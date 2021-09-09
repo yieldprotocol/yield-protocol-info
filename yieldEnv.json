@@ -1,0 +1,46 @@
+{
+  "addresses": {
+    "1": {
+      "Cauldron": "0x324ee27d5f5A7Da8C926A5954CB86357b8e07F81",
+      "Ladle": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "ChainlinkMultiOracle": "0x2C5f88E7BD899CE57242ecA7650F21a4a9c28D3f",
+      "CompositeMultiOracle": "0x77528b9E8300D4eF6075c18C7148420C86997106"
+    },
+    "42": {
+      "Cauldron": "0xc3EE4DF58b09184A7E47b50cFB4e457D5042a382",
+      "Ladle": "0xf7611BC6f78AE082f9C3E290F67349dE3b8591Cf",
+      "ChainlinkMultiOracle": "0x585Aa99cF4F9F5C65E347d6f6A4a23E992e37E68",
+      "CompositeMultiOracle": "0xC9BdCf50604bC2430800d902183c574B31723dD0"
+    },
+    "31337": {
+      "Cauldron": "0x7Dd21c63a12042759ce9D5207301F0f19b10c634",
+      "Ladle": "0xb3768d474dc5464c50AFF228682a5D63c06335E8",
+      "ChainlinkMulitOracle": "0x06E5903f2Aa1935EE6f4B9f825F8A140C681C0F1",
+      "CompositeMultiOracle": "0x77528b9E8300D4eF6075c18C7148420C86997106"
+    }
+  },
+  "assetColors": {
+    "DAI": "#F5AC37",
+    "USDC": "#2775CA",
+    "WBTC": "#5A5564",
+    "TST": "#D15034",
+    "WETH": "#FFFFFF",
+    "USDT": "#50af95"
+  },
+  "seasonColors": {
+    "WINTER": ["#D9D9D9", "#67F2FC", "#333333"],
+    "SPRING": ["#6AD99E", "#FF6BE4", "#333333"],
+    "SUMMER": ["#FFDE75", "#409C4D", "#333333"],
+    "FALL": ["#7255BD", "#D95948", "#ffffff"]
+  },
+  "strategies": {
+    "1": [],
+    "42": [
+      "0xA711725a06205509D13EFB454bf8BD4fCDE53187",
+      "0x2603c930D4B391D64f094875Ceaf4E9555524e63",
+      "0x1229Db69e1301A1d5b6D0b94b952aaBC2F377877",
+      "0xcD82AaF88C13Eaf8271D8Cdaa2494824247D052A"
+    ],
+    "31337": []
+  }
+}
