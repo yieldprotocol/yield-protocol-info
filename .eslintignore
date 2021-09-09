@@ -13,3 +13,7 @@ src/serviceWorker.ts
 
 # ignore all js
 # **/*
+
+# ignore tailwind config
+tailwind.config.js
+postcss.config.js
