@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { IAssetRoot, ISeriesRoot, ActionType } from '../types/chain';
+import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
   appVersion: '0.0.0' as string,
@@ -34,8 +34,6 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return { ...state, fallbackProvider: action.fallbackProvider };
     case ActionType.PROVIDER:
       return { ...state, provider: action.provider };
-    case ActionType.SIGNER:
-      return { ...state, signer: action.signer };
     case ActionType.CHAIN_LOADING:
       return { ...state, chainLoading: action.chainLoading };
     case ActionType.CHAIN_ID:
@@ -46,8 +44,6 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return { ...state, connectors: action.connectors };
     case ActionType.CONNECTOR:
       return { ...state, connector: action.connector };
-    case ActionType.ACCOUNT:
-      return { ...state, account: action.account };
     case ActionType.CONTRACT_MAP:
       return { ...state, contractMap: action.contractMap };
     case ActionType.ADD_ASSET:

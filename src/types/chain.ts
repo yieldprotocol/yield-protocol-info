@@ -1,22 +1,6 @@
 import { ethers, BigNumber, BigNumberish } from 'ethers';
 // import { FYToken, Pool, Strategy } from '../contracts';
 
-export enum ActionType {
-  APP_VERSION = 'chain/APP_VERSION',
-  FALLBACK_PROVIDER = 'chain/FALLBACK_PROVIDER',
-  PROVIDER = 'chain/PROVIDER',
-  SIGNER = 'chain/SIGNER',
-  CHAIN_LOADING = 'chain/CHAIN_LOADING',
-  CHAIN_ID = 'chain/CHAIN_ID',
-  WEB3_ACTIVE = 'chain/WEB3_ACTIVE',
-  CONNECTORS = 'chain/CONNECTORS',
-  CONNECTOR = 'chain/CONNECTOR',
-  ACCOUNT = 'chain/ACCOUNT',
-  CONTRACT_MAP = 'chain/CONTRACT_MAP',
-  ADD_SERIES = 'chain/ADD_SERIES',
-  ADD_ASSET = 'chain/ADD_ASSET',
-}
-
 export interface ISignable {
   name: string;
   version: string;
