@@ -9,5 +9,5 @@ export enum ActionType {
   CONNECTOR = 'chain/CONNECTOR',
   CONTRACT_MAP = 'chain/CONTRACT_MAP',
   ADD_SERIES = 'chain/ADD_SERIES',
-  ADD_ASSET = 'chain/ADD_ASSET',
+  ASSETS_UPDATED = 'chain/ASSETS_UPDATED',
 }
