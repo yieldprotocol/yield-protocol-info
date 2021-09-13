@@ -1,6 +1,5 @@
 import React from 'react';
-import MainViewWrap from '../wraps/MainViewWrap';
 
-const Asset = () => <MainViewWrap>Asset View</MainViewWrap>;
+const Asset = () => <div className="">single Asset View</div>;
 
 export default Asset;

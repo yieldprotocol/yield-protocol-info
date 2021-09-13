@@ -2,7 +2,6 @@ import { ethers } from 'ethers';
 import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
-  appVersion: '0.0.0' as string,
   chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) as number | null,
   provider: null as ethers.providers.Web3Provider | null,
   fallbackProvider: null as ethers.providers.Web3Provider | null,
@@ -18,45 +17,48 @@ const INITIAL_STATE = {
 
   /* flags */
   chainLoading: true,
+  seriesLoading: false,
+  strategiesLoading: false,
+  assetsLoading: false,
 
   /* Connected Contract Maps */
-  contractMap: {},
-  assetRootMap: {},
-  seriesRootMap: {},
-  strategyRootMap: {},
+  contractMap: null,
+  assets: null,
+  series: null,
+  strategies: null,
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
   switch (action.type) {
-    case ActionType.APP_VERSION:
-      return { ...state, appVersion: action.appVersion };
-    case ActionType.FALLBACK_PROVIDER:
-      return { ...state, fallbackProvider: action.fallbackProvider };
     case ActionType.PROVIDER:
       return { ...state, provider: action.provider };
-    case ActionType.CHAIN_LOADING:
-      return { ...state, chainLoading: action.chainLoading };
     case ActionType.CHAIN_ID:
       return { ...state, chainId: action.chainId };
-    case ActionType.WEB3_ACTIVE:
-      return { ...state, web3Active: action.web3Active };
-    case ActionType.CONNECTORS:
-      return { ...state, connectors: action.connectors };
-    case ActionType.CONNECTOR:
-      return { ...state, connector: action.connector };
-    case ActionType.CONTRACT_MAP:
-      return { ...state, contractMap: action.contractMap };
-    case ActionType.ADD_ASSET:
+    case ActionType.CHAIN_LOADING:
+      return { ...state, chainLoading: action.chainLoading };
+    case ActionType.SERIES_LOADING:
+      return { ...state, seriesLoading: action.seriesLoading };
+    case ActionType.STRATEGIES_LOADING:
+      return { ...state, strategiesLoading: action.strategiesLoading };
+    case ActionType.ASSETS_LOADING:
+      return { ...state, assetsLoading: action.assetsLoading };
+    case ActionType.UPDATE_SERIES:
       return {
         ...state,
-        assetRootMap: { ...state.assetRootMap, [action.asset?.id]: { ...action.asset } },
+        series: action.series,
       };
-    case ActionType.ADD_SERIES:
+    case ActionType.UPDATE_STRATEGIES:
       return {
         ...state,
-        seriesRootMap: { ...state.seriesRootMap, [action.series?.id]: { ...action.series } },
+        strategies: action.strategies,
       };
-
+    case ActionType.UPDATE_ASSETS:
+      return {
+        ...state,
+        assets: action.assets,
+      };
+    case ActionType.RESET:
+      return INITIAL_STATE;
     default:
       return state;
   }

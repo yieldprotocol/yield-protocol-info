@@ -1,10 +1,10 @@
 import React from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 
-const StrategyItem = ({ item }: any) => (
-  <ListItemWrap type="strategy" item={item}>
+const SeriesItem = ({ item }: any) => (
+  <ListItemWrap type="series" item={item}>
     <div className="text-sm">
-      Strategy: <strong>{item.name}</strong>
+      Series: <strong>{item.name}</strong>
     </div>
     <div className="text-sm">Symbol: {item.symbol}</div>
     <div className="text-sm">Base Id: {item.baseId}</div>
@@ -12,4 +12,4 @@ const StrategyItem = ({ item }: any) => (
   </ListItemWrap>
 );
 
-export default StrategyItem;
+export default SeriesItem;

@@ -1,7 +1,6 @@
 import { format, getMonth, subDays } from 'date-fns';
 import { BigNumber, BigNumberish, ethers } from 'ethers';
 import Identicon, { IdenticonOptions } from 'identicon.js';
-import { ActionCodes } from '../types';
 
 export const copyToClipboard = (str: string) => {
   const el = document.createElement('textarea');
@@ -54,21 +53,6 @@ export const toLog = (message: string, type: string = 'info') => {
   // eslint-disable-next-line no-console
   console.log(message);
 };
-
-/* creates internal tracking code of a transaction type */
-export const getTxCode = (txType: ActionCodes, vaultOrSeriesId: string | null) => `${txType}_${vaultOrSeriesId}`;
-
-// /* google analytics log event */
-// export const analyticsLogEvent = (eventName: string, eventParams: any ) => {
-//   if (eventName) {
-//     try {
-//     window?.gtag('event', eventName, eventParams);
-//     } catch (e) {
-//       // eslint-disable-next-line no-console
-//       console.log(e);
-//     }
-//   }
-// };
 
 // TODO make it change based on hemisphere ( ie swap winter and summer)
 export enum SeasonType {
@@ -217,37 +201,3 @@ export const buildGradient = (colorFrom: string, colorTo: string) => `linear-gra
       ${modColor(colorTo, 0)}, 
       ${modColor(colorTo, 0)})
     `;
-
-export const getPositionPathPrefix = (txCode: string) => {
-  const action = txCode.split('_')[0];
-  switch (action) {
-    // BORROW
-    case ActionCodes.BORROW:
-    case ActionCodes.REMOVE_COLLATERAL:
-    case ActionCodes.REPAY:
-    case ActionCodes.ROLL_DEBT:
-    case ActionCodes.TRANSFER_VAULT:
-    case ActionCodes.MERGE_VAULT:
-      return 'vaultposition';
-    // LEND
-    case ActionCodes.LEND:
-    case ActionCodes.CLOSE_POSITION:
-    case ActionCodes.ROLL_POSITION:
-    case ActionCodes.REDEEM:
-      return 'lendposition';
-    // POOL
-    case ActionCodes.ADD_LIQUIDITY:
-    case ActionCodes.REMOVE_LIQUIDITY:
-    case ActionCodes.ROLL_LIQUIDITY:
-      return 'poolposition';
-
-    default:
-      return `${action.toLowerCase()}position`;
-  }
-};
-
-export const getVaultIdFromReceipt = (receipt: any, contractMap: any) => {
-  const cauldronAddr = contractMap.get('Cauldron').address;
-  const vaultIdHex = receipt.events.filter((e: any) => e.address === cauldronAddr)[0].topics[1];
-  return vaultIdHex.slice(0, 26);
-};

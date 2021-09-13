@@ -1,15 +1,19 @@
-import { IAsset } from '../../types/chain';
+import { IAsset, ISeries, IStrategy } from '../../types/chain';
 import { ActionType } from '../actionTypes/chain';
 
-export const getAssets = () => async (dispatch: any) => {
-  // const assets = _getAssets()
-  const assets = '';
-  return dispatch(updateAssets(assets));
-};
+export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, provider });
+export const updateChainId = (chainId: any) => ({ type: ActionType.CHAIN_ID, chainId });
+export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, chainLoading });
 
-function updateAssets(assets: any) {
-  return {
-    type: ActionType.ASSETS_UPDATED,
-    assets,
-  };
-}
+export const setSeriesLoading = (seriesLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, seriesLoading });
+export const setStrategiesLoading = (strategiesLoading: boolean) => ({
+  type: ActionType.CHAIN_LOADING,
+  strategiesLoading,
+});
+export const setAssetsLoading = (assetsLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, assetsLoading });
+
+export const updateSeries = (series: any) => ({ type: ActionType.UPDATE_SERIES, series });
+export const updateStrategies = (strategies: any) => ({ type: ActionType.UPDATE_STRATEGIES, strategies });
+export const updateAssets = (assets: any) => ({ type: ActionType.UPDATE_ASSETS, assets });
+
+export const reset = () => ({ type: ActionType.RESET });

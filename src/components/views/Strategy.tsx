@@ -1,6 +1,5 @@
 import React from 'react';
-import MainViewWrap from '../wraps/MainViewWrap';
 
-const Strategy = () => <MainViewWrap>Strategy view</MainViewWrap>;
+const Strategy = () => <div className="">single Strategy view</div>;
 
 export default Strategy;
