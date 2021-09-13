@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import SeriesItem from '../SeriesItem';
 import { useAppSelector } from '../../state/hooks/general';
 

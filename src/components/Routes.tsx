@@ -7,6 +7,7 @@ import Strategies from './views/Strategies';
 import Strategy from './views/Strategy';
 import Assets from './views/Assets';
 import Asset from './views/Asset';
+import Governance from './views/Governance';
 
 const Routes = () => (
   <>
@@ -31,6 +32,9 @@ const Routes = () => (
       </Route>
       <Route path="/assets/:id">
         <Asset />
+      </Route>
+      <Route exact path="/governance">
+        <Governance />
       </Route>
 
       <Redirect to="/" />
