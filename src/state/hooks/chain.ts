@@ -125,6 +125,7 @@ const useChain = () => {
         const newAssets: any = {};
 
         try {
+          dispatch(setAssetsLoading(true));
           await Promise.all(
             assetAddedEvents.map(async (x: any) => {
               const { assetId: id, asset: address } = Cauldron.interface.parseLog(x).args;
@@ -214,6 +215,7 @@ const useChain = () => {
 
         /* Add in any extra static series */
         try {
+          dispatch(setSeriesLoading(true));
           await Promise.all([
             ...seriesAddedEvents.map(async (x: any): Promise<void> => {
               const { seriesId: id, baseId, fyToken } = Cauldron.interface.parseLog(x).args;
