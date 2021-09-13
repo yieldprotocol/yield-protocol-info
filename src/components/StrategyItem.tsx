@@ -2,7 +2,7 @@ import React from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 
 const StrategyItem = ({ item }: any) => (
-  <ListItemWrap type="strategy" item={item}>
+  <ListItemWrap type="strategies" item={item}>
     <div className="text-sm">
       Strategy: <strong>{item.name}</strong>
     </div>

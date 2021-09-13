@@ -1,5 +1,5 @@
 import React from 'react';
-import SeriesItem from '../AssetItem';
+import SeriesItem from '../SeriesItem';
 import { useAppSelector } from '../../state/hooks/general';
 
 const SeriesList = () => {

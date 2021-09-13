@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ContractFactory, ethers } from 'ethers';
-import { createWeb3ReactRoot, Web3ReactProvider, useWeb3React } from '@web3-react/core';
+import { useWeb3React } from '@web3-react/core';
 import { NetworkConnector } from '@web3-react/network-connector';
 import { format } from 'date-fns';
-// import { NetworkConnector } from '@web3-react/network-connector';
-import { useAppSelector, useAppDispatch } from './general';
+import { useAppDispatch } from './general';
 import {
-  updateProvider,
   setChainLoading,
   updateChainId,
   setSeriesLoading,
@@ -85,7 +83,6 @@ const useChain = () => {
    * Update on FALLBACK connection/state on network changes (id/library)
    */
   useEffect(() => {
-    library && updateProvider(library);
     chainId && updateChainId(chainId);
 
     if (library && chainId) {

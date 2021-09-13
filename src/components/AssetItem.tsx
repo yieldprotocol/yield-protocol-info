@@ -2,7 +2,7 @@ import React from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 
 const AssetItem = ({ item }: any) => (
-  <ListItemWrap type="asset" item={item}>
+  <ListItemWrap type="assets" item={item}>
     <div className="text-sm">
       Symbol: <strong>{item.symbol}</strong>
     </div>
