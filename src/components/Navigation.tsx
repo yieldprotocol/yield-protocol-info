@@ -10,14 +10,12 @@ const Navigation = () => {
         <div className="mx-auto px-2 sm:px-4 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
             <div className="flex items-center px-2 lg:px-0 lg:space-x-2">
-              <div className="flex-none">
-                <NavLink
-                  to="/"
-                  className="align-middle rounded-md overflow-hidden flex h-9 w-9 focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition"
-                >
-                  <YieldMark className="h-8 w-8" />
-                </NavLink>
-              </div>
+              <NavLink
+                to="/"
+                className="rounded-md overflow-hidden flex focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition"
+              >
+                <YieldMark />
+              </NavLink>
               <div className="flex">
                 <div className="ml-10 flex space-x-4">
                   {views.map((view) => (
