@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ContractFactory, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import { NetworkConnector } from '@web3-react/network-connector';
 import { format } from 'date-fns';
@@ -22,23 +22,6 @@ import { IAssetRoot, ISeriesRoot, IStrategyRoot } from '../../types/chain';
 
 import { ETH_BASED_ASSETS } from '../../utils/constants';
 import { nameFromMaturity, getSeason, SeasonType } from '../../utils/appUtils';
-
-import DaiMark from '../../components/logos/DaiMark';
-import EthMark from '../../components/logos/EthMark';
-import TSTMark from '../../components/logos/TSTMark';
-import USDCMark from '../../components/logos/USDCMark';
-import WBTCMark from '../../components/logos/WBTCMark';
-import USDTMark from '../../components/logos/USDTMark';
-import YieldMark from '../../components/logos/YieldMark';
-
-// const markMap = new Map([
-//   ['DAI', <DaiMark key="dai" />],
-//   ['USDC', <USDCMark key="usdc" />],
-//   ['WBTC', <WBTCMark key="wbtc" />],
-//   ['TST', <TSTMark key="tst" />],
-//   ['ETH', <EthMark key="eth" />],
-//   ['USDT', <USDTMark key="eth" />],
-// ]);
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
