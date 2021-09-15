@@ -179,7 +179,6 @@ const useChain = () => {
 
           fullDate: format(new Date(_series.maturity * 1000), 'dd MMMM yyyy'),
           displayName: format(new Date(_series.maturity * 1000), 'dd MMM yyyy'),
-          displayNameMobile: `${nameFromMaturity(_series.maturity, 'MMM yyyy')}`,
 
           season,
           startColor,
@@ -193,7 +192,6 @@ const useChain = () => {
           seriesMark: '',
 
           // built-in helper functions:
-          getTimeTillMaturity: () => _series.maturity - Math.round(new Date().getTime() / 1000),
           isMature: async () => _series.maturity < (await library.getBlock('latest')).timestamp,
           // getBaseAddress: () => assets[_series.baseId].address, // TODO refactor to get this static - if possible?
         };

@@ -4,7 +4,7 @@ import Navigation from './components/Navigation';
 import { useChain } from './state/hooks/chain';
 import MainViewWrap from './components/wraps/MainViewWrap';
 
-const App = () => {
+function App() {
   useChain();
   return (
     <div className="">
@@ -16,6 +16,6 @@ const App = () => {
       </div>
     </div>
   );
-};
+}
 
 export default App;
