@@ -12,11 +12,13 @@ const Asset = () => {
       <div className="text-sm">
         <strong>{asset.symbol}</strong>
       </div>
-      {Object.entries(asset).map((key: any, val: any) => (
-        <div className="text-sm" key={key}>
-          {key}: {val}
-        </div>
-      ))}
+      <div className="grid-cols-2">
+        {Object.keys(asset).map((key: any) => (
+          <div className="text-sm" key={key}>
+            {key}: <strong>{assets[key]}</strong>
+          </div>
+        ))}
+      </div>
     </div>
   ) : null;
 };

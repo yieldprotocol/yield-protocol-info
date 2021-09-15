@@ -18,21 +18,15 @@ const Routes = () => (
       <Route exact path="/series">
         <SeriesList />
       </Route>
-      <Route path="/series/:id">
-        <Series />
-      </Route>
+      <Route path="/series/:id" component={Series} />
       <Route exact path="/strategies">
         <Strategies />
       </Route>
-      <Route path="/strategies/:id">
-        <Strategy />
-      </Route>
+      <Route path="/strategies/:id" component={Strategy} />
       <Route exact path="/assets">
         <Assets />
       </Route>
-      <Route path="/assets/:id">
-        <Asset />
-      </Route>
+      <Route path="/assets/:id" component={Asset} />
       <Route exact path="/governance">
         <Governance />
       </Route>

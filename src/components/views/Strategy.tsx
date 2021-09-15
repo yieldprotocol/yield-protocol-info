@@ -12,9 +12,9 @@ const Strategy = () => {
       <div className="text-sm">
         <strong>{strategy.symbol}</strong>
       </div>
-      {Object.entries(strategy).map((key: any, val: any) => (
+      {Object.keys(strategy).map((key: any) => (
         <div className="text-sm" key={key}>
-          {key}: {val}
+          {key}: <strong>{strategy[key]}</strong>
         </div>
       ))}
     </div>

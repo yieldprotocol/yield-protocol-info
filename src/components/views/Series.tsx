@@ -12,9 +12,9 @@ const Series = () => {
       <div className="text-sm">
         <strong>{series.symbol}</strong>
       </div>
-      {Object.entries(series).map((key: any, val: any) => (
+      {Object.keys(series).map((key: any) => (
         <div className="text-sm" key={key}>
-          {key}: {val}
+          {key}: <strong>{series[key]}</strong>
         </div>
       ))}
     </div>

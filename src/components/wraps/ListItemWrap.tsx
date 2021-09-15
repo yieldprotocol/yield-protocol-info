@@ -9,7 +9,7 @@ const ListItemWrap = ({ item, type, children }: { item: any; type: string; child
         background: `linear-gradient( ${item.startColor?.toString().concat('96')} , ${item.endColor?.toString()} )`,
       }}
     >
-      <div className="rounded-md p-.5 align-middle justify-items-start">{children}</div>
+      <div className="rounded-md p-.5 align-middle justify-items-center">{children}</div>
     </div>
   </Link>
 );

@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div className="">
       <Navigation />
-      <div className="h-full bg-white dark:bg-gray-900">
+      <div className="h-full dark:bg-gray-900">
         <MainViewWrap>
           <Routes />
         </MainViewWrap>

@@ -6,7 +6,7 @@ const Navigation = () => {
   const views = ['series', 'strategies', 'assets', 'governance'];
   return (
     <div className="sticky top-0 z-10 flex-none">
-      <nav className="dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <nav className="dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 bg-white">
         <div className="mx-auto px-2 sm:px-4 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
             <div className="flex items-center px-2 lg:px-0 lg:space-x-2">
