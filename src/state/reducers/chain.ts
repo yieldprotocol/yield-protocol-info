@@ -10,9 +10,9 @@ const INITIAL_STATE = {
   assetsLoading: false,
 
   /* Data */
-  series: null,
-  strategies: null,
-  assets: null,
+  series: {},
+  strategies: {},
+  assets: {},
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
