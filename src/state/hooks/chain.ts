@@ -10,9 +10,12 @@ import {
   setSeriesLoading,
   setStrategiesLoading,
   setAssetsLoading,
+  setEventsLoading,
   updateSeries,
   updateStrategies,
   updateAssets,
+  updateEvents,
+  updateContractMap,
   reset,
 } from '../actions/chain';
 
@@ -82,6 +85,8 @@ const useChain = () => {
       newContractMap.Ladle = Ladle;
       newContractMap.ChainlinkMultiOracle = ChainlinkMultiOracle;
       newContractMap.CompositeMultiOracle = CompositeMultiOracle;
+
+      dispatch(updateContractMap(newContractMap));
 
       /* Get the hardcoded strategy addresses */
       const strategyAddresses = (yieldEnv.strategies as any)[chainId];
@@ -285,9 +290,61 @@ const useChain = () => {
         }
       };
 
+      const _getEvents = async (contract: any) => {
+        try {
+          dispatch(setEventsLoading(true));
+          const events = await contract.queryFilter('*', null, null);
+          console.log(events);
+          const updatedEvents = events.map((e: any, i: number) => ({
+            id: i,
+            event: e.event,
+            blockNumber: e.blockNumber,
+          }));
+
+          const eventsMap = { [contract.address]: updatedEvents };
+
+          /* build a map from the event data */
+          // const eventMap: Map<string, string> = new Map(
+          //   events.map((log: any) => events.interface.parseLog(log).args) as [[string, string]]
+          // );
+
+          // const newObj: any = {};
+          // await Promise.all([
+          //   ...events.map(async (x: any): Promise<void> => {
+          //     const { seriesId: id, baseId, fyToken } = contract.interface.parseLog(x).args;
+          //     const { maturity } = await Cauldron.series(id);
+
+          //       const events = {
+          //         id,
+          //         baseId,
+          //         maturity,
+          //         name,
+          //         symbol,
+          //         version,
+          //         address: fyToken,
+          //         fyTokenAddress: fyToken,
+          //         decimals,
+          //         poolAddress,
+          //         poolVersion,
+          //         poolName,
+          //         poolSymbol,
+          //       };
+          //       newSeriesObj[id] = _chargeSeries(newSeries);
+          //     }
+          //   }),
+          // ]);
+          dispatch(updateEvents(eventsMap));
+          dispatch(setEventsLoading(false));
+          console.log('Yield Protocol Series data updated.');
+        } catch (e) {
+          dispatch(setSeriesLoading(false));
+          console.log('Error fetching series data: ', e);
+        }
+      };
+
       /* LOAD the Series and Assets */
       (async () => {
-        await Promise.all([_getAssets(), _getSeries(), _getStrategies()]);
+        await Promise.all([_getAssets(), _getSeries(), _getStrategies(), _getEvents(Cauldron)]);
         dispatch(setChainLoading(false));
       })();
     }

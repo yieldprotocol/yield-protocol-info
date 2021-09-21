@@ -13,6 +13,8 @@ const INITIAL_STATE = {
   series: {},
   strategies: {},
   assets: {},
+  events: {},
+  contractMap: {},
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
@@ -25,6 +27,8 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return { ...state, seriesLoading: action.seriesLoading };
     case ActionType.STRATEGIES_LOADING:
       return { ...state, strategiesLoading: action.strategiesLoading };
+    case ActionType.EVENTS_LOADING:
+      return { ...state, eventsLoading: action.eventsLoading };
     case ActionType.ASSETS_LOADING:
       return { ...state, assetsLoading: action.assetsLoading };
     case ActionType.UPDATE_SERIES:
@@ -41,6 +45,16 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return {
         ...state,
         assets: action.assets,
+      };
+    case ActionType.UPDATE_EVENTS:
+      return {
+        ...state,
+        events: action.events,
+      };
+    case ActionType.UPDATE_CONTRACT_MAP:
+      return {
+        ...state,
+        contractMap: action.contractMap,
       };
     case ActionType.RESET:
       return INITIAL_STATE;

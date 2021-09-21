@@ -8,6 +8,8 @@ import Strategy from './views/Strategy';
 import Assets from './views/Assets';
 import Asset from './views/Asset';
 import Governance from './views/Governance';
+import Contracts from './views/Contracts';
+import Contract from './views/Contract';
 
 const Routes = () => (
   <>
@@ -15,6 +17,10 @@ const Routes = () => (
       <Route exact path="/">
         <Home />
       </Route>
+      <Route exact path="/contracts">
+        <Contracts />
+      </Route>
+      <Route path="/contracts/:addr" component={Contract} />
       <Route exact path="/series">
         <SeriesList />
       </Route>
