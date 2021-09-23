@@ -6,6 +6,7 @@ const INITIAL_STATE = {
 
   /* Data */
   vaults: {},
+  prices: {},
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
