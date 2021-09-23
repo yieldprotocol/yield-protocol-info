@@ -10,21 +10,18 @@ import {
   setSeriesLoading,
   setStrategiesLoading,
   setAssetsLoading,
-  setEventsLoading,
   updateSeries,
   updateStrategies,
   updateAssets,
-  updateEvents,
-  updateContractMap,
-  reset,
+  reset as resetChain,
 } from '../actions/chain';
+
+import { getEvents, updateContractMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
-import { IAssetRoot, ISeriesRoot, IStrategyRoot } from '../../types/chain';
 
-import { ETH_BASED_ASSETS } from '../../utils/constants';
-import { nameFromMaturity, getSeason, SeasonType } from '../../utils/appUtils';
+import { getSeason, SeasonType } from '../../utils/appUtils';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -56,11 +53,10 @@ chainData.set(5, { name: 'Goerli', color: '#3099f2', supported: false });
 chainData.set(10, { name: 'Optimism', color: '#EB0822', supported: false });
 chainData.set(42, { name: 'Kovan', color: '#7F7FFE', supported: true });
 
-/* Build the context */
-
 const useChain = () => {
   const dispatch = useAppDispatch();
-  dispatch(reset());
+  dispatch(resetChain());
+
   const defaultChainId = 42;
   const fallbackConnection = useWeb3React<ethers.providers.JsonRpcProvider>('fallback');
   const { library, chainId, activate } = fallbackConnection;
@@ -81,10 +77,10 @@ const useChain = () => {
 
       /* Update the baseContracts state : ( hardcoded based on networkId ) */
       const newContractMap: any = {};
-      newContractMap.Cauldron = Cauldron;
-      newContractMap.Ladle = Ladle;
-      newContractMap.ChainlinkMultiOracle = ChainlinkMultiOracle;
-      newContractMap.CompositeMultiOracle = CompositeMultiOracle;
+      newContractMap[Cauldron.address] = { contract: Cauldron, name: 'Cauldron' };
+      newContractMap[Ladle.address] = { contract: Ladle, name: 'Ladle' };
+      newContractMap[ChainlinkMultiOracle.address] = { contract: ChainlinkMultiOracle, name: 'ChainlinkMultiOracle' };
+      newContractMap[CompositeMultiOracle.address] = { contract: CompositeMultiOracle, name: 'CompositeMultiOracle' };
 
       dispatch(updateContractMap(newContractMap));
 
@@ -290,61 +286,9 @@ const useChain = () => {
         }
       };
 
-      const _getEvents = async (contract: any) => {
-        try {
-          dispatch(setEventsLoading(true));
-          const events = await contract.queryFilter('*', null, null);
-          console.log(events);
-          const updatedEvents = events.map((e: any, i: number) => ({
-            id: i,
-            event: e.event,
-            blockNumber: e.blockNumber,
-          }));
-
-          const eventsMap = { [contract.address]: updatedEvents };
-
-          /* build a map from the event data */
-          // const eventMap: Map<string, string> = new Map(
-          //   events.map((log: any) => events.interface.parseLog(log).args) as [[string, string]]
-          // );
-
-          // const newObj: any = {};
-          // await Promise.all([
-          //   ...events.map(async (x: any): Promise<void> => {
-          //     const { seriesId: id, baseId, fyToken } = contract.interface.parseLog(x).args;
-          //     const { maturity } = await Cauldron.series(id);
-
-          //       const events = {
-          //         id,
-          //         baseId,
-          //         maturity,
-          //         name,
-          //         symbol,
-          //         version,
-          //         address: fyToken,
-          //         fyTokenAddress: fyToken,
-          //         decimals,
-          //         poolAddress,
-          //         poolVersion,
-          //         poolName,
-          //         poolSymbol,
-          //       };
-          //       newSeriesObj[id] = _chargeSeries(newSeries);
-          //     }
-          //   }),
-          // ]);
-          dispatch(updateEvents(eventsMap));
-          dispatch(setEventsLoading(false));
-          console.log('Yield Protocol Series data updated.');
-        } catch (e) {
-          dispatch(setSeriesLoading(false));
-          console.log('Error fetching series data: ', e);
-        }
-      };
-
-      /* LOAD the Series and Assets */
+      /* LOAD the Series, Assets, Strategies, and contract events */
       (async () => {
-        await Promise.all([_getAssets(), _getSeries(), _getStrategies(), _getEvents(Cauldron)]);
+        await Promise.all([_getAssets(), _getSeries(), _getStrategies()]);
         dispatch(setChainLoading(false));
       })();
     }
