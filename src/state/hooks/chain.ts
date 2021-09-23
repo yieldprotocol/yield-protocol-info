@@ -16,7 +16,7 @@ import {
   reset as resetChain,
 } from '../actions/chain';
 
-import { getEvents, updateContractMap } from '../actions/contracts';
+import { updateContractMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
@@ -70,20 +70,20 @@ const useChain = () => {
     if (library && chainId) {
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];
-      const Cauldron = contracts.Cauldron__factory.connect(addrs.Cauldron, library);
-      const Ladle = contracts.Ladle__factory.connect(addrs.Ladle, library);
-      const ChainlinkMultiOracle = contracts.ChainlinkMultiOracle__factory.connect(addrs.ChainlinkMultiOracle, library);
-      const CompositeMultiOracle = contracts.CompositeMultiOracle__factory.connect(addrs.CompositeMultiOracle, library);
 
-      /* Update the baseContracts state : ( hardcoded based on networkId ) */
+      /* Update the baseContracts state */
       const newContractMap: any = {};
-      newContractMap[Cauldron.address] = { contract: Cauldron, name: 'Cauldron' };
-      newContractMap[Ladle.address] = { contract: Ladle, name: 'Ladle' };
-      newContractMap[ChainlinkMultiOracle.address] = { contract: ChainlinkMultiOracle, name: 'ChainlinkMultiOracle' };
-      newContractMap[CompositeMultiOracle.address] = { contract: CompositeMultiOracle, name: 'CompositeMultiOracle' };
+
+      [...Object.keys(addrs)].forEach((name: string) => {
+        const addr = addrs[name];
+        const contract = (contracts as any)[`${name}__factory`].connect(addrs[name], library);
+        newContractMap[addr] = { contract, name };
+      });
+
+      const Cauldron = newContractMap[addrs.Cauldron].contract;
+      const Ladle = newContractMap[addrs.Ladle].contract;
 
       dispatch(updateContractMap(newContractMap));
-
       /* Get the hardcoded strategy addresses */
       const strategyAddresses = (yieldEnv.strategies as any)[chainId];
 
