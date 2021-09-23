@@ -8,7 +8,6 @@ export function getVaults(contractMap: any, series: any) {
     const Cauldron = (Object.values(contractMap).filter((x: any) => x.name === 'Cauldron')[0] as any).contract;
 
     if (Object.keys(Cauldron.filters).length) {
-      console.log(Cauldron);
       const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
       const vaultsReceivedfilter = Cauldron.filters.VaultGiven(null, null);
 
