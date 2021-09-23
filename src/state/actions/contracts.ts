@@ -4,17 +4,17 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
   return async function _getEvents(dispatch: any) {
     dispatch(setEventsLoading(true));
     const contract = contractMap[contractAddr]?.contract!;
-
     if (contract) {
       try {
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, null, null);
         console.log(events);
+
         const updatedEvents = events.map((e: any, i: number) => ({
           id: i,
           event: e.event,
           blockNumber: e.blockNumber,
-          args: e.args.join(', '),
+          args: e.args ? e.args.join(', ') : '',
         }));
 
         const eventsMap = { [contractAddr]: updatedEvents };
