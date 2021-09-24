@@ -3,12 +3,13 @@ import { Link, useHistory } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useAppSelector } from '../../state/hooks/general';
 import { cleanValue } from '../../utils/appUtils';
+import { markMap } from '../../config/marks';
 
 const Assets = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.chain.vaultsLoading);
-  const prices = useAppSelector((st) => st.vaults.prices);
+  const assets = useAppSelector((st) => st.chain.assets);
 
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
@@ -31,55 +32,105 @@ const Assets = () => {
             </th>
             <th
               scope="col"
-              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-left"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
               Collateralization Ratio
             </th>
             <th
               scope="col"
-              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-left"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
-              Debt (USD)
+              Debt Asset
             </th>
             <th
               scope="col"
-              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-left"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
-              Collateral (USD)
+              Debt Balance
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
+            >
+              Collateral Asset
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
+            >
+              Collateral Balance
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
+            >
+              Price
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
+            >
+              Collateral Balance
             </th>
           </tr>
         </thead>
         <tbody className="bg-green divide-y divide-gray-200">
-          {[...Object.values(vaults)].map((v: any) => (
-            <tr
-              key={v.id}
-              onClick={() => handleClick(v.id)}
-              className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
-            >
-              <td className="px-6 py-5 text-left">
-                <div className="flex items-center">
-                  <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate justify-items-start">
-                    {v.id}
+          {[...Object.values(vaults)].map((v: any) => {
+            const debtAsset = assets[v.baseId];
+            const collatAsset = assets[v.ilkId];
+            const debtAssetLogo = markMap?.get(debtAsset.symbol);
+            const collatAssetLogo = markMap?.get(collatAsset.symbol);
+            return (
+              <tr
+                key={v.id}
+                onClick={() => handleClick(v.id)}
+                className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
+              >
+                <td className="px-6 py-5 text-left">
+                  <div className="flex items-center">
+                    <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate justify-items-start">
+                      {v.id}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate justify-items-center">
+                    <span>{cleanValue(v.collatRatioPct, 1)}%</span>
                   </span>
-                </div>
-              </td>
-              <td className="px-6 py-5 text-right">
-                <span className="text-sm leading-5 font-medium text-gray-900 dark:text-white truncate justify-items-start">
-                  <span>{cleanValue(v.collatRatioPct, 1)}%</span>
-                </span>
-              </td>
-              <td className="px-6 py-5 text-right">
-                <span className="text-sm leading-5 font-medium text-gray-900 dark:text-white truncate justify-items-start">
-                  <span>{v.art_}</span>
-                </span>
-              </td>
-              <td className="px-6 py-5 text-right">
-                <span className="text-sm leading-5 font-medium text-gray-900 dark:text-white truncate justify-items-start">
-                  <span>{v.ink_}</span>
-                </span>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{v.art_}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{v.ink_}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{cleanValue(v.price_, 2)}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-5 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{cleanValue(v.inkToArtBal, 2)}</span>
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -60,13 +60,17 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
             await Cauldron.balances(vault.id),
             await Cauldron.vaults(vault.id),
             await Cauldron.debt(vault.baseId, vault.ilkId),
-            await updatePrice(vault.ilkId, vault.baseId, priceMap, contractMap),
+            await getPrice(vault.ilkId, vault.baseId, contractMap),
           ]);
 
           const base = assets[vault.baseId];
           const ilk = assets[ilkId];
 
           const collateralizationRatio = calculateCollateralizationRatio(ink, price, art, true);
+          const price_ = cleanValue(utils.formatUnits(price, 18)); // TODO is this format unit correct
+          const ink_ = cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat); // for display purposes only
+          const art_ = cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat); // for display purposes only
+          const inkToArtBal = (Number(ink_) * Number(price_)).toString();
 
           return {
             ...vault,
@@ -74,9 +78,11 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
             isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
             seriesId,
             ilkId,
-            ink_: cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat), // for display purposes only
-            art_: cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat), // for display purposes only
+            ink_,
+            art_,
             collatRatioPct: cleanValue(collateralizationRatio, 2),
+            price_,
+            inkToArtBal,
           };
         })
       );
@@ -92,24 +98,22 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
   };
 }
 
-const updatePrice = async (ilk: string, base: string, priceMap: any, contractMap: any) => {
+async function getPrice(ilk: string, base: string, contractMap: any) {
   try {
-    const _ilkPriceMap = priceMap[ilk] || {};
-
     const Oracle = (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any)
       .contract;
     const [price] = await Oracle.peek(bytesToBytes32(ilk, 6), bytesToBytes32(base, 6), ONE_WEI_BN);
-
-    _ilkPriceMap[base] = price;
-
-    updatePrices(_ilkPriceMap);
     return price;
   } catch (e) {
     console.log(e);
     return ethers.constants.Zero;
   }
-};
+}
 
 export const updateVaults = (vaults: any) => ({ type: ActionType.UPDATE_VAULTS, vaults });
 export const setVaultsLoading = (vaultsLoading: boolean) => ({ type: ActionType.VAULTS_LOADING, vaultsLoading });
-const updatePrices = (prices: any) => ({ type: ActionType.UPDATE_PRICES, prices });
+
+// const updatePrices = (price: any, ilk: string, base: string) => ({
+//   type: ActionType.UPDATE_PRICES,
+//   price: { price, ilk, base },
+// });
