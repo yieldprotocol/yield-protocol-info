@@ -46,7 +46,7 @@ const Assets = () => {
               scope="col"
               className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
-              Debt Balance
+              Debt Amount
             </th>
             <th
               scope="col"
@@ -58,7 +58,7 @@ const Assets = () => {
               scope="col"
               className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
-              Collateral Balance
+              Collateral Amount
             </th>
             <th
               scope="col"
