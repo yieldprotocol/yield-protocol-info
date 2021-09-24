@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useAppSelector } from '../../state/hooks/general';
-import { cleanValue } from '../../utils/appUtils';
+import { abbreviateHash, cleanValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 
 const Assets = () => {
@@ -26,7 +26,7 @@ const Assets = () => {
           <tr>
             <th
               scope="col"
-              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-left"
+              className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
             >
               Id
             </th>
@@ -86,44 +86,44 @@ const Assets = () => {
                 onClick={() => handleClick(v.id)}
                 className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
               >
-                <td className="px-6 py-5 text-left">
+                <td className="px-6 py-2 text-center">
                   <div className="flex items-center">
-                    <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate justify-items-start">
-                      {v.id}
+                    <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate">
+                      {abbreviateHash(v.id)}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate justify-items-center">
+                <td className="px-6 py-3 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{cleanValue(v.collatRatioPct, 1)}%</span>
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{v.art_}</span>
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{v.ink_}</span>
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{cleanValue(v.price_, 2)}</span>
                   </span>
                 </td>
-                <td className="px-6 py-5 text-center items-center">
+                <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{cleanValue(v.inkToArtBal, 2)}</span>
                   </span>
