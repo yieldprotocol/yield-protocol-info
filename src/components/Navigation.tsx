@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import YieldMark from './logos/YieldMark';
 
 const Navigation = () => {
-  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance'];
+  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance', 'roles'];
   return (
     <div className="sticky top-0 z-10 flex-none">
       <nav className="dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 bg-white">
