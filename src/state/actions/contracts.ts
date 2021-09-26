@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { ActionType } from '../actionTypes/contracts';
 
 const ROLE_GRANTED = 'RoleGranted';
@@ -54,23 +55,31 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
 
         const eventsMap = { [contractAddr]: updatedEvents };
         const rolesMap = { [contractAddr]: updatedRoles };
-        console.log(roleBytesSeen)
-        const roleNames:any = {
+
+        const roleNames: any = {
           [ROOT]: 'admin',
         };
-        const test = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=0xbba88631`);
-        console.log(test)
-        console.log(test.json())
-        // roleBytesSeen.forEach(async (bytes: any) => {
-        //   const res = await fetch(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${bytes}`);
-        //     console.log(res)
-        //       console.log(res.json())
-        //       if (res.json().results?.length === 1) {
-        //           roleNames[bytes] = res.json().results[0].text_signature
-        //       }
-        //   })
-        // })
+        const promises: Promise<void>[] = [];
 
+        roleBytesSeen.forEach(async (hex_signature: any) => {
+          const promise = axios
+            .get('https://www.4byte.directory/api/v1/signatures/', { params: { hex_signature } })
+            .then((res) => {
+              const {
+                data: { results },
+              } = res;
+              if (results?.length === 1) {
+                const [functionName] = results[0].text_signature.split('(');
+                roleNames[hex_signature] = functionName;
+              }
+            });
+          promises.push(promise);
+        });
+
+        Promise.all(promises).then(() => {
+          dispatch(updateRoleNames(roleNames));
+
+        });
 
         /* build a map from the event data */
         // const eventMap: Map<string, string> = new Map(
@@ -106,7 +115,6 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
           updateEvents({
             events: eventsMap,
             roles: rolesMap,
-            roleNames,
           })
         );
         dispatch(setEventsLoading(false));
@@ -118,5 +126,6 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
   };
 }
 export const updateEvents = (payload: any) => ({ type: ActionType.UPDATE_EVENTS, payload });
+export const updateRoleNames = (roleNames: any) => ({ type: ActionType.UPDATE_ROLENAMES, roleNames });
 export const setEventsLoading = (eventsLoading: boolean) => ({ type: ActionType.EVENTS_LOADING, eventsLoading });
 export const updateContractMap = (contractMap: any) => ({ type: ActionType.UPDATE_CONTRACT_MAP, contractMap });

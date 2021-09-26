@@ -25,6 +25,11 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
         ...state,
         contractMap: action.contractMap,
       };
+    case ActionType.UPDATE_ROLENAMES:
+      return {
+        ...state,
+        roleNames: action.roleNames,
+      };
     case ActionType.RESET:
       return INITIAL_STATE;
     default:
