@@ -6,6 +6,8 @@ const INITIAL_STATE = {
 
   /* Data */
   events: {},
+  roles: {},
+  roleNames: {},
   contractMap: {},
 };
 
@@ -16,7 +18,7 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
     case ActionType.UPDATE_EVENTS:
       return {
         ...state,
-        events: action.events,
+        ...action.payload,
       };
     case ActionType.UPDATE_CONTRACT_MAP:
       return {
