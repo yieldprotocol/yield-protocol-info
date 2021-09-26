@@ -4,8 +4,6 @@ const RolesTable = ({ roles, roleNames }: any) => {
   if (!roles) return null;
   const displayName = (bytes: string) => roleNames[bytes] || `unknown role (${bytes}) `;
   const displayGuys = (key: string) => Array.from(roles[key]).map((x) => <p key={key+x}><code>{`${x}`}</code></p>)
-  // Hey Marco what do you think of this styling ^^?  I like it because its fixed width and the addresses line up
-  // if you like it maybe we could apply it to the args column in Contracts as well
   return (
     <div>
       <table className="table min-w-full divide-y divide-gray-200">
