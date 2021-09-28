@@ -1,6 +1,20 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
+const EventTableCell = ({ value, idx }: any) => {
+  if (idx !== 3) return <>{value}</>;
+  // use <code> block style for args column (3)
+  return (
+    <>
+      {value.split(',').map((x: string) => (
+        <p key={uuid()}>
+          <code>{`${x}`}</code>
+        </p>
+      ))}
+    </>
+  );
+};
+
 const EventTable = ({ events }: any) =>
   events ? (
     <div>
@@ -21,10 +35,12 @@ const EventTable = ({ events }: any) =>
         <tbody className="bg-green divide-y divide-gray-200">
           {[...events.slice(0, 50)].map((e: any) => (
             <tr key={e.id}>
-              {[...Object.values(e)].map((x: any) => (
+              {[...Object.values(e)].map((x: any, idx: number) => (
                 <td className="px-6 py-4" key={uuid()}>
                   <div className="justify-items-start">
-                    <div className="text-sm font-medium text-gray-900 justify-items-start">{x}</div>
+                    <div className="text-sm font-medium text-gray-900 justify-items-start">
+                      <EventTableCell value={x} idx={idx} />
+                    </div>
                   </div>
                 </td>
               ))}

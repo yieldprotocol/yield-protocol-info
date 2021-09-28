@@ -8,7 +8,6 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
       try {
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, null, null);
-        console.log(events);
 
         const updatedEvents = events.map((e: any, i: number) => ({
           id: i,
