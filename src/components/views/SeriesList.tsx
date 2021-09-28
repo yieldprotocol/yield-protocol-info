@@ -14,15 +14,17 @@ const SeriesList = () => {
       setSeriesList([...Object.values(series)].sort((s1: any, s2: any) => s1?.maturity! - s2?.maturity!));
   }, [series]);
 
-  return seriesLoading ? (
-    <ClipLoader loading={seriesLoading} />
-  ) : (
+  return (
     <MainViewWrap>
-      <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {seriesList.map((s: any) => (
-          <SeriesItem item={s} key={s.id} />
-        ))}
-      </div>
+      {seriesLoading ? (
+        <ClipLoader loading={seriesLoading} />
+      ) : (
+        <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {seriesList.map((s: any) => (
+            <SeriesItem item={s} key={s.id} />
+          ))}
+        </div>
+      )}
     </MainViewWrap>
   );
 };
