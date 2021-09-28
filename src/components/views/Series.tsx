@@ -4,6 +4,7 @@ import { formatDistanceStrict } from 'date-fns';
 import { useAppSelector } from '../../state/hooks/general';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import { secondsToFrom } from '../../utils/yieldMath';
+import MainViewWrap from '../wraps/MainViewWrap';
 
 const Series = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,15 +34,17 @@ const Series = () => {
   );
 
   return series ? (
-    <div className="rounded-md p-5 align-middle justify-items-start shadow-sm bg-green-50">
-      <div className="text-md pb-4">
-        <strong>{series.symbol}</strong>
-        <div className="text-md pt-2">
-          <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
+    <MainViewWrap>
+      <div className="rounded-md p-5 align-middle justify-items-start shadow-sm bg-green-50">
+        <div className="text-md pb-4">
+          <strong>{series.symbol}</strong>
+          <div className="text-md pt-2">
+            <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
+          </div>
         </div>
+        <SingleItemViewGrid item={series} />
       </div>
-      <SingleItemViewGrid item={series} />
-    </div>
+    </MainViewWrap>
   ) : null;
 };
 

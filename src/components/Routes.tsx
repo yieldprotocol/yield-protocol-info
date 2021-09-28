@@ -8,7 +8,6 @@ import Strategy from './views/Strategy';
 import Assets from './views/Assets';
 import Asset from './views/Asset';
 import Governance from './views/Governance';
-import Roles from './views/Roles'
 import Role from './views/Role';
 import Contracts from './views/Contracts';
 import Contract from './views/Contract';
@@ -25,7 +24,8 @@ const Routes = () => (
       <Route exact path="/contracts">
         <Contracts />
       </Route>
-      <Route path="/contracts/:addr" component={Contract} />
+      <Route path="/contracts/:addr/events" component={Contract} />
+      <Route path="/contracts/:addr/roles" component={Role} />
 
       <Route exact path="/series">
         <SeriesList />
@@ -50,10 +50,6 @@ const Routes = () => (
       <Route exact path="/governance">
         <Governance />
       </Route>
-      <Route exact path="/roles">
-        <Roles />
-      </Route>
-      <Route path="/roles/:addr" component={Role} />
       <Redirect to="/" />
     </Switch>
   </>
