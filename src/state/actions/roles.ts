@@ -5,6 +5,16 @@ const ROLE_GRANTED = 'RoleGranted';
 const ROLE_REVOKED = 'RoleRevoked';
 const ROOT = '0x00000000';
 
+export function eventSort(a: any, b: any) {
+  if (a.blockNumber > b.blockNumber) return 1;
+  if (a.blockNumber < b.blockNumber) return -1;
+  if (a.transactionIndex > b.transactionIndex) return 1;
+  if (a.transactionIndex < b.transactionIndex) return -1;
+  if (a.logIndex > b.logIndex) return 1;
+  if (a.logIndex < b.logIndex) return -1;
+  return 0;
+}
+
 export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
@@ -14,23 +24,13 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
         dispatch(setRolesLoading(true));
         const events = await contract.queryFilter(filter, null, null);
 
-        // we don't need to do this anymore, maybe?
-        const updatedEvents = events.map((e: any, i: number) => ({
-          id: i,
-          event: e.event,
-          blockNumber: e.blockNumber,
-          args: e.args ? e.args.join(', ') : '',
-          logIndex: e.logIndex,
-        }));
-
         // determine current roles by iterating over events chronologically
         // tracking who's been added/removed from each role
         const roleBytesSeen = new Set(); // used to fetch friendly display names later
-        const sortedEvents = updatedEvents.sort((a: any, b: any) => a.logIndex - b.logIndex);
-        const updatedRoles = sortedEvents.reduce((acc: any, e: any) => {
+        const updatedRoles = events.sort(eventSort).reduce((acc: any, e: any) => {
           if (![ROLE_GRANTED, ROLE_REVOKED].includes(e.event)) return acc;
-          const [roleBytes, guy]: [roleBytes: string, guy: string] = e.args.split(',');
-          roleBytesSeen.add(`${roleBytes}`);
+          const [roleBytes, guy] = e.args;
+          roleBytesSeen.add(roleBytes);
           if (e.event === ROLE_GRANTED) {
             if (roleBytes in acc) {
               acc[roleBytes].add(guy);
@@ -46,11 +46,12 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
                 acc[roleBytes].delete(guy);
               }
             } else {
-              // I don't think this could happen...
-              console.warn('RevokeRole encounted before GrantRole, logIndex:', e.logIndex);
+              // This shouldn't be possible...
+              console.warn(
+                `RevokeRole encounted before GrantRole, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+              );
             }
           }
-
           return acc;
         }, {});
 
