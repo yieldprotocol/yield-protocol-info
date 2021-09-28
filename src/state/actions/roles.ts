@@ -15,6 +15,57 @@ export function eventSort(a: any, b: any) {
   return 0;
 }
 
+export function calcRoles(events: any) {
+  // TODO: write test
+
+  // determine current roles by iterating over events chronologically
+  // tracking who's been added/removed from each role
+  const updatedRoles: any = {};
+  const roleBytesSeen = new Set();
+  events.sort(eventSort).forEach((e: any) => {
+    // skip all other events
+    if (![ROLE_GRANTED, ROLE_REVOKED].includes(e.event)) return;
+
+    const [roleBytes, guy] = e.args;
+
+    roleBytesSeen.add(roleBytes); // used to fetch friendly display names later
+
+    if (e.event === ROLE_GRANTED) {
+      if (roleBytes in updatedRoles) {
+        if (updatedRoles[roleBytes].has(guy)) {
+          console.warn(
+            `RoleGranted encounted with pre-existing role, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+          );
+        } else {
+          updatedRoles[roleBytes].add(guy);
+        }
+      } else {
+        updatedRoles[roleBytes] = new Set([guy]);
+      }
+    }
+    if (e.event === ROLE_REVOKED) {
+      if (roleBytes in updatedRoles) {
+        if (updatedRoles[roleBytes].has(guy)) {
+          updatedRoles[roleBytes].delete(guy);
+        } else {
+          console.warn(
+            `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+          );
+          return;
+        }
+        if (updatedRoles[roleBytes].size === 1) {
+          delete updatedRoles[roleBytes];
+          return;
+        }
+      }
+      console.warn(
+        `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+      );
+    }
+  });
+  return [updatedRoles, roleBytesSeen];
+}
+
 export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
@@ -22,46 +73,18 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
     if (contract) {
       try {
         dispatch(setRolesLoading(true));
+
         const events = await contract.queryFilter(filter, null, null);
 
-        // determine current roles by iterating over events chronologically
-        // tracking who's been added/removed from each role
-        const roleBytesSeen = new Set(); // used to fetch friendly display names later
-        const updatedRoles = events.sort(eventSort).reduce((acc: any, e: any) => {
-          if (![ROLE_GRANTED, ROLE_REVOKED].includes(e.event)) return acc;
-          const [roleBytes, guy] = e.args;
-          roleBytesSeen.add(roleBytes);
-          if (e.event === ROLE_GRANTED) {
-            if (roleBytes in acc) {
-              acc[roleBytes].add(guy);
-            } else {
-              acc[roleBytes] = new Set([guy]);
-            }
-          }
-          if (e.event === ROLE_REVOKED) {
-            if (roleBytes in acc) {
-              if (acc[roleBytes].size === 1) {
-                delete acc[roleBytes];
-              } else {
-                acc[roleBytes].delete(guy);
-              }
-            } else {
-              // This shouldn't be possible...
-              console.warn(
-                `RevokeRole encounted before GrantRole, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
-              );
-            }
-          }
-          return acc;
-        }, {});
+        const [updatedRoles, roleBytesSeen] = calcRoles(events);
 
         const rolesMap = { [contractAddr]: updatedRoles };
 
         const roleNames: any = {
           [ROOT]: 'admin',
         };
-        const promises: Promise<void>[] = [];
 
+        const promises: Promise<void>[] = [];
         roleBytesSeen.forEach(async (hex_signature: any) => {
           const promise = axios
             .get('https://www.4byte.directory/api/v1/signatures/', { params: { hex_signature } })
@@ -83,6 +106,7 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
         });
       } catch (e) {
         dispatch(setRolesLoading(false));
+        console.warn('errors', e)
       }
     }
   };
