@@ -17,15 +17,14 @@ export function eventSort(a: any, b: any) {
 
 function _warnPrexistingRole(e: any) {
   console.warn(
-    `RoleGranted encounted with pre-existing role, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+    `RoleGranted encountered with pre-existing role, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
   );
 }
 
 function _warnMissingGrant(e: any) {
   console.warn(
-    `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+    `RoleRevoked encountered with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
   );
-
 }
 
 export function calcRoles(events: any) {

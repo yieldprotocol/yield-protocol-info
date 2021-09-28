@@ -1,5 +1,6 @@
 import React from 'react';
+import MainViewWrap from '../wraps/MainViewWrap';
 
-const Governance = () => <div className="">Governance view</div>;
+const Governance = () => <MainViewWrap>Governance view</MainViewWrap>;
 
 export default Governance;

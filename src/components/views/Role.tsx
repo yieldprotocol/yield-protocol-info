@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getRoles } from '../../state/actions/roles';
 import RolesTable from '../RolesTable';
+import MainViewWrap from '../wraps/MainViewWrap';
+import SubNav from '../SubNav';
 
 const chainNames: any = {
   1: 'Mainnet',
@@ -30,16 +32,30 @@ const Role = () => {
     if (Object.keys(contractMap).length && addr) dispatch(getRoles(contractMap, addr));
   }, [contractMap, dispatch, addr]);
 
-  return rolesLoading ? (
-    <ClipLoader />
-  ) : (
-    <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">
-      <h1 className="">{contractMap[addr]?.name} - {chainName}</h1>
-      <code className="text-sm">{addr}</code>
-      <div className="text-lg pb-4 flex gap-x-2">
-        <RolesTable roles={contractRoles} roleNames={roleNames} />
+  return (
+    <>
+      <SubNav
+        paths={[
+          { path: `contracts/${addr}/events`, name: 'events' },
+          { path: `contracts/${addr}/roles`, name: 'roles' },
+        ]}
+      />
+      <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
+        {rolesLoading ? (
+          <ClipLoader />
+        ) : (
+          <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">
+            <h1 className="">
+              {contractMap[addr]?.name} - {chainName}
+            </h1>
+            <code className="text-sm">{addr}</code>
+            <div className="text-lg pb-4 flex gap-x-2">
+              <RolesTable roles={contractRoles} roleNames={roleNames} />
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
