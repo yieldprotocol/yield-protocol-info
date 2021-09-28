@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
-import { getEvents } from '../../state/actions/contracts';
+import { getRoles } from '../../state/actions/roles';
 import RolesTable from '../RolesTable';
 
 const chainNames: any = {
@@ -23,14 +23,14 @@ const Role = () => {
 
   const roles = useAppSelector((st) => st.contracts.roles);
   const roleNames = useAppSelector((st) => st.contracts.roleNames);
-  const eventsLoading = useAppSelector((st) => st.contracts.eventsLoading);
+  const rolesLoading = useAppSelector((st) => st.contracts.rolesLoading);
   const contractRoles = roles[addr];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && addr) dispatch(getEvents(contractMap, addr));
+    if (Object.keys(contractMap).length && addr) dispatch(getRoles(contractMap, addr));
   }, [contractMap, dispatch, addr]);
 
-  return eventsLoading ? (
+  return rolesLoading ? (
     <ClipLoader />
   ) : (
     <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">

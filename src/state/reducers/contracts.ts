@@ -3,11 +3,11 @@ import { ActionType } from '../actionTypes/contracts';
 const INITIAL_STATE = {
   /* flags */
   eventsLoading: false,
+  rolesLoading: false,
 
   /* Data */
   events: {},
   roles: {},
-  roleNames: {},
   contractMap: {},
 };
 
@@ -18,17 +18,19 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
     case ActionType.UPDATE_EVENTS:
       return {
         ...state,
-        ...action.payload,
+        events: action.events,
       };
     case ActionType.UPDATE_CONTRACT_MAP:
       return {
         ...state,
         contractMap: action.contractMap,
       };
-    case ActionType.UPDATE_ROLENAMES:
+      case ActionType.ROLES_LOADING:
+        return { ...state, rolesLoading: action.rolesLoading };
+    case ActionType.UPDATE_ROLES:
       return {
         ...state,
-        roleNames: action.roleNames,
+        ...action.payload,
       };
     case ActionType.RESET:
       return INITIAL_STATE;
