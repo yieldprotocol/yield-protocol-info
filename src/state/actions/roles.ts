@@ -15,11 +15,23 @@ export function eventSort(a: any, b: any) {
   return 0;
 }
 
-export function calcRoles(events: any) {
-  // TODO: write test
+function _warnPrexistingRole(e: any) {
+  console.warn(
+    `RoleGranted encounted with pre-existing role, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+  );
+}
 
+function _warnMissingGrant(e: any) {
+  console.warn(
+    `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
+  );
+
+}
+
+export function calcRoles(events: any) {
   // determine current roles by iterating over events chronologically
   // tracking who's been added/removed from each role
+  // TODO: write test
   const updatedRoles: any = {};
   const roleBytesSeen = new Set();
   events.sort(eventSort).forEach((e: any) => {
@@ -30,37 +42,32 @@ export function calcRoles(events: any) {
 
     roleBytesSeen.add(roleBytes); // used to fetch friendly display names later
 
-    if (e.event === ROLE_GRANTED) {
-      if (roleBytes in updatedRoles) {
-        if (updatedRoles[roleBytes].has(guy)) {
-          console.warn(
-            `RoleGranted encounted with pre-existing role, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
-          );
+    switch (e.event) {
+      case ROLE_GRANTED:
+        if (roleBytes in updatedRoles) {
+          if (updatedRoles[roleBytes].has(guy)) {
+            _warnPrexistingRole(e);
+          } else {
+            updatedRoles[roleBytes].add(guy);
+          }
         } else {
-          updatedRoles[roleBytes].add(guy);
+          updatedRoles[roleBytes] = new Set([guy]);
         }
-      } else {
-        updatedRoles[roleBytes] = new Set([guy]);
-      }
-    }
-    if (e.event === ROLE_REVOKED) {
-      if (roleBytes in updatedRoles) {
-        if (updatedRoles[roleBytes].has(guy)) {
-          updatedRoles[roleBytes].delete(guy);
-        } else {
-          console.warn(
-            `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
-          );
-          return;
+        break;
+      case ROLE_REVOKED:
+        if (roleBytes in updatedRoles) {
+          if (updatedRoles[roleBytes].has(guy)) {
+            updatedRoles[roleBytes].delete(guy);
+            if (updatedRoles[roleBytes].size === 0) {
+              delete updatedRoles[roleBytes];
+            }
+          }
+          break;
         }
-        if (updatedRoles[roleBytes].size === 1) {
-          delete updatedRoles[roleBytes];
-          return;
-        }
-      }
-      console.warn(
-        `RoleRevoked encounted with no pre-existing role found, blockNumber: ${e.blockNumber} transactionIndex: ${e.transactionIndex} logIndex: ${e.logIndex}`
-      );
+        _warnMissingGrant(e);
+        break;
+      default:
+        break;
     }
   });
   return [updatedRoles, roleBytesSeen];
@@ -106,7 +113,7 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
         });
       } catch (e) {
         dispatch(setRolesLoading(false));
-        console.warn('errors', e)
+        console.warn('errors', e);
       }
     }
   };
