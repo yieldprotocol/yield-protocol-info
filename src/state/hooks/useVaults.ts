@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getVaults } from '../actions/vaults';
+import { getVaults, updateVaults } from '../actions/vaults';
 import { useAppDispatch, useAppSelector } from './general';
 
 export const useVaults = () => {
@@ -10,7 +10,10 @@ export const useVaults = () => {
   const prices = useAppSelector((st) => st.vaults.prices);
 
   useEffect(() => {
-    if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length)
+    if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length) {
       dispatch(getVaults(prices, contractMap, series, assets));
+    } else {
+      dispatch(updateVaults({}));
+    }
   }, [contractMap, series, assets, prices, dispatch]);
 };

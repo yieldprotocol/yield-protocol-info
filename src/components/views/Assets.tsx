@@ -7,6 +7,9 @@ import MainViewWrap from '../wraps/MainViewWrap';
 const Assets = () => {
   const assets = useAppSelector((st) => st.chain.assets);
   const assetsLoading = useAppSelector((st) => st.chain.assetsLoading);
+
+  if (!Object.values(assets).length) return <MainViewWrap>No Assets</MainViewWrap>;
+
   return (
     <MainViewWrap>
       {assetsLoading ? (

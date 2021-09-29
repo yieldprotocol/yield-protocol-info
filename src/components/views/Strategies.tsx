@@ -7,6 +7,9 @@ import MainViewWrap from '../wraps/MainViewWrap';
 const Strategies = () => {
   const strategies = useAppSelector((st) => st.chain.strategies);
   const strategiesLoading = useAppSelector((st) => st.chain.strategiesLoading);
+
+  if (!Object.values(strategies).length) return <MainViewWrap>No Strategies</MainViewWrap>;
+
   return (
     <MainViewWrap>
       {strategiesLoading ? (

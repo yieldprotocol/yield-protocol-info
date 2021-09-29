@@ -14,6 +14,8 @@ const SeriesList = () => {
       setSeriesList([...Object.values(series)].sort((s1: any, s2: any) => s1?.maturity! - s2?.maturity!));
   }, [series]);
 
+  if (!Object.values(series).length) return <MainViewWrap>No Series</MainViewWrap>;
+
   return (
     <MainViewWrap>
       {seriesLoading ? (

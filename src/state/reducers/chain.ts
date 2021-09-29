@@ -1,7 +1,7 @@
 import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
-  chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) as number | null,
+  chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) as number,
 
   /* flags */
   chainLoading: true,
