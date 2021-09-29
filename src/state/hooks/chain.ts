@@ -23,6 +23,7 @@ import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
+import RPC_URLS from '../../config/rpc';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -31,14 +32,6 @@ const assetDigitFormatMap = new Map([
   ['USDC', 2],
   ['USDT', 2],
 ]);
-
-/* Set up web3react config */
-const RPC_URLS: { [chainId: number]: string } = {
-  1: process.env.REACT_APP_RPC_URL_1 as string,
-  42: process.env.REACT_APP_RPC_URL_42 as string,
-  1337: process.env.REACT_APP_RPC_URL_1337 as string,
-  31337: process.env.REACT_APP_RPC_URL_31337 as string,
-};
 
 interface IChainData {
   name: string;
@@ -316,7 +309,7 @@ const useChain = () => {
     /* Connect the fallback */
     activate(
       new NetworkConnector({
-        urls: { 1: RPC_URLS[1], 42: RPC_URLS[42], 31337: RPC_URLS[31337], 1337: RPC_URLS[1337] },
+        urls: RPC_URLS,
         defaultChainId,
       }),
       (e: any) => console.log(e),
