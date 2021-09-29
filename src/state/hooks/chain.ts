@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import { NetworkConnector } from '@web3-react/network-connector';
 import { format } from 'date-fns';
-import { useAppDispatch, useAppSelector } from './general';
+import { useAppDispatch } from './general';
 import {
   setChainLoading,
   updateChainId,
@@ -13,11 +13,9 @@ import {
   updateSeries,
   updateStrategies,
   updateAssets,
-  reset as resetChain,
 } from '../actions/chain';
 
 import { updateContractMap } from '../actions/contracts';
-import { getVaults } from '../actions/vaults';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
