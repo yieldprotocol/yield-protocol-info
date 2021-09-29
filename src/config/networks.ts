@@ -1,6 +1,6 @@
 export enum ChainId {
-  MAINNET = 1,
-  KOVAN = 42,
+  MAINNET = 1 as number,
+  KOVAN = 42 as number,
 }
 
 export const NETWORK_LABEL: { [chainId in ChainId]?: string } = {
