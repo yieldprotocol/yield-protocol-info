@@ -6,7 +6,6 @@ import { useVaults } from './state/hooks/useVaults';
 
 function App() {
   useChain();
-  useVaults();
 
   return (
     <div className="">

@@ -1,9 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { NETWORK_LABEL } from '../config/networks';
 import YieldMark from './logos/YieldMark';
+import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
   const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance'];
+
   return (
     <div className="sticky top-0 z-10 flex-none">
       <nav className="dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 bg-white">
@@ -32,6 +35,7 @@ const Navigation = () => {
               </div>
             </div>
             <div className="hidden lg:block lg:ml-4">
+              <NetworkModal />
               <div className="flex items-center"> {/* <DarkModeToggle /> */}</div>
             </div>
           </div>

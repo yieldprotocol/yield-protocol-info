@@ -5,16 +5,20 @@ import { useAppSelector } from '../../state/hooks/general';
 import { abbreviateHash, cleanValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
+import { useVaults } from '../../state/hooks/useVaults';
 
 const Vaults = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.chain.vaultsLoading);
   const assets = useAppSelector((st) => st.chain.assets);
+  useVaults();
 
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
   };
+
+  if (!vaultsLoading && !Object.values(vaults).length) return <MainViewWrap>No Vaults</MainViewWrap>;
 
   return (
     <MainViewWrap>
@@ -79,8 +83,8 @@ const Vaults = () => {
               {[...Object.values(vaults)].map((v: any) => {
                 const debtAsset = assets[v.baseId];
                 const collatAsset = assets[v.ilkId];
-                const debtAssetLogo = markMap?.get(debtAsset.symbol);
-                const collatAssetLogo = markMap?.get(collatAsset.symbol);
+                const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
+                const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
                 return (
                   <tr
                     key={v.id}

@@ -1,6 +1,6 @@
 import { ActionType } from '../actionTypes/chain';
 
-export const updateChainId = (chainId: any) => ({ type: ActionType.CHAIN_ID, chainId });
+export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, chainId });
 export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, chainLoading });
 export const setSeriesLoading = (seriesLoading: boolean) => ({ type: ActionType.SERIES_LOADING, seriesLoading });
 export const setStrategiesLoading = (strategiesLoading: boolean) => ({
