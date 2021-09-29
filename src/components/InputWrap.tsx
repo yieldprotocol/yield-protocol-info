@@ -22,16 +22,13 @@ const InputWrap = ({
   message,
   ...props
 }: IInputWrap) => (
-  <div className="mt-2 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-300 rounded-md">
-    <label htmlFor={name} className="block text-md font-medium text-gray-900">
-      {label}
-    </label>
+  <div className="w-full">
     <input
       type={type}
       name={name}
       value={value}
       onChange={handleChange}
-      className="mt-2 focus:ring-green-500 focus:border-green-500 block w-full h-8 shadow-sm sm:text-sm border-green-300 rounded-md"
+      className="focus:ring-green-500 focus:border-green-500 block w-full h-full shadow-sm sm:text-sm border-green-300 bg-green-50 rounded-md"
     />
     {showErrorText && isError}
     {message}
