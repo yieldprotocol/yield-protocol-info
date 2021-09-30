@@ -10,7 +10,7 @@ import { useVaults } from '../../state/hooks/useVaults';
 const Vaults = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
-  const vaultsLoading = useAppSelector((st) => st.chain.vaultsLoading);
+  const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
   const assets = useAppSelector((st) => st.chain.assets);
   useVaults();
 
