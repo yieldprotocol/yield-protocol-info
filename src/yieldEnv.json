@@ -1,6 +1,10 @@
 {
   "addresses": {
-    "1": {},
+    "1": {
+      "Timelock": "0xA5E64f55f1d7244475Ee3842E06295c1973482eD",
+      "Cloak": "0x0479f8dE06e07cE834eEfd9d7cDD50743118Feef",
+      "YieldMath": "0xf003Bd8A847A7EC2a76813495E734bc247ca6851"
+    },
     "42": {
       "Cauldron": "0xE3c33408b72adCA6DdB17D6bcAB0400Ae79Bd85B",
       "Ladle": "0x5840069B175D3EEa154C58b065edC06095bB9217",
