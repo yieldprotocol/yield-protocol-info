@@ -32,7 +32,11 @@ const Contract = () => {
         ) : (
           <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">
             <div className="text-lg pb-4 flex gap-x-2">
-              <EventTable events={contractEvents} />
+              {contractEvents && contractEvents.length ? (
+                <EventTable events={contractEvents} />
+              ) : (
+                <>No event data available</>
+              )}
             </div>
           </div>
         )}
