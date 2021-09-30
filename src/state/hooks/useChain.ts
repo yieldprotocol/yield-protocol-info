@@ -1,19 +1,16 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { useWeb3React } from '@web3-react/core';
-import { NetworkConnector } from '@web3-react/network-connector';
 import { format } from 'date-fns';
 import { useAppDispatch, useAppSelector } from './general';
 import {
   setChainLoading,
-  updateChainId,
   setSeriesLoading,
   setStrategiesLoading,
   setAssetsLoading,
   updateSeries,
   updateStrategies,
   updateAssets,
-  reset as resetChain,
 } from '../actions/chain';
 
 import { updateContractMap } from '../actions/contracts';
@@ -46,6 +43,7 @@ chainData.set(10, { name: 'Optimism', color: '#EB0822', supported: false });
 chainData.set(42, { name: 'Kovan', color: '#7F7FFE', supported: true });
 
 const useChain = () => {
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const chainId = useAppSelector((st) => st.chain.chainId);
 
@@ -61,8 +59,14 @@ const useChain = () => {
 
       [...Object.keys(addrs)].forEach((name: string) => {
         const addr = addrs[name];
-        const contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
-        newContractMap[addr] = { contract, name };
+        let contract: any;
+
+        try {
+          contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
+          newContractMap[addr] = { contract, name };
+        } catch (e) {
+          console.log(`could not connect to contract ${name}`);
+        }
       });
 
       const Cauldron = newContractMap[addrs.Cauldron]?.contract!;
@@ -282,6 +286,11 @@ const useChain = () => {
       })();
     }
   }, [chainId, dispatch]);
+
+  useEffect(() => {
+    // send to home page when chain id changes
+    history.push('/');
+  }, [chainId, history]);
 };
 
 export { useChain };

@@ -1,8 +1,7 @@
 import React from 'react';
 import Routes from './components/Routes';
 import Navigation from './components/Navigation';
-import { useChain } from './state/hooks/chain';
-import { useVaults } from './state/hooks/useVaults';
+import { useChain } from './state/hooks/useChain';
 
 function App() {
   useChain();
