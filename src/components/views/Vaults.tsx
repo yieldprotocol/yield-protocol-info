@@ -19,6 +19,7 @@ const Vaults = () => {
   const [allVaults, setAllVaults] = useState<any[]>([]);
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
+  const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
 
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
@@ -28,6 +29,7 @@ const Vaults = () => {
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults.filter((v: any) => unhealthyFilter && Number(v.collatRatioPct) <= 180);
       setFilteredVaults(_filteredVaults);
+      setNumUnhealthy(_filteredVaults.length.toString());
     },
     [unhealthyFilter]
   );
@@ -61,7 +63,10 @@ const Vaults = () => {
         <ClipLoader loading={vaultsLoading} />
       ) : (
         <div>
-          <div className="mb-4 w-44">
+          {numUnhealthy && unhealthyFilter && (
+            <div className="text-md text-center align-middle">{numUnhealthy} Unhealthy Vaults</div>
+          )}
+          <div className="mb-4 mr-4 w-44">
             <Button
               label={unhealthyFilter ? 'Show All' : 'Show Unhealthy'}
               action={() => setUnhealthyFilter(!unhealthyFilter)}
