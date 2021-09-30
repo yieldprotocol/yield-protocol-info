@@ -61,8 +61,14 @@ const useChain = () => {
 
       [...Object.keys(addrs)].forEach((name: string) => {
         const addr = addrs[name];
-        const contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
-        newContractMap[addr] = { contract, name };
+        let contract: any;
+
+        try {
+          contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
+          newContractMap[addr] = { contract, name };
+        } catch (e) {
+          console.log(`could not connect to contract ${name}`);
+        }
       });
 
       const Cauldron = newContractMap[addrs.Cauldron]?.contract!;
