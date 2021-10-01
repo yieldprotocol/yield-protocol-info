@@ -1,9 +1,17 @@
 import React from 'react';
+import { v4 as uuid } from 'uuid';
+
+import AddressDisplay from './AddressDisplay';
 
 const RolesTable = ({ roles, roleNames }: any) => {
   if (!roles) return null;
   const displayName = (bytes: string) => roleNames[bytes] || `unknown role (${bytes}) `;
-  const displayGuys = (key: string) => Array.from(roles[key]).map((x) => <p key={key+x}><code>{`${x}`}</code></p>)
+  const displayGuys = (key: string) =>
+    Array.from(roles[key]).map(x => (
+      <div key={uuid()}>
+        <AddressDisplay addr={x} />
+      </div>
+    ));
   return (
     <div>
       <table className="table min-w-full divide-y divide-gray-200">

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getEvents } from '../../state/actions/contracts';
 import EventTable from '../EventTable';
 import SubNav from '../SubNav';
+import Header from '../Header';
 
 const Contract = () => {
   const { addr } = useParams<{ addr: string }>();
@@ -20,12 +21,14 @@ const Contract = () => {
 
   return (
     <>
+      <Header>
       <SubNav
         paths={[
           { path: `contracts/${addr}/events`, name: 'events' },
           { path: `contracts/${addr}/roles`, name: 'roles' },
         ]}
       />
+      </Header>
       <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
         {eventsLoading ? (
           <ClipLoader />
