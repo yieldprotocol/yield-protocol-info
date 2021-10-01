@@ -12,7 +12,9 @@ module.exports = {
       blue: colors.indigo,
       white: colors.white,
     },
-    extend: {},
+    extend: {
+      textDecoration: ['focus-visible'],
+    },
   },
   variants: {
     extend: {},

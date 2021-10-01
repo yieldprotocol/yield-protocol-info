@@ -8,6 +8,7 @@ import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
 import { useVaults } from '../../state/hooks/useVaults';
 import Button from '../Button';
+import SearchInput from '../SearchInput';
 
 const Vaults = () => {
   useVaults();
@@ -20,6 +21,7 @@ const Vaults = () => {
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
+  const [vaultSearch, setVaultSearch] = useState<string>('');
 
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
@@ -27,11 +29,13 @@ const Vaults = () => {
 
   const handleFilter = useCallback(
     (_vaults: any) => {
-      const _filteredVaults: any[] = _vaults.filter((v: any) => unhealthyFilter && Number(v.collatRatioPct) <= 180);
+      const _filteredVaults: any[] = _vaults
+        .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch : true))
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
-    [unhealthyFilter]
+    [unhealthyFilter, vaultSearch]
   );
 
   useEffect(() => {
@@ -47,13 +51,13 @@ const Vaults = () => {
       .sort((vA: any, vB: any) => (vA.isActive === vB.isActive ? 0 : vA.isActive ? -1 : 1));
 
     setAllVaults(_allVaults);
-  }, [vaults, handleFilter, unhealthyFilter]);
+  }, [vaults, handleFilter]);
 
   useEffect(() => {
-    if (unhealthyFilter) {
+    if (unhealthyFilter || vaultSearch) {
       handleFilter(allVaults);
     }
-  }, [unhealthyFilter, allVaults, handleFilter]);
+  }, [unhealthyFilter, allVaults, handleFilter, vaultSearch]);
 
   if (!vaultsLoading && !Object.values(vaults).length) return <MainViewWrap>No Vaults</MainViewWrap>;
 
@@ -63,15 +67,21 @@ const Vaults = () => {
         <ClipLoader loading={vaultsLoading} />
       ) : (
         <div>
-          {numUnhealthy && unhealthyFilter && (
-            <div className="text-md text-center align-middle">{numUnhealthy} Unhealthy Vaults</div>
-          )}
-          <div className="mb-4 mr-4 w-44">
-            <Button
-              label={unhealthyFilter ? 'Show All' : 'Show Unhealthy'}
-              action={() => setUnhealthyFilter(!unhealthyFilter)}
-            />
+          <div className="mb-4 w-1/3">
+            <SearchInput name="search" value={vaultSearch} action={(e: any) => setVaultSearch(e.target.value)} />
           </div>
+          <div>
+            {numUnhealthy && unhealthyFilter && (
+              <div className="text-md text-center align-middle">{numUnhealthy} Unhealthy Vaults</div>
+            )}
+            <div className="mb-4 mr-4 w-44">
+              <Button
+                label={unhealthyFilter ? 'Show All' : 'Show Unhealthy'}
+                action={() => setUnhealthyFilter(!unhealthyFilter)}
+              />
+            </div>
+          </div>
+
           <div className="rounded-md shadow-sm bg-green-50">
             <table className="table min-w-full divide-y divide-gray-200">
               <thead>
@@ -97,7 +107,7 @@ const Vaults = () => {
                 </tr>
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
-                {(unhealthyFilter ? filteredVaults : allVaults).map((v: any) => {
+                {(unhealthyFilter || vaultSearch ? filteredVaults : allVaults).map((v: any) => {
                   const debtAsset = assets[v.baseId];
                   const collatAsset = assets[v.ilkId];
                   const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
@@ -111,7 +121,7 @@ const Vaults = () => {
                       <td className="px-6 py-2 text-center">
                         <div className="flex items-center">
                           <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate">
-                            {abbreviateHash(v.id)}
+                            {v.id}
                           </span>
                         </div>
                       </td>
