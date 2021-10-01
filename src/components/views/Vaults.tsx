@@ -29,7 +29,7 @@ const Vaults = () => {
   const handleFilter = useCallback(
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
-        .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch : true))
+        .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
         .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
@@ -67,7 +67,12 @@ const Vaults = () => {
       ) : (
         <div>
           <div className="mb-4 w-1/3">
-            <SearchInput name="search" value={vaultSearch} action={(e: any) => setVaultSearch(e.target.value)} />
+            <SearchInput
+              name="search"
+              value={vaultSearch}
+              action={(e: any) => setVaultSearch(e.target.value)}
+              placeHolder="Vault Id or Owner"
+            />
           </div>
           <div>
             {numUnhealthy && unhealthyFilter && (
