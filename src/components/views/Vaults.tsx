@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ethers } from 'ethers';
 import { useHistory } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useAppSelector } from '../../state/hooks/general';
-import { abbreviateHash, cleanValue } from '../../utils/appUtils';
+import { cleanValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
 import { useVaults } from '../../state/hooks/useVaults';
