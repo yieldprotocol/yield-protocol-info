@@ -23,14 +23,13 @@ const Role = () => {
 
   return (
     <>
-      <Header>
       <SubNav
         paths={[
           { path: `contracts/${addr}/events`, name: 'events' },
           { path: `contracts/${addr}/roles`, name: 'roles' },
         ]}
       />
-      </Header>
+      <Header> </Header>
       <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
         {rolesLoading ? (
           <ClipLoader />
