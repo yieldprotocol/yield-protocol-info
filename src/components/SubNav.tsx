@@ -30,5 +30,4 @@ const SubNav = ({ paths }: { paths: IPath[] }) => (
     </div>
   </div>
 );
-
 export default SubNav;
