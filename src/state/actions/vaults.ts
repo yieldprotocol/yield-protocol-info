@@ -57,15 +57,13 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { min: minDebt, max: maxDebt }, price] = await Promise.all(
-              [
+            const [{ ink, art }, { owner, seriesId, ilkId }, { min: minDebt, max: maxDebt, dec: decimals }, price] =
+              await Promise.all([
                 await Cauldron.balances(vault.id),
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await getPrice(vault.ilkId, vault.baseId, contractMap),
-              ]
-            );
-
+              ]);
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
 
@@ -74,6 +72,7 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
             const ink_ = cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat); // for display purposes only
             const art_ = cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat); // for display purposes only
             const inkToArtBal = (Number(ink_) * Number(price_)).toString();
+            const maxDebt_ = maxDebt * 10 ** decimals; // for display purposes only
 
             return {
               ...vault,
@@ -86,6 +85,8 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
               collatRatioPct: cleanValue(collateralizationRatio, 2),
               price_,
               inkToArtBal,
+              maxDebt_,
+              decimals,
             };
           })
         );
