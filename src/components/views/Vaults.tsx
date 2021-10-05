@@ -5,12 +5,10 @@ import { useAppSelector } from '../../state/hooks/general';
 import { cleanValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
-import { useVaults } from '../../state/hooks/useVaults';
 import Button from '../Button';
 import SearchInput from '../SearchInput';
 
 const Vaults = () => {
-  useVaults();
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
