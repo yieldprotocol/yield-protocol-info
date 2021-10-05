@@ -72,7 +72,7 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
             const ink_ = cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat); // for display purposes only
             const art_ = cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat); // for display purposes only
             const inkToArtBal = (Number(ink_) * Number(price_)).toString();
-            const maxDebt_ = maxDebt * 10 ** decimals; // for display purposes only
+            const maxDebt_ = (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }); // for display purposes only
 
             return {
               ...vault,
