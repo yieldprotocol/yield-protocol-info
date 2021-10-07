@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -21,17 +21,46 @@ class Call {
     return { function: `${this.method} [${this.to}]`, arguments: this.arguments };
   }
 }
-const addressLadle = '0x5840069b175d3eea154c58b065edc06095bb9217';
 
-const BatchDecoder = () => {
-  const [txnHash, setTxnHash] = useState('');
-  const [txnLoading, setTxnLoading] = useState(false);
+const ADDRESS_LADLE = '0x5840069b175d3eea154c58b065edc06095bb9217';
+
+let provider: any;
+export function CallsDisplay({ txnHash }: any) {
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [calls, setCalls]: any = useState([]);
   const [decoded, setDecoded]: any = useState({
     abis: {},
     contracts: {},
     calls: {},
   });
+
+  const network = 'mainnet';
+  if (!provider) {
+    provider = ethers.getDefaultProvider(network);
+    console.log('provider', provider);
+  }
+
+  async function getCalls() {
+    console.log('getcalls');
+    setLoading(true);
+
+    const tx = await provider.getTransaction(txnHash);
+    console.log('tx', tx);
+    if (!tx?.to) {
+      console.log(`Transaction without address: ${tx}`);
+      return;
+    }
+    const call = new Call(tx.to, tx.data);
+    console.log(`call: ${call}`);
+    await resolveCall(call);
+    setCalls([txnHash, call]);
+    setLoading(false);
+  }
+
+  if (!loading && !loaded) {
+    getCalls();
+  }
 
   async function getABI(target: string) {
     if (!(target in decoded.abis)) {
@@ -71,19 +100,26 @@ const BatchDecoder = () => {
     return decoded.abis[target];
   }
 
-  async function resolveCall(call: Call) {
-    const abi = await getABI(call.to);
-    const [func, argsCalldata] = await getFunction(abi, call.calldata);
+  async function resolveCall(calling: Call) {
+    const abi = await getABI(calling.to);
+    console.log('abi', abi);
+    const [func, argsCalldata] = await getFunction(abi, calling.calldata);
+    console.log('getFunction', [func, argsCalldata]);
 
     let args = ethers.utils.defaultAbiCoder.decode(
       func.inputs.map((p: any) => p.format()),
       argsCalldata
     );
-    if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(addressLadle) && func.name === 'batch') {
-      args = [args[0].map((x: any) => new Call(call.to, x))];
+
+    console.log('args', args);
+    if (ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
+      args = [args[0].map((x: any) => new Call(calling.to, x))];
 
       await Promise.all(args[0].map((x: any) => resolveCall(x)));
-    } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(addressLadle) && func.name === 'route') {
+    } else if (
+      ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
+      func.name === 'route'
+    ) {
       args = [new Call(args[0], args[1])];
       await resolveCall(args[0]);
     } else {
@@ -92,23 +128,8 @@ const BatchDecoder = () => {
     // const decoded_args = func.inputs.map((v) => {
     //   return v.format(ethers.utils.FormatTypes.minimal);
     // });
-    call.resolve(func.name, args);
+    calling.resolve(func.name, args);
   }
-
-  async function decodeTxHash(hash: string) {
-    setTxnLoading(true);
-    const tx = await ethers.getDefaultProvider(network).getTransaction(hash);
-    if (!tx?.to) {
-      console.log(`Transaction without address: ${tx}`);
-      return;
-    }
-    const call = new Call(tx.to, tx.data);
-    console.log(`call: ${call}`);
-    await resolveCall(call);
-    setCalls([hash, call]);
-  }
-
-  const network = 'mainnet'; // !!!!
 
   function getFunctionName(target: string, calldata: string): string {
     if (!(target in decoded.abis)) {
@@ -155,15 +176,20 @@ const BatchDecoder = () => {
     );
   }
 
-  if (txnHash) {
-    decodeTxHash(txnHash);
-  }
+  return (
+    <div>
+      <ClipLoader loading={loading} />
+      {calls.length && getCallsJson()}
+    </div>
+  );
+}
 
+const BatchDecoder = () => {
+  const [txnHash, setTxnHash] = useState('');
   return (
     <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20" style={{ width: '38rem' }}>
       <TextInput action={setTxnHash} name="Transaction" placeHolder="Transaction hash" />
-      <ClipLoader loading={txnLoading} />
-      {calls.length && getCallsJson()}
+      {txnHash && <CallsDisplay txnHash={txnHash} />}
     </div>
   );
 };

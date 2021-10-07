@@ -49,7 +49,6 @@ const useChain = () => {
 
   useEffect(() => {
     const provider = new ethers.providers.InfuraProvider(Number(chainId), '646dc0f33d2449878b28e0afa25267f6');
-
     if (provider && chainId) {
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];

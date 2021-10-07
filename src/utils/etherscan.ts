@@ -6,36 +6,36 @@ export function addHexPrefix(addrLike: string) {
 }
 
 async function* asyncGenerator(max: number) {
-    let i = 0;
-    while (i < max) {
-      yield i;
-      i += 1;
-    }
+  let i = 0;
+  while (i < max) {
+    yield i;
+    i += 1;
   }
+}
 
 export async function fetchEtherscan(
   network: string,
   params: URLSearchParams,
   logger: (arg0: string) => void
 ): Promise<any> {
-//   const cacheKey = JSON.stringify({ network, params: params.toString() });
-//   const cachedValue = localStorage.getItem(cacheKey);
-//   if (cachedValue) {
-//     return JSON.parse(cachedValue);
-//   }
-  let resp
-  let respJson
+  //   const cacheKey = JSON.stringify({ network, params: params.toString() });
+  //   const cachedValue = localStorage.getItem(cacheKey);
+  //   if (cachedValue) {
+  //     return JSON.parse(cachedValue);
+  //   }
+  let resp;
+  let respJson;
   const maxAttempts = 5;
   for await (const attempt of asyncGenerator(maxAttempts)) {
     logger('Querying Etherscan');
     resp = await fetch(`https://api${network === 'mainnet' ? '' : `-${network}`}.etherscan.io/api?${params}`);
     respJson = await resp.json();
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
-    //   localStorage.setItem(cacheKey, JSON.stringify(respJson));
+      //   localStorage.setItem(cacheKey, JSON.stringify(respJson));
       return respJson;
     }
     if (attempt + 1 === maxAttempts) {
-      break
+      break;
     }
     const delaySeconds = 5 + 2 ** attempt;
     logger(
@@ -48,7 +48,6 @@ export async function fetchEtherscan(
     });
   }
   return Promise.reject(new Error(`Failed to quest etherscan: ${respJson.message} - ${respJson.result}`));
-
 }
 
 export async function fetchTransactionInput(network: string, tx_hash: string, logger: (arg0: string) => void) {
