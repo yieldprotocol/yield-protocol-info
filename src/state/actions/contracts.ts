@@ -61,3 +61,7 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
 export const updateEvents = (events: any) => ({ type: ActionType.UPDATE_EVENTS, events });
 export const setEventsLoading = (eventsLoading: boolean) => ({ type: ActionType.EVENTS_LOADING, eventsLoading });
 export const updateContractMap = (contractMap: any) => ({ type: ActionType.UPDATE_CONTRACT_MAP, contractMap });
+export const updateEventArgPropsMap = (eventArgPropsMap: any) => ({
+  type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
+  eventArgPropsMap,
+});

@@ -57,7 +57,5 @@ const eventMocksSorted = [
 const eventMocksUnsorted = [9, 2, 3, 7, 1, 4, 0, 8, 5, 6].map(idx => eventMocksSorted[idx])
 
 test('eventSort sorts by block => transactionIndex => logIndex', () => {
-  console.log(eventMocksUnsorted.sort(eventSort))
-  console.log('ssssssssssssssssssssssssssssss')
   expect(eventMocksUnsorted.sort(eventSort)).toEqual(eventMocksSorted);
 });
