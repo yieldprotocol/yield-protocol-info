@@ -1,21 +1,23 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
+import AddressDisplay from './AddressDisplay';
 
-const EventTableCell = ({ value, idx }: any) => {
-  if (idx !== 3) return <>{value}</>;
-  // use <code> block style for args column (3)
-  return (
-    <>
-      {value.split(',').map((x: string) => (
-        <p key={uuid()}>
-          <code>{`${x}`}</code>
-        </p>
+const ArgsCell = ({ values, eventArgs }: any) => (
+  <table>
+    <tbody>
+      {values.split(',').map((value: string, idx: number) => (
+        <tr key={uuid()}>
+          <td style={{ minWidth: '8rem' }}>{eventArgs[idx].name}:</td>
+          <td>
+            <p>{eventArgs[idx].type === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}</p>
+          </td>
+        </tr>
       ))}
-    </>
-  );
-};
+    </tbody>
+  </table>
+);
 
-const EventTable = ({ events }: any) => (
+const EventTable = ({ events, eventArgsProps }: any) => (
   <div>
     <table className="table min-w-full divide-y divide-gray-200">
       <thead className="">
@@ -34,11 +36,11 @@ const EventTable = ({ events }: any) => (
       <tbody className="bg-green divide-y divide-gray-200">
         {[...events].map((e: any) => (
           <tr key={e.id}>
-            {[...Object.values(e)].map((x: any, idx: number) => (
+            {[...Object.values(e)].map((value: any, idx: number) => (
               <td className="px-6 py-4" key={uuid()}>
                 <div className="justify-items-start">
                   <div className="text-sm font-medium text-gray-900 justify-items-start">
-                    <EventTableCell value={x} idx={idx} />
+                    {idx === 3 ? <ArgsCell values={value} eventArgs={eventArgsProps[e.event]} /> : value}
                   </div>
                 </div>
               </td>

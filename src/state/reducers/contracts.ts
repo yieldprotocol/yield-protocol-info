@@ -9,6 +9,7 @@ const INITIAL_STATE = {
   events: {},
   roles: {},
   contractMap: {},
+  eventArgsPropsMap: {},
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
@@ -24,6 +25,11 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return {
         ...state,
         contractMap: action.contractMap,
+      };
+    case ActionType.UPDATE_EVENT_ARGS_PROPS_MAP:
+      return {
+        ...state,
+        eventArgsPropsMap: action.eventArgPropsMap,
       };
       case ActionType.ROLES_LOADING:
         return { ...state, rolesLoading: action.rolesLoading };
