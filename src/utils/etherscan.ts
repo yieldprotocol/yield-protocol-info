@@ -14,7 +14,7 @@ async function* asyncGenerator(max: number) {
 }
 
 export async function fetchEtherscan(
-  network: string,
+  network: string | undefined,
   params: URLSearchParams,
   logger: (arg0: string) => void
 ): Promise<any> {
@@ -28,7 +28,9 @@ export async function fetchEtherscan(
   const maxAttempts = 5;
   for await (const attempt of asyncGenerator(maxAttempts)) {
     logger('Querying Etherscan');
-    resp = await fetch(`https://api${network === 'mainnet' ? '' : `-${network}`}.etherscan.io/api?${params}`);
+    const url = `https://api${network === 'mainnet' ? '' : `-${network}`}.etherscan.io/api?${params}`;
+    resp = await fetch(url);
+    console.log(respJson);
     respJson = await resp.json();
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
       //   localStorage.setItem(cacheKey, JSON.stringify(respJson));

@@ -4,29 +4,23 @@ import SubNav from '../SubNav';
 import MainViewWrap from '../wraps/MainViewWrap';
 import BatchDecoder from './BatchDecoder';
 
-
 const Governance = () => {
-    const { subnav } = useParams<{ subnav: string }>();
-    console.log(subnav)
+  const { subnav } = useParams<{ subnav: string }>();
 
-
-    return (
-        <>
-          <SubNav paths={[
-              { path: `governance/batchdecoder`, name: 'batch decoder' },
-              { path: `governance/proposaldecoder`, name: 'proposal decoder' },
-              ]} />
-          <MainViewWrap>
-          {subnav === 'batchdecoder' && (
-            <BatchDecoder/>
-          )}
-          {subnav === 'proposaldecoder' && (
-            <code>not implemented</code>
-          )}
-          </MainViewWrap>
-        </>
-
-    )
-}
+  return (
+    <>
+      <SubNav
+        paths={[
+          { path: `governance/batchDecoder`, name: 'batch decoder' },
+          // { path: `governance/proposalDecoder`, name: 'proposal decoder' },
+        ]}
+      />
+      <MainViewWrap>
+        {subnav === 'batchDecoder' && <BatchDecoder />}
+        {/* {subnav === 'proposalDecoder' && <code>not implemented</code>} */}
+      </MainViewWrap>
+    </>
+  );
+};
 
 export default Governance;
