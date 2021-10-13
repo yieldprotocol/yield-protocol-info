@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
@@ -8,9 +8,10 @@ import { NETWORK_LABEL } from '../config/networks';
 const useBatchDecoder = (txHash: string) => {
   const chainId = 42;
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
-  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
+  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Timelock;
   const [loading, setLoading] = useState(false);
-  const [calls, setCalls] = useState<any>();
+  const [funcName, setFuncName] = useState<string>('');
+  const [args, setArgs] = useState<any>();
   const [decoded, setDecoded] = useState<any>({
     abis: {},
     contracts: {},
@@ -29,7 +30,7 @@ const useBatchDecoder = (txHash: string) => {
     const call = { to: tx.to, data: tx.data };
     console.log(`call: ${call}`);
     await resolveCall(call);
-    setCalls([txHash, call]);
+    // setCalls([txHash, call]);
     setLoading(false);
   }
 
@@ -57,9 +58,7 @@ const useBatchDecoder = (txHash: string) => {
     abi: { interface: Interface; functions: Map<string, FunctionFragment> },
     calldata: string
   ): Promise<any> {
-    console.log('calldata', calldata);
     const selector = calldata.slice(0, 2 + 4 * 2);
-    console.log('abi in getfunc', abi);
     const f = abi.functions.get(selector);
     if (!f) {
       console.log(`Can't find selector ${selector} in function ${abi}`);
@@ -83,9 +82,14 @@ const useBatchDecoder = (txHash: string) => {
       const functions = new Map<string, FunctionFragment>();
       // eslint-disable-next-line guard-for-in
       for (const f in iface.functions) {
-        console.log('f', f);
         functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]);
       }
+
+      const result = {
+        interface: iface,
+        functions,
+      };
+
       setDecoded({
         ...decoded,
         contract: {
@@ -94,19 +98,16 @@ const useBatchDecoder = (txHash: string) => {
         },
         abis: {
           ...decoded.abis,
-          [target]: {
-            interface: iface,
-            functions,
-          },
+          [target]: result,
         },
       });
+      return result;
     }
     return decoded.abis[target];
   }
 
   async function resolveCall(calling: any) {
     const abi = await getABI(calling.to);
-    console.log('abi', abi);
     const [func, argsCalldata] = await getFunction(abi, calling.data);
 
     let _args = ethers.utils.defaultAbiCoder.decode(
@@ -114,10 +115,9 @@ const useBatchDecoder = (txHash: string) => {
       argsCalldata
     );
 
-    console.log('args', _args);
     if (ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => ({ to: calling.to, data: x }))];
-
+      console.log('args', _args);
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
     } else if (
       ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
@@ -128,9 +128,12 @@ const useBatchDecoder = (txHash: string) => {
     } else {
       _args = _args.map((x) => x.toString());
     }
+
+    return { funcName: func.name, args: _args };
   }
 
   async function decodeTxHash() {
+    setLoading(true);
     try {
       const tx = await ethers.getDefaultProvider(network).getTransaction(txHash);
       if (!tx.to) {
@@ -138,12 +141,19 @@ const useBatchDecoder = (txHash: string) => {
         return;
       }
       const call = { to: tx.to, data: tx.data };
-      await resolveCall(call);
+      const { funcName: _funcName, args: _args } = await resolveCall(call);
+      console.log('func', _funcName);
+      console.log('args', _args);
+      setFuncName(_funcName);
+      setArgs(_args);
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       console.log('error getting decoded data');
+      console.log(e);
     }
   }
-  return { decodeTxHash, decoded, loading };
+  return { decodeTxHash, loading, funcName, args };
 };
 
 export { useBatchDecoder };

@@ -11,7 +11,7 @@ const Governance = () => {
     <>
       <SubNav
         paths={[
-          { path: `governance/batchDecoder`, name: 'batch decoder' },
+          { path: `governance/batchDecoder`, name: 'Batch Decoder' },
           // { path: `governance/proposalDecoder`, name: 'proposal decoder' },
         ]}
       />

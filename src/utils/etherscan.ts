@@ -2,7 +2,7 @@ export function addHexPrefix(addrLike: string) {
   if (addrLike.startsWith('0x')) {
     return addrLike;
   }
-  return `0x ${addrLike}`;
+  return `0x${addrLike}`;
 }
 
 async function* asyncGenerator(max: number) {
@@ -30,8 +30,8 @@ export async function fetchEtherscan(
     logger('Querying Etherscan');
     const url = `https://api${network === 'mainnet' ? '' : `-${network}`}.etherscan.io/api?${params}`;
     resp = await fetch(url);
-    console.log(respJson);
     respJson = await resp.json();
+
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
       //   localStorage.setItem(cacheKey, JSON.stringify(respJson));
       return respJson;
