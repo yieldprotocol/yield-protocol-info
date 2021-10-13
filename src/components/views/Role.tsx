@@ -21,6 +21,7 @@ const Role = () => {
     if (Object.keys(contractMap).length && addr) dispatch(getRoles(contractMap, addr));
   }, [contractMap, dispatch, addr]);
 
+
   return (
     <>
       <SubNav
@@ -36,7 +37,11 @@ const Role = () => {
         ) : (
           <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">
             <div className="text-lg pb-4 flex gap-x-2">
-              <RolesTable roles={contractRoles} roleNames={roleNames} />
+              {contractRoles && Object.keys(contractRoles).length ? (
+                <RolesTable roles={contractRoles} roleNames={roleNames} />
+              ) : (
+                <>No roles found</>
+              )}
             </div>
           </div>
         )}
