@@ -16,7 +16,7 @@ import {
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
-import * as contracts from '../../contracts';
+import * as contracts from '../../app-v2/src/contracts'
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
 
