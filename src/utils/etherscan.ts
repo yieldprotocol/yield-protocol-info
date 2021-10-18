@@ -28,7 +28,7 @@ export async function fetchEtherscan(
   const maxAttempts = 5;
   for await (const attempt of asyncGenerator(maxAttempts)) {
     logger('Querying Etherscan');
-    const url = `https://api${network === 'mainnet' ? '' : `-${network}`}.etherscan.io/api?${params}`;
+    const url = `https://api${network === 'ethereum' ? '' : `-${network}`}.etherscan.io/api?${params}`;
     resp = await fetch(url);
     respJson = await resp.json();
 
