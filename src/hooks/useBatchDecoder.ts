@@ -4,55 +4,23 @@ import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
 import { NETWORK_LABEL } from '../config/networks';
+import { useAppSelector } from '../state/hooks/general';
+
 
 const useBatchDecoder = (txHash: string) => {
-  const chainId = 42;
-  const network = NETWORK_LABEL[chainId]?.toLowerCase();
-  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Timelock;
+  const chainId = useAppSelector((st: any) => st.chain.chainId);
+  const network_ = NETWORK_LABEL[chainId]?.toLowerCase();
+  const network = network_ === 'ethereum' ? 'mainnet' : network_
+  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
-  const [funcName, setFuncName] = useState<string>('');
-  const [args, setArgs] = useState<any>();
+  const [finalCall, setFinalCall] = useState<any>();
   const [decoded, setDecoded] = useState<any>({
     abis: {},
     contracts: {},
     calls: {},
   });
 
-  async function getCalls() {
-    console.log('getcalls');
-    setLoading(true);
 
-    const tx = await ethers.getDefaultProvider(network).getTransaction(txHash);
-    if (!tx?.to) {
-      console.log(`Transaction without address: ${tx}`);
-      return;
-    }
-    const call = { to: tx.to, data: tx.data };
-    console.log(`call: ${call}`);
-    await resolveCall(call);
-    // setCalls([txHash, call]);
-    setLoading(false);
-  }
-
-  function getFunctionName(target: string, calldata: string): string {
-    if (!(target in decoded.abis)) {
-      return 'Fetching function name...';
-    }
-    const abi = decoded.abis[target];
-    const selector = calldata.slice(0, 2 + 4 * 2);
-    const f = abi.functions.get(selector);
-    if (!f) {
-      return "Selector not found, that's bad";
-    }
-    return f.format(ethers.utils.FormatTypes.full);
-  }
-
-  function getFunctionArguments(target: string, calldata: string): Array<[string, string]> {
-    if (!(target in decoded.abis)) {
-      return [['status', 'Fetching function arguments...']];
-    }
-    return [];
-  }
 
   async function getFunction(
     abi: { interface: Interface; functions: Map<string, FunctionFragment> },
@@ -67,69 +35,89 @@ const useBatchDecoder = (txHash: string) => {
   }
 
   async function getABI(target: string) {
-    if (!(target in decoded.abis)) {
-      const ret = await fetchEtherscan(
-        network,
-        new URLSearchParams({
-          module: 'contract',
-          action: 'getsourcecode',
-          address: addHexPrefix(target),
-          apikey: 'FSUGH69TNP8K1Q1TAZQYND5VDHETGMADR5',
-        }),
-        (x) => console.log(x)
-      );
-      const iface = new Interface(ret.result[0].ABI);
-      const functions = new Map<string, FunctionFragment>();
-      // eslint-disable-next-line guard-for-in
-      for (const f in iface.functions) {
-        functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]);
-      }
-
-      const result = {
-        interface: iface,
-        functions,
-      };
-
-      setDecoded({
-        ...decoded,
-        contract: {
-          ...decoded.contracts,
-          [target]: ret.ContractName,
-        },
-        abis: {
-          ...decoded.abis,
-          [target]: result,
-        },
-      });
-      return result;
+    if (target in decoded.abis) return decoded.abis[target];
+    const ret = await fetchEtherscan(
+      network,
+      new URLSearchParams({
+        module: 'contract',
+        action: 'getsourcecode',
+        address: addHexPrefix(target),
+        apikey: 'FSUGH69TNP8K1Q1TAZQYND5VDHETGMADR5',
+      }),
+      (x) => console.log(x)
+    );
+    const iface = new Interface(ret.result[0].ABI);
+    const functions = new Map<string, FunctionFragment>();
+    // eslint-disable-next-line guard-for-in
+    for (const f in iface.functions) {
+      functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]);
     }
-    return decoded.abis[target];
+
+    const result = {
+      interface: iface,
+      functions,
+    };
+
+    setDecoded({
+      ...decoded,
+      contract: {
+        ...decoded.contracts,
+        [target]: ret.ContractName,
+      },
+      abis: {
+        ...decoded.abis,
+        [target]: result,
+      },
+    });
+    return result;
   }
 
-  async function resolveCall(calling: any) {
-    const abi = await getABI(calling.to);
-    const [func, argsCalldata] = await getFunction(abi, calling.data);
+  class Call {
+    method?: string;
 
-    let _args = ethers.utils.defaultAbiCoder.decode(
+    argProps?: any[];
+
+    arguments: (string|Call)[] = [];
+
+    constructor(readonly to: string, readonly calldata: string) {
+    }
+
+    resolve(_method: string, _arguments: (string|Call)[], _argProps: any[]) {
+      this.method = _method;
+      this.arguments = _arguments;
+      this.argProps = _argProps;
+    }
+
+    toPrettyJson() {
+      return { "function": `${this.method} [${this.to}]`, "arguments": this.arguments };
+    }
+  }
+
+
+  async function resolveCall(call: Call) {
+    const abi = await getABI(call.to);
+
+    const [func, argsCalldata] = await getFunction(abi, call.calldata);
+
+    let _args: any = ethers.utils.defaultAbiCoder.decode(
       func.inputs.map((p: any) => p.format()),
       argsCalldata
     );
 
-    if (ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
-      _args = [_args[0].map((x: any) => ({ to: calling.to, data: x }))];
-      console.log('args', _args);
+    if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
+      _args = [_args[0].map((x: any) => (new Call(call.to, x)))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
     } else if (
-      ethers.utils.getAddress(calling.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
+      ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
       func.name === 'route'
     ) {
-      _args = [{ to: _args[0], data: _args[1] }];
+      _args = [new Call(_args[0], _args[1])];
       await resolveCall(_args[0]);
     } else {
-      _args = _args.map((x) => x.toString());
+      _args = _args.map((x: any) => x.toString());
     }
-
-    return { funcName: func.name, args: _args };
+    call.resolve(func.name, _args, func.inputs.map((i: any) => ({ name: i.name, type: i.type })))
+    return call
   }
 
   async function decodeTxHash() {
@@ -140,20 +128,18 @@ const useBatchDecoder = (txHash: string) => {
         console.log(`Transaction without address: ${tx}`);
         return;
       }
-      const call = { to: tx.to, data: tx.data };
-      const { funcName: _funcName, args: _args } = await resolveCall(call);
-      console.log('func', _funcName);
-      console.log('args', _args);
-      setFuncName(_funcName);
-      setArgs(_args);
+      const call = new Call(tx.to, tx.data);
+      await resolveCall(call);
       setLoading(false);
+    setFinalCall(call)
+
     } catch (e) {
       setLoading(false);
       console.log('error getting decoded data');
       console.log(e);
     }
   }
-  return { decodeTxHash, loading, funcName, args };
+  return { decodeTxHash, loading, call: finalCall };
 };
 
 export { useBatchDecoder };
