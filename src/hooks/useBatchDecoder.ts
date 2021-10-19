@@ -31,8 +31,6 @@ const useBatchDecoder = (txHash: string) => {
     if (!f) {
       console.log(`Can't find selector ${selector} in function ${abi}`);
     }
-    console.log(`selector found: ${f}`);
-    console.log(`args calldata found: ${addHexPrefix(calldata.slice(2 + 2 * 4))}`);
     return [f, addHexPrefix(calldata.slice(2 + 2 * 4))];
   }
 
@@ -108,7 +106,6 @@ const useBatchDecoder = (txHash: string) => {
 
     if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => (new Call(call.to, x)))];
-      console.log('args', _args);
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
     } else if (
       ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
