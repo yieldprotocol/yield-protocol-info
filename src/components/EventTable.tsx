@@ -5,11 +5,11 @@ import AddressDisplay from './AddressDisplay';
 const ArgsCell = ({ values, eventArgs }: any) => (
   <table>
     <tbody>
-      {values.split(',').map((value: string, idx: number) => (
+      {eventArgs && values?.split(',').map((value: string, idx: number) => (
         <tr key={uuid()}>
-          <td style={{ minWidth: '8rem' }}>{eventArgs[idx].name}:</td>
+          <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
           <td>
-            <p>{eventArgs[idx].type === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}</p>
+            <p>{(eventArgs && eventArgs[idx].type) === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}</p>
           </td>
         </tr>
       ))}
