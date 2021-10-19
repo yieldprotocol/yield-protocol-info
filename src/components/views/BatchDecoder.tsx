@@ -15,7 +15,6 @@ const CallDisplay = ({ call }: any): any => (
         </tr>
         {call.arguments?.map((ogArgs: any, idx: number) => {
           const args: any = Array.isArray(ogArgs) ? ogArgs : [ogArgs];
-          console.log(ogArgs);
           return (
             <>
               <tr style={{ paddingLeft: '2rem' }} className="no-wrap">
@@ -56,6 +55,7 @@ const CallDisplay = ({ call }: any): any => (
       </tbody>
     </table>
   );
+
 const BatchDecoder = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);

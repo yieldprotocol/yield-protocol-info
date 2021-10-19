@@ -4,11 +4,14 @@ import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
 import { NETWORK_LABEL } from '../config/networks';
+import { useAppSelector } from '../state/hooks/general';
+
 
 const useBatchDecoder = (txHash: string) => {
-  const chainId = 42;
-  const network = NETWORK_LABEL[chainId]?.toLowerCase();
-  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Timelock;
+  const chainId = useAppSelector((st: any) => st.chain.chainId);
+  const network_ = NETWORK_LABEL[chainId]?.toLowerCase();
+  const network = network_ === 'ethereum' ? 'mainnet' : network_
+  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>();
   const [decoded, setDecoded] = useState<any>({
@@ -28,8 +31,6 @@ const useBatchDecoder = (txHash: string) => {
     if (!f) {
       console.log(`Can't find selector ${selector} in function ${abi}`);
     }
-    console.log(`selector found: ${f}`);
-    console.log(`args calldata found: ${addHexPrefix(calldata.slice(2 + 2 * 4))}`);
     return [f, addHexPrefix(calldata.slice(2 + 2 * 4))];
   }
 
@@ -103,15 +104,11 @@ const useBatchDecoder = (txHash: string) => {
       argsCalldata
     );
 
-    // @marco - Help!
-    const ladles = ["0xeD5D1c6A66EE2c39bac78EE896ef66f5A85d6e68", "0x5840069B175D3EEa154C58b065edC06095bB9217"]
-    // if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
-      if (ladles.includes(ethers.utils.getAddress(call.to)) && func.name === 'batch') {
+    if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => (new Call(call.to, x)))];
-      console.log('args', _args);
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
     } else if (
-      ladles.includes(ethers.utils.getAddress(call.to)) &&
+      ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
       func.name === 'route'
     ) {
       _args = [new Call(_args[0], _args[1])];

@@ -4,7 +4,6 @@ import { NETWORK_LABEL as chainData } from '../config/networks';
 
 const AddressDisplay = ({ addr }: any) => {
   const chainId = useAppSelector((st: any) => st.chain.chainId);
-  console.log('addr', addr)
   return (
     <a
       href={`https://${chainId === '1' ? '' : `${chainData[chainId]}.`}etherscan.io/address/${addr.trim()}`}
