@@ -19,7 +19,6 @@ const ProposalHashDecoder = () => {
     console.log(getFunctionName(call.target, call.data));
     console.log(getFunctionArguments(call.target, call.data));
   }
-
   return (
     <div className="w-1/2">
       <div className="h-14">
@@ -41,33 +40,34 @@ const ProposalHashDecoder = () => {
         {!loading && calls && (
           <>
             <div className="mb-2">
-              <span className="font-bold">Transaction Hash </span><AddressDisplay addr={txHash[1]} tx />
+              <span className="font-bold">Transaction Hash </span>
+              <AddressDisplay addr={txHash[1]} tx />
             </div>
-            <span className="font-bold mr-2">
-            Calls:
-            </span>
+            <span className="font-bold mr-2">Calls:</span>
             {calls[1].length}
             {calls[1].map((call: any) => (
               <>
                 <div className="mb-2">
-                <span className="font-bold mr-2">Target: </span>{decoded.contracts[call.target]}
+                  <span className="font-bold mr-2">Target: </span>
+                  {decoded.contracts[call.target]}
                 </div>
                 <div className="mb-3">
-
-                <span className="font-bold">Decoded calldata:</span>
+                  <span className="font-bold">Decoded calldata:</span>
                 </div>
                 <div className="ml-4">
-                  function{' '}<span className="font-bold">{getFunctionName(call.target, call.data)[0].split(' ')[1]}</span>
+                  function <span className="font-bold">{getFunctionName(call.target, call.data)[0].split(' ')[1]}</span>
                   <table className="ml-4">
                     {getFunctionArguments(call.target, call.data).map((x: any, idx: number) => {
                       const [typeName, value] = x;
-                      const [type, name] = typeName.split(' ')
+                      const [type, name] = typeName.split(' ');
 
                       return (
                         <tr key={uuid()} className="pl-6">
                           <td className="font-bold">{name}</td>
-                          <td className="italic" style={{ minWidth: '5rem' }}>({type})</td>
-                          {type === 'address' ? <AddressDisplay addr={value}/> : <code>{value}</code> }
+                          <td className="italic" style={{ minWidth: '5rem' }}>
+                            ({type})
+                          </td>
+                          {type === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}
                         </tr>
                       );
                     })}
