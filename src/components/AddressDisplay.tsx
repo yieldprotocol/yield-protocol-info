@@ -6,7 +6,7 @@ const AddressDisplay = ({ addr }: any) => {
   const chainId = useAppSelector((st: any) => st.chain.chainId);
   return (
     <a
-      href={`https://${chainId === '1' ? '' : `${chainData[chainId]}.`}etherscan.io/address/${addr}`}
+      href={`https://${chainId === '1' ? '' : `${chainData[chainId]}.`}etherscan.io/address/${addr.trim()}`}
       target="_blank"
       rel="noreferrer"
     >

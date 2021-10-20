@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Home from './Home';
 import SeriesList from './views/SeriesList';
 import Series from './views/Series';
@@ -50,7 +50,7 @@ const Routes = () => (
       <Route exact path="/governance">
         <Governance />
       </Route>
-      <Redirect to="/" />
+      <Route path="/governance/:subnav" component={Governance} />
     </Switch>
   </>
 );

@@ -11,6 +11,8 @@ const Contract = () => {
   const { addr } = useParams<{ addr: string }>();
   const dispatch = useAppDispatch();
   const contractMap = useAppSelector((st) => st.contracts.contractMap);
+  const eventArgsPropsMap = useAppSelector((st) => st.contracts.eventArgsPropsMap);
+  const eventArgsProps = eventArgsPropsMap[addr]
   const events = useAppSelector((st) => st.contracts.events);
   const eventsLoading = useAppSelector((st) => st.contracts.eventsLoading);
   const contractEvents = events[addr];
@@ -35,7 +37,7 @@ const Contract = () => {
           <div className="rounded-md p-8 align-middle justify-items-start shadow-sm bg-green-50">
             <div className="text-lg pb-4 flex gap-x-2">
               {contractEvents && contractEvents.length ? (
-                <EventTable events={contractEvents} />
+                <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />
               ) : (
                 <>No event data available</>
               )}

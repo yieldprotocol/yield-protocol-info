@@ -13,7 +13,7 @@ import {
   updateAssets,
 } from '../actions/chain';
 
-import { updateContractMap } from '../actions/contracts';
+import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
@@ -42,6 +42,28 @@ chainData.set(5, { name: 'Goerli', color: '#3099f2', supported: false });
 chainData.set(10, { name: 'Optimism', color: '#EB0822', supported: false });
 chainData.set(42, { name: 'Kovan', color: '#7F7FFE', supported: true });
 
+const getEventArgProps = (contract: any) =>
+  Object.entries(contract.interface.events).reduce((acc: any, curr: any): any => {
+    // example interface:
+    // key: "RoleAdminChanged(bytes4,bytes4)"
+    // value: {
+    //    anonymous: false,
+    //    inputs: [{ name: "assetId", type: "bytes6" }, {name: "address", type: "address"}],
+    //    name: "AssetAdded",
+    //    type: "event",
+    //    _isFragment: true
+    //  }
+    //
+    // final shape of the accumulator:
+    //  {"RoleAdminChanged": [{name: "assetId", type: "bytes6"}, {name: "asset", type: "address"]}
+    const [key, value] = curr;
+    const eventName = key.split('(')[0];
+    if (!(eventName in acc)) {
+      acc[eventName] = value.inputs.map(({ name, type }: any): any => ({ name, type }));
+    }
+    return acc;
+  }, {});
+
 const useChain = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -49,13 +71,15 @@ const useChain = () => {
 
   useEffect(() => {
     const provider = new ethers.providers.InfuraProvider(Number(chainId), '646dc0f33d2449878b28e0afa25267f6');
-
     if (provider && chainId) {
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];
 
       /* Update the baseContracts state */
       const newContractMap: any = {};
+
+      /* Update the Event argument properties */
+      const newEventArgPropsMap: any = {};
 
       [...Object.keys(addrs)].forEach((name: string) => {
         const addr = addrs[name];
@@ -64,6 +88,7 @@ const useChain = () => {
         try {
           contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
           newContractMap[addr] = { contract, name };
+          newEventArgPropsMap[addr] = getEventArgProps(contract);
         } catch (e) {
           console.log(`could not connect to contract ${name}`);
         }
@@ -73,6 +98,7 @@ const useChain = () => {
       const Ladle = newContractMap[addrs.Ladle]?.contract!;
 
       dispatch(updateContractMap(newContractMap));
+      dispatch(updateEventArgPropsMap(newEventArgPropsMap));
       /* Get the hardcoded strategy addresses */
       const strategyAddresses = (yieldEnv.strategies as any)[chainId];
 

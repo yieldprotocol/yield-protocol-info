@@ -8,6 +8,7 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
       try {
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, null, null);
+        console.log('events', events)
 
         const updatedEvents = events.map((e: any, i: number) => ({
           id: i,
@@ -15,6 +16,7 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
           blockNumber: e.blockNumber,
           args: e.args ? e.args.join(', ') : '',
         }));
+        console.log('updatedEvents', updatedEvents)
 
         const eventsMap = { [contractAddr]: updatedEvents };
 
@@ -61,3 +63,7 @@ export function getEvents(contractMap: any, contractAddr: any, filter = '*') {
 export const updateEvents = (events: any) => ({ type: ActionType.UPDATE_EVENTS, events });
 export const setEventsLoading = (eventsLoading: boolean) => ({ type: ActionType.EVENTS_LOADING, eventsLoading });
 export const updateContractMap = (contractMap: any) => ({ type: ActionType.UPDATE_CONTRACT_MAP, contractMap });
+export const updateEventArgPropsMap = (eventArgPropsMap: any) => ({
+  type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
+  eventArgPropsMap,
+});
