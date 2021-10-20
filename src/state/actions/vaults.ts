@@ -57,35 +57,31 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { min: minDebt, max: maxDebt, dec: decimals }, price] =
-              await Promise.all([
-                await Cauldron.balances(vault.id),
-                await Cauldron.vaults(vault.id),
-                await Cauldron.debt(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap),
-              ]);
+            const [
+              { ink, art },
+              { owner, seriesId, ilkId },
+              { min: minDebt, max: maxDebt, dec: decimals },
+              { ratio: minCollatRatio },
+              price,
+            ] = await Promise.all([
+              await Cauldron.balances(vault.id),
+              await Cauldron.vaults(vault.id),
+              await Cauldron.debt(vault.baseId, vault.ilkId),
+              await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+              await getPrice(vault.ilkId, vault.baseId, contractMap),
+            ]);
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
-
-            const collateralizationRatio = calculateCollateralizationRatio(ink, price, art, true);
-            const price_ = cleanValue(utils.formatUnits(price, 18)); // TODO is this format unit correct
-            const ink_ = cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat); // for display purposes only
-            const art_ = cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat); // for display purposes only
-            const inkToArtBal = (Number(ink_) * Number(price_)).toString();
-            const maxDebt_ = (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }); // for display purposes only
 
             return {
               ...vault,
               owner,
               isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
-              seriesId,
-              ilkId,
-              ink_,
-              art_,
-              collatRatioPct: cleanValue(collateralizationRatio, 2),
-              price_,
-              inkToArtBal,
-              maxDebt_,
+              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}%`,
+              minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
+              ink: cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat),
+              art: cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat),
+              maxDebt: (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
               decimals,
             };
           })

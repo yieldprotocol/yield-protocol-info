@@ -40,9 +40,9 @@ const Vaults = () => {
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
       .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty
-      .filter((v: any) => Number(v.art_) !== 0 && Number(v.ink_) !== 0)
+      .filter((v: any) => Number(v.art) !== 0 && Number(v.ink) !== 0)
       // sorting by debt balance
-      .sort((vA: any, vB: any) => (Number(vA.art_) < Number(vB.art_) ? 1 : -1))
+      .sort((vA: any, vB: any) => (Number(vA.art) < Number(vB.art) ? 1 : -1))
       // sorting to prioritize active vaults
       // eslint-disable-next-line no-nested-ternary
       .sort((vA: any, vB: any) => (vA.isActive === vB.isActive ? 0 : vA.isActive ? -1 : 1));
@@ -95,8 +95,6 @@ const Vaults = () => {
                     'Debt Amount',
                     'Collateral Asset',
                     'Collateral Amount',
-                    'Price',
-                    'Collateral Balance',
                   ].map((x) => (
                     <th
                       key={x}
@@ -139,7 +137,7 @@ const Vaults = () => {
                       </td>
                       <td className="px-6 py-3 text-center items-center">
                         <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{v.art_}</span>
+                          <span>{v.art}</span>
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
@@ -149,17 +147,7 @@ const Vaults = () => {
                       </td>
                       <td className="px-6 py-3 text-center items-center">
                         <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{v.ink_}</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{cleanValue(v.price_, 2)}</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{cleanValue(v.inkToArtBal, 2)}</span>
+                          <span>{v.ink}</span>
                         </span>
                       </td>
                     </tr>
