@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import SubNav from '../SubNav';
 import MainViewWrap from '../wraps/MainViewWrap';
 import BatchDecoder from './BatchDecoder';
+import ProposalHashDecoder from './ProposalHashDecoder';
 
 const Governance = () => {
   const { subnav } = useParams<{ subnav: string }>();
@@ -12,12 +13,12 @@ const Governance = () => {
       <SubNav
         paths={[
           { path: `governance/batchDecoder`, name: 'Batch Decoder' },
-          // { path: `governance/proposalDecoder`, name: 'proposal decoder' },
+          { path: `governance/proposalDecoder`, name: 'proposal decoder' },
         ]}
       />
       <MainViewWrap>
         {subnav === 'batchDecoder' && <BatchDecoder />}
-        {/* {subnav === 'proposalDecoder' && <code>not implemented</code>} */}
+        {subnav === 'proposalDecoder' && <ProposalHashDecoder/>}
       </MainViewWrap>
     </>
   );
