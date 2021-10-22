@@ -8,6 +8,7 @@ import Strategy from './views/Strategy';
 import Assets from './views/Assets';
 import Asset from './views/Asset';
 import Governance from './views/Governance';
+import Liquidations from './views/Liquidations';
 import Role from './views/Role';
 import Contracts from './views/Contracts';
 import Contract from './views/Contract';
@@ -51,6 +52,9 @@ const Routes = () => (
         <Governance />
       </Route>
       <Route path="/governance/:subnav" component={Governance} />
+      <Route exact path="/liquidations">
+        <Liquidations />
+      </Route>
     </Switch>
   </>
 );

@@ -5,7 +5,7 @@ import YieldMark from './logos/YieldMark';
 import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
-  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance'];
+  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance', 'liquidations'];
 
   return (
     <div className="sticky top-0 z-10 flex-none">
