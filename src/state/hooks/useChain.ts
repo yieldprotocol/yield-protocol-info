@@ -106,8 +106,6 @@ const useChain = () => {
       const _chargeAsset = (asset: any) => ({
         ...asset,
         digitFormat: assetDigitFormatMap.has(asset.symbol) ? assetDigitFormatMap.get(asset.symbol) : 6,
-        image: asset.symbol,
-        color: (yieldEnv.assetColors as any)[asset.symbol],
       });
 
       const _getAssets = async () => {
