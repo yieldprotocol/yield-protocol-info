@@ -18,11 +18,6 @@ export async function fetchEtherscan(
   params: URLSearchParams,
   logger: (arg0: string) => void
 ): Promise<any> {
-  //   const cacheKey = JSON.stringify({ network, params: params.toString() });
-  //   const cachedValue = localStorage.getItem(cacheKey);
-  //   if (cachedValue) {
-  //     return JSON.parse(cachedValue);
-  //   }
   let resp;
   let respJson;
   const maxAttempts = 5;
@@ -33,7 +28,6 @@ export async function fetchEtherscan(
     respJson = await resp.json();
 
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
-      //   localStorage.setItem(cacheKey, JSON.stringify(respJson));
       return respJson;
     }
     if (attempt + 1 === maxAttempts) {
@@ -45,6 +39,7 @@ export async function fetchEtherscan(
         respJson.result
       }; will try again in ${delaySeconds} seconds; attempts left: ${maxAttempts - attempt - 1}`
     );
+
     await new Promise((resolve, _) => {
       setTimeout(resolve, delaySeconds * 1000);
     });

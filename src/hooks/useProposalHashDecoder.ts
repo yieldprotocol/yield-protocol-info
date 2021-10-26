@@ -24,6 +24,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   async function startFetchingABIs(targets: any) {
     const promises = [];
+
     for (const target of targets) {
       if (!(target in decoded.abis)) {
         promises.push(
@@ -48,17 +49,17 @@ const useProposalHashDecoder = (proposalHash: string) => {
               interface: iface,
               functions,
             };
-            setDecoded({
-              ...decoded,
+            setDecoded((d: any) => ({
+              ...d,
               contracts: {
-                ...decoded.contracts,
+                ...d.contracts,
                 [target]: result.ContractName,
               },
               abis: {
-                ...decoded.abis,
+                ...d.abis,
                 [target]: newResult,
               },
-            });
+            }));
           })
         );
       }
@@ -69,7 +70,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
-    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'mainnet' : network).getTransaction(hash);
+    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(hash);
     const input = tx.data;
     const callsArr = ethers.utils.defaultAbiCoder.decode([PROPOSE_ARGUMENTS], addHexPrefix(input.slice(2 + 4 * 2)))[0];
     // 0x4a6c405fad393b24f0fd889bb8ae715b3fcca1f0a12c9ae079d072958c9dbbc7
@@ -124,34 +125,43 @@ const useProposalHashDecoder = (proposalHash: string) => {
     if (!(target in decoded.abis)) {
       return 'Fetching function name...';
     }
+
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
+
     if (!f) {
       return "Selector not found, that's bad";
     }
-    const fn = f.format(ethers.utils.FormatTypes.full);
 
-    const parts = fn.split('(');
-    const args = parts[1].replace(')', '').split(', ');
-    return [parts[0], args];
+    const fn = f.format(ethers.utils.FormatTypes.full);
+    return fn.split('(')[0].split('function ')[1];
   }
 
   function getFunctionArguments(target: string, calldata: string): Array<[string, string]> {
     if (!(target in decoded.abis)) {
       return [['status', 'Fetching function arguments...']];
     }
+
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
+
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
     }
-    const args = ethers.utils.defaultAbiCoder.decode(
-      [f.format(ethers.utils.FormatTypes.full)],
-      addHexPrefix(calldata.slice(2 + 2 * 4))
-    )[0];
-    return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
+
+    try {
+      const args = ethers.utils.defaultAbiCoder.decode(
+        [f.format(ethers.utils.FormatTypes.full)],
+        addHexPrefix(calldata.slice(2 + 2 * 4))
+      )[0];
+      return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
+    } catch (e) {
+      console.log(e);
+    }
+
+    return [];
   }
 
   async function decodeProposalHash() {
