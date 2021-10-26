@@ -119,7 +119,6 @@ const useBatchDecoder = (txHash: string) => {
     setLoading(true);
     try {
       const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(txHash);
-      console.log(tx);
       if (!tx?.to) {
         console.log(`Transaction without address: ${tx}`);
         return;
