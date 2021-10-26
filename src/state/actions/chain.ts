@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { cleanValue } from '../../utils/appUtils';
 import { ActionType } from '../actionTypes/chain';
 import { getPrice } from './vaults';
 
@@ -25,10 +26,9 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
 
       const assetPairData = await Promise.all(
         [...Object.values(assets)].map(async (x: any) => {
-          const [{ min: minDebt, max: maxDebt, dec: decimals }, { ratio: minCollatRatio }, price] = await Promise.all([
+          const [{ min: minDebt, max: maxDebt, dec: decimals }, { ratio: minCollatRatio }] = await Promise.all([
             await Cauldron.debt(asset.id, x.id),
             await Cauldron.spotOracles(asset.id, x.id),
-            await getPrice(x.id, asset.id, contractMap),
           ]);
 
           return {
@@ -37,12 +37,9 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
             minCollatRatioPct: `${ethers.utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
             minDebt: (minDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
             maxDebt: (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
-            price: ethers.utils.formatUnits(price, 18),
           };
         })
       );
-
-      console.log('asset pair data', assetPairData);
 
       dispatch(updateAssetPairData(asset.id, assetPairData));
       console.log('Yield Protocol Asset Pair data updated.');
