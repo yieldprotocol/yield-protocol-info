@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
@@ -10,15 +10,16 @@ const ProposalHashDecoder = () => {
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
-  console.log('calls', calls);
-  console.log('decoded', decoded);
-  console.log('txHash', txHash);
-  if (calls) {
-    console.log('calls', calls);
-    const call = calls[1][0];
-    console.log(getFunctionName(call.target, call.data));
-    console.log(getFunctionArguments(call.target, call.data));
-  }
+
+  useEffect(() => {
+    if (calls) {
+      const call = calls[1][0];
+      console.log('calls', calls);
+      console.log(getFunctionName(call.target, call.data));
+      console.log(getFunctionArguments(call.target, call.data));
+    }
+  }, [calls, getFunctionName, getFunctionArguments]);
+
   return (
     <div className="w-1/2">
       <div className="h-14">

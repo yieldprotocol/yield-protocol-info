@@ -13,7 +13,6 @@ const useProposalHashDecoder = (proposalHash: string) => {
   const chainId = useAppSelector((st) => st.chain.chainId);
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
-  console.log(ADDRESS_TIMELOCK);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
@@ -25,6 +24,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   async function startFetchingABIs(targets: any) {
     const promises = [];
+
     for (const target of targets) {
       if (!(target in decoded.abis)) {
         promises.push(
@@ -49,17 +49,17 @@ const useProposalHashDecoder = (proposalHash: string) => {
               interface: iface,
               functions,
             };
-            setDecoded({
-              ...decoded,
+            setDecoded((d: any) => ({
+              ...d,
               contracts: {
-                ...decoded.contracts,
+                ...d.contracts,
                 [target]: result.ContractName,
               },
               abis: {
-                ...decoded.abis,
+                ...d.abis,
                 [target]: newResult,
               },
-            });
+            }));
           })
         );
       }
