@@ -18,7 +18,7 @@ const TextInput = ({
       type="text"
       placeholder={placeHolder}
       onChange={(e) => onChange(e.target.value)}
-      className="p-3 block w-full pl-10 pr-12 sm:text-sm rounded-md h-full bg-green-50 focus:ring-0 ring-0"
+      className="p-3 block w-full pl-10 pr-12 sm:text-sm rounded-md h-full bg-green-50 focus:outline-none"
       value={value}
       onKeyPress={(e) => {
         if (e.key === 'Enter') {
