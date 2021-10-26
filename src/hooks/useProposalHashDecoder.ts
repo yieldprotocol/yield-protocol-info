@@ -125,29 +125,32 @@ const useProposalHashDecoder = (proposalHash: string) => {
     if (!(target in decoded.abis)) {
       return 'Fetching function name...';
     }
+
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
+
     if (!f) {
       return "Selector not found, that's bad";
     }
-    const fn = f.format(ethers.utils.FormatTypes.full);
 
-    const parts = fn.split('(');
-    const args = parts[1].replace(')', '').split(', ');
-    return [parts[0], args];
+    const fn = f.format(ethers.utils.FormatTypes.full);
+    return fn.split('(').split('function')[0];
   }
 
   function getFunctionArguments(target: string, calldata: string): Array<[string, string]> {
     if (!(target in decoded.abis)) {
       return [['status', 'Fetching function arguments...']];
     }
+
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
+
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
     }
+
     try {
       const args = ethers.utils.defaultAbiCoder.decode(
         [f.format(ethers.utils.FormatTypes.full)],
@@ -157,6 +160,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
     } catch (e) {
       console.log(e);
     }
+
     return [];
   }
 

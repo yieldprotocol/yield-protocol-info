@@ -15,8 +15,8 @@ const ProposalHashDecoder = () => {
     if (calls) {
       const call = calls[1][0];
       console.log('calls', calls);
-      console.log(getFunctionName(call.target, call.data));
-      console.log(getFunctionArguments(call.target, call.data));
+      console.log('func name', getFunctionName(call.target, call.data));
+      console.log('func args', getFunctionArguments(call.target, call.data));
     }
   }, [calls, getFunctionName, getFunctionArguments]);
 
@@ -40,25 +40,29 @@ const ProposalHashDecoder = () => {
         )}
         {!loading && calls && (
           <>
-            <div className="mb-2">
-              <span className="font-bold">Transaction Hash </span>
+            <div className="mb-4">
+              <div className="mb-1">
+                <span className="font-bold">Transaction Hash: </span>
+              </div>
               <AddressDisplay addr={txHash[1]} tx />
             </div>
-            <span className="font-bold mr-2">Calls:</span>
-            {calls[1].length}
+            <div className="mb-4">
+              <span className="font-bold mr-2">Calls:</span>
+              {calls[1].length}
+            </div>
             {calls[1].map((call: any) => (
-              <div key={uuid()}>
+              <div className="ml-4 my-6" key={uuid()}>
                 <div className="mb-2">
                   <span className="font-bold mr-2">Target: </span>
                   {decoded.contracts[call.target]}
                 </div>
-                <div className="mb-3">
+                <div className="mb-2">
                   <span className="font-bold">Decoded calldata:</span>
                 </div>
-                <div className="ml-4">
-                  function <span className="font-bold">{getFunctionName(call.target, call.data)[0].split(' ')[1]}</span>
+                <div className="ml-6">
+                  function <span className="font-bold">{getFunctionName(call.target, call.data)}</span>
                   <table className="ml-4">
-                    {getFunctionArguments(call.target, call.data).map((x: any, idx: number) => {
+                    {getFunctionArguments(call.target, call.data).map((x: any) => {
                       const [typeName, value] = x;
                       const [type, name] = typeName.split(' ');
 
