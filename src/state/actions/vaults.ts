@@ -4,7 +4,7 @@ import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { ONE_WEI_BN } from '../../utils/constants';
 import { calculateCollateralizationRatio } from '../../utils/yieldMath';
 
-export function getVaults(priceMap: any, contractMap: any, series: any, assets: any) {
+export function getVaults(contractMap: any, series: any, assets: any) {
   return async function _getVaults(dispatch: any) {
     try {
       dispatch(setVaultsLoading(true));
@@ -57,19 +57,15 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [
-              { ink, art },
-              { owner, seriesId, ilkId },
-              { min: minDebt, max: maxDebt, dec: decimals },
-              { ratio: minCollatRatio },
-              price,
-            ] = await Promise.all([
-              await Cauldron.balances(vault.id),
-              await Cauldron.vaults(vault.id),
-              await Cauldron.debt(vault.baseId, vault.ilkId),
-              await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-              await getPrice(vault.ilkId, vault.baseId, contractMap),
-            ]);
+            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }, price] =
+              await Promise.all([
+                await Cauldron.balances(vault.id),
+                await Cauldron.vaults(vault.id),
+                await Cauldron.debt(vault.baseId, vault.ilkId),
+                await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+                await getPrice(vault.ilkId, vault.baseId, contractMap),
+              ]);
+
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
 
@@ -79,10 +75,10 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
               isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
               collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}%`,
               minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
-              ink: cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat),
-              art: cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat),
-              maxDebt: (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
+              ink: ilk ? cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat) : '',
+              art: base ? cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat) : '',
               decimals,
+              seriesId,
             };
           })
         );

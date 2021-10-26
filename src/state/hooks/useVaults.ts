@@ -11,7 +11,7 @@ export const useVaults = () => {
 
   useEffect(() => {
     if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length) {
-      dispatch(getVaults(prices, contractMap, series, assets));
+      dispatch(getVaults(contractMap, series, assets));
     } else {
       dispatch(updateVaults({}));
     }
