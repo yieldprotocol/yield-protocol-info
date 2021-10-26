@@ -46,7 +46,7 @@ const ProposalHashDecoder = () => {
             <span className="font-bold mr-2">Calls:</span>
             {calls[1].length}
             {calls[1].map((call: any) => (
-              <>
+              <div key={uuid()}>
                 <div className="mb-2">
                   <span className="font-bold mr-2">Target: </span>
                   {decoded.contracts[call.target]}
@@ -73,7 +73,7 @@ const ProposalHashDecoder = () => {
                     })}
                   </table>
                 </div>
-              </>
+              </div>
             ))}
           </>
         )}
