@@ -13,6 +13,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   const chainId = useAppSelector((st) => st.chain.chainId);
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
+  console.log(ADDRESS_TIMELOCK);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
@@ -69,7 +70,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
-    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'mainnet' : network).getTransaction(hash);
+    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(hash);
     const input = tx.data;
     const callsArr = ethers.utils.defaultAbiCoder.decode([PROPOSE_ARGUMENTS], addHexPrefix(input.slice(2 + 4 * 2)))[0];
     // 0x4a6c405fad393b24f0fd889bb8ae715b3fcca1f0a12c9ae079d072958c9dbbc7
@@ -147,11 +148,16 @@ const useProposalHashDecoder = (proposalHash: string) => {
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
     }
-    const args = ethers.utils.defaultAbiCoder.decode(
-      [f.format(ethers.utils.FormatTypes.full)],
-      addHexPrefix(calldata.slice(2 + 2 * 4))
-    )[0];
-    return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
+    try {
+      const args = ethers.utils.defaultAbiCoder.decode(
+        [f.format(ethers.utils.FormatTypes.full)],
+        addHexPrefix(calldata.slice(2 + 2 * 4))
+      )[0];
+      return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
+    } catch (e) {
+      console.log(e);
+    }
+    return [];
   }
 
   async function decodeProposalHash() {

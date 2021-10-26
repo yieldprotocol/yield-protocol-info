@@ -62,6 +62,7 @@ const CallDisplay = ({ call }: any): any => (
 
 const BatchDecoder = () => {
   const [txHash, setTxHash] = useState('');
+  console.log('txhash', txHash);
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
   return (
     <div className="w-1/2">
