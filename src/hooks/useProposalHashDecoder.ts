@@ -135,7 +135,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
     }
 
     const fn = f.format(ethers.utils.FormatTypes.full);
-    return fn.split('(').split('function')[0];
+    return fn.split('(')[0].split('function ')[1];
   }
 
   function getFunctionArguments(target: string, calldata: string): Array<[string, string]> {
