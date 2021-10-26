@@ -6,11 +6,10 @@ import * as yieldEnv from '../yieldEnv.json';
 import { NETWORK_LABEL } from '../config/networks';
 import { useAppSelector } from '../state/hooks/general';
 
-
 const useBatchDecoder = (txHash: string) => {
   const chainId = useAppSelector((st: any) => st.chain.chainId);
-  const network_ = NETWORK_LABEL[chainId]?.toLowerCase();
-  const network = network_ === 'ethereum' ? 'mainnet' : network_
+  const network = NETWORK_LABEL[chainId]?.toLowerCase();
+  console.log(network);
   const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>();
@@ -19,8 +18,6 @@ const useBatchDecoder = (txHash: string) => {
     contracts: {},
     calls: {},
   });
-
-
 
   async function getFunction(
     abi: { interface: Interface; functions: Map<string, FunctionFragment> },
@@ -77,22 +74,20 @@ const useBatchDecoder = (txHash: string) => {
 
     argProps?: any[];
 
-    arguments: (string|Call)[] = [];
+    arguments: (string | Call)[] = [];
 
-    constructor(readonly to: string, readonly calldata: string) {
-    }
+    constructor(readonly to: string, readonly calldata: string) {}
 
-    resolve(_method: string, _arguments: (string|Call)[], _argProps: any[]) {
+    resolve(_method: string, _arguments: (string | Call)[], _argProps: any[]) {
       this.method = _method;
       this.arguments = _arguments;
       this.argProps = _argProps;
     }
 
     toPrettyJson() {
-      return { "function": `${this.method} [${this.to}]`, "arguments": this.arguments };
+      return { function: `${this.method} [${this.to}]`, arguments: this.arguments };
     }
   }
-
 
   async function resolveCall(call: Call) {
     const abi = await getABI(call.to);
@@ -105,25 +100,26 @@ const useBatchDecoder = (txHash: string) => {
     );
 
     if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
-      _args = [_args[0].map((x: any) => (new Call(call.to, x)))];
+      _args = [_args[0].map((x: any) => new Call(call.to, x))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
-    } else if (
-      ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) &&
-      func.name === 'route'
-    ) {
+    } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'route') {
       _args = [new Call(_args[0], _args[1])];
       await resolveCall(_args[0]);
     } else {
       _args = _args.map((x: any) => x.toString());
     }
-    call.resolve(func.name, _args, func.inputs.map((i: any) => ({ name: i.name, type: i.type })))
-    return call
+    call.resolve(
+      func.name,
+      _args,
+      func.inputs.map((i: any) => ({ name: i.name, type: i.type }))
+    );
+    return call;
   }
 
   async function decodeTxHash() {
     setLoading(true);
     try {
-      const tx = await ethers.getDefaultProvider(network).getTransaction(txHash);
+      const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(txHash);
       if (!tx.to) {
         console.log(`Transaction without address: ${tx}`);
         return;
@@ -131,8 +127,7 @@ const useBatchDecoder = (txHash: string) => {
       const call = new Call(tx.to, tx.data);
       await resolveCall(call);
       setLoading(false);
-    setFinalCall(call)
-
+      setFinalCall(call);
     } catch (e) {
       setLoading(false);
       console.log('error getting decoded data');
