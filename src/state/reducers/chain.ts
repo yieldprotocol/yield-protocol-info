@@ -13,6 +13,7 @@ const INITIAL_STATE = {
   series: {},
   strategies: {},
   assets: {},
+  assetPairData: {},
   contractMap: {},
 };
 
@@ -42,6 +43,12 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return {
         ...state,
         assets: action.assets,
+      };
+    case ActionType.UPDATE_ASSET_PAIR_DATA:
+      console.log(action.payload.assetId);
+      return {
+        ...state,
+        assetPairData: { ...state.assetPairData, [action.payload.assetId]: action.payload.assetPairData },
       };
     case ActionType.RESET:
       return INITIAL_STATE;

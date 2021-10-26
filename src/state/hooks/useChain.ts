@@ -106,8 +106,6 @@ const useChain = () => {
       const _chargeAsset = (asset: any) => ({
         ...asset,
         digitFormat: assetDigitFormatMap.has(asset.symbol) ? assetDigitFormatMap.get(asset.symbol) : 6,
-        image: asset.symbol,
-        color: (yieldEnv.assetColors as any)[asset.symbol],
       });
 
       const _getAssets = async () => {
@@ -130,14 +128,8 @@ const useChain = () => {
               const { assetId: id, asset: address } = Cauldron.interface.parseLog(x).args;
               const ERC20 = contracts.ERC20Permit__factory.connect(address, provider);
               /* Add in any extra static asset Data */ // TODO is there any other fixed asset data needed?
-              const [name, symbol, decimals] = await Promise.all([
-                ERC20.name(),
-                ERC20.symbol(),
-                ERC20.decimals(),
-                // ETH_BASED_ASSETS.includes(id) ? async () =>'1' : ERC20.version()
-              ]);
+              const [name, symbol, decimals] = await Promise.all([ERC20.name(), ERC20.symbol(), ERC20.decimals()]);
 
-              // console.log(symbol, ':', id);
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
 

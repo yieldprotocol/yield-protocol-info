@@ -103,7 +103,7 @@ export function getVaults(priceMap: any, contractMap: any, series: any, assets: 
   };
 }
 
-async function getPrice(ilk: string, base: string, contractMap: any) {
+export async function getPrice(ilk: string, base: string, contractMap: any) {
   try {
     const Oracle = (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any)
       .contract;
@@ -118,8 +118,3 @@ async function getPrice(ilk: string, base: string, contractMap: any) {
 export const updateVaults = (vaults: any) => ({ type: ActionType.UPDATE_VAULTS, vaults });
 export const setVaultsLoading = (vaultsLoading: boolean) => ({ type: ActionType.VAULTS_LOADING, vaultsLoading });
 export const reset = () => ({ type: ActionType.RESET });
-
-// const updatePrices = (price: any, ilk: string, base: string) => ({
-//   type: ActionType.UPDATE_PRICES,
-//   price: { price, ilk, base },
-// });
