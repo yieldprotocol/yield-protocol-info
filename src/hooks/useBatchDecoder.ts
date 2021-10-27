@@ -101,6 +101,10 @@ const useBatchDecoder = (txHash: string) => {
     if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => new Call(call.to, x))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
+    // } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'execute') {
+    } else if (func.name === 'execute') {
+      _args = [_args[0].map((x: any) => new Call(x[0], x[1]))];
+      await Promise.all(_args[0].map((x: any) => resolveCall(x)));
     } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'route') {
       _args = [new Call(_args[0], _args[1])];
       await resolveCall(_args[0]);
