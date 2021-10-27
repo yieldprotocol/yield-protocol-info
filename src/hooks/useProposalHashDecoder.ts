@@ -23,11 +23,9 @@ const useProposalHashDecoder = (proposalHash: string) => {
   });
 
   async function startFetchingABIs(targets: any) {
-    const promises = [];
-
-    for (const target of targets) {
-      if (!(target in decoded.abis)) {
-        promises.push(
+    await Promise.all(
+      [...targets.values()].map((target: any) => {
+        if (!(target in decoded.abis)) {
           fetchEtherscan(
             network,
             new URLSearchParams({
@@ -41,14 +39,11 @@ const useProposalHashDecoder = (proposalHash: string) => {
             const result = ret.result[0];
             const iface = new Interface(result.ABI);
             const functions = new Map<string, FunctionFragment>();
-            // eslint-disable-next-line guard-for-in
-            for (const f in iface.functions) {
-              functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]);
-            }
-            const newResult = {
-              interface: iface,
-              functions,
-            };
+
+            Object.keys(iface.functions).map((f) =>
+              functions.set(iface.getSighash(iface.functions[f]), iface.functions[f])
+            );
+
             setDecoded((d: any) => ({
               ...d,
               contracts: {
@@ -57,16 +52,14 @@ const useProposalHashDecoder = (proposalHash: string) => {
               },
               abis: {
                 ...d.abis,
-                [target]: newResult,
+                [target]: { interface: iface, functions },
               },
             }));
-          })
-        );
-      }
-    }
-    Promise.all(promises).then(() => {
-      setLoading(false);
-    });
+          });
+        }
+      })
+    );
+    setLoading(false);
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
