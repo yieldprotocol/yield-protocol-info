@@ -24,6 +24,11 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   async function startFetchingABIs(targets: any) {
     const promises = [];
+    const newDecoded: any = {
+      abis: {},
+      contracts: {},
+      calls: {},
+    }
     for (const target of targets) {
       if (!(target in decoded.abis)) {
         promises.push(
@@ -48,23 +53,15 @@ const useProposalHashDecoder = (proposalHash: string) => {
               interface: iface,
               functions,
             };
-            setDecoded({
-              ...decoded,
-              contracts: {
-                ...decoded.contracts,
-                [target]: result.ContractName,
-              },
-              abis: {
-                ...decoded.abis,
-                [target]: newResult,
-              },
-            });
+            newDecoded.contracts[target] = result.ContractName
+            newDecoded.abis[target] = newResult
           })
-        );
+          );
+        }
       }
-    }
-    Promise.all(promises).then(() => {
-      setLoading(false);
+      Promise.all(promises).then(() => {
+        setDecoded(newDecoded);
+        setLoading(false);
     });
   }
 
