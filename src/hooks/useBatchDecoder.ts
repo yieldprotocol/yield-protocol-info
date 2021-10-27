@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
@@ -54,17 +54,17 @@ const useBatchDecoder = (txHash: string) => {
       functions,
     };
 
-    setDecoded({
-      ...decoded,
-      contract: {
-        ...decoded.contracts,
+    setDecoded((d: any) => ({
+      ...d,
+      contracts: {
+        ...d.contracts,
         [target]: ret.ContractName,
       },
       abis: {
-        ...decoded.abis,
+        ...d.abis,
         [target]: result,
       },
-    });
+    }));
     return result;
   }
 
@@ -90,7 +90,6 @@ const useBatchDecoder = (txHash: string) => {
 
   async function resolveCall(call: Call) {
     const abi = await getABI(call.to);
-
     const [func, argsCalldata] = await getFunction(abi, call.calldata);
 
     let _args: any = ethers.utils.defaultAbiCoder.decode(
@@ -101,7 +100,7 @@ const useBatchDecoder = (txHash: string) => {
     if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => new Call(call.to, x))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
-    // } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'execute') {
+      // } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'execute') {
     } else if (func.name === 'execute') {
       _args = [_args[0].map((x: any) => new Call(x[0], x[1]))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
@@ -129,14 +128,15 @@ const useBatchDecoder = (txHash: string) => {
       }
       const call = new Call(tx.to, tx.data);
       await resolveCall(call);
-      setLoading(false);
       setFinalCall(call);
+      setLoading(false);
     } catch (e) {
       setLoading(false);
       console.log('error getting decoded data');
       console.log(e);
     }
   }
+
   return { decodeTxHash, loading, call: finalCall };
 };
 
