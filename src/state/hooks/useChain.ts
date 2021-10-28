@@ -181,11 +181,6 @@ const useChain = () => {
           oppStartColor,
           oppEndColor,
           oppTextColor,
-          seriesMark: '',
-
-          // built-in helper functions:
-          isMature: async () => _series.maturity < (await provider.getBlock('latest')).timestamp,
-          // getBaseAddress: () => assets[_series.baseId].address, // TODO refactor to get this static - if possible?
         };
       };
 
@@ -288,7 +283,7 @@ const useChain = () => {
           );
           dispatch(updateStrategies(newStrategies));
           dispatch(setStrategiesLoading(false));
-          console.log('Yield Protocol Series data updated.');
+          console.log('Yield Protocol Strategy data updated.');
         } catch (e) {
           dispatch(setStrategiesLoading(false));
           dispatch(updateStrategies({}));
