@@ -11,7 +11,11 @@ const SeriesList = () => {
 
   useEffect(() => {
     Object.values(series).length > 0 &&
-      setSeriesList([...Object.values(series)].sort((s1: any, s2: any) => s1?.maturity! - s2?.maturity!));
+      setSeriesList(
+        [...Object.values(series)]
+          .sort((s1: any, s2: any) => (s1?.name! < s2?.name! ? -1 : 1))
+          .sort((s1: any, s2: any) => s1?.maturity! - s2?.maturity!)
+      );
   }, [series]);
 
   if (!Object.values(series).length) return <MainViewWrap>No Series</MainViewWrap>;

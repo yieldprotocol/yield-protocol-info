@@ -7,9 +7,22 @@ import { secondsToFrom } from '../../utils/yieldMath';
 import MainViewWrap from '../wraps/MainViewWrap';
 
 const Series = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: seriesId } = useParams<{ id: string }>();
   const seriesMap = useAppSelector((st) => st.chain.series);
-  const series = seriesMap[id];
+  const series = seriesMap[seriesId];
+  const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } = series;
+  const series_ = {
+    id,
+    baseId,
+    maturity,
+    symbol,
+    address,
+    fyTokenAddress,
+    poolAddress,
+    poolName,
+    poolSymbol,
+    fullDate,
+  }; // for table
 
   const [secondsTillMaturity, setSecondsTillMaturity] = useState<number>(0);
 
@@ -42,7 +55,7 @@ const Series = () => {
             <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
           </div>
         </div>
-        <SingleItemViewGrid item={series} />
+        <SingleItemViewGrid item={series_} />
       </div>
     </MainViewWrap>
   ) : null;
