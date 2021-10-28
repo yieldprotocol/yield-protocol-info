@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { ActionType } from '../actionTypes/chain';
 import { getPrice } from './vaults';
@@ -26,17 +26,24 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
 
       const assetPairData = await Promise.all(
         [...Object.values(assets)].map(async (x: any) => {
-          const [{ min: minDebt, max: maxDebt, dec: decimals }, { ratio: minCollatRatio }] = await Promise.all([
+          const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
             await Cauldron.debt(asset.id, x.id),
             await Cauldron.spotOracles(asset.id, x.id),
+            (await Cauldron.debt(asset.id, x.id)).sum,
           ]);
+
+          const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
 
           return {
             baseAssetId: asset.id,
             ilkAssetId: x.id,
             minCollatRatioPct: `${ethers.utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
-            minDebt: (minDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
-            maxDebt: (maxDebt * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false }),
+            minDebt,
+            maxDebt,
+            minDebt_: ethers.utils.formatUnits(minDebt, decimals),
+            maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
+            totalDebt_: cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2),
           };
         })
       );

@@ -8,7 +8,15 @@ const AssetPairTable = ({ data, assets }: any) =>
       <table className="table min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
-            {['', 'Min Collat Ratio', 'Min Debt', 'Max Debt'].map((x) => (
+            {[
+              '',
+              'Min Collat Ratio',
+              'Min Debt (Decimals)',
+              'Max Debt (Decimals)',
+              'Max Debt',
+              'Total Debt',
+              'Diff (Max - Total)',
+            ].map((x) => (
               <th
                 key={x}
                 scope="col"
@@ -50,6 +58,21 @@ const AssetPairTable = ({ data, assets }: any) =>
                 <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     <span>{x.maxDebt}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-3 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{x.maxDebt_}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-3 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{x.totalDebt_}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-3 text-center items-center">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <span>{Number(x.maxDebt_) - Number(x.totalDebt_)}</span>
                   </span>
                 </td>
               </tr>
