@@ -148,7 +148,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
     try {
       const hexedCallData = addHexPrefix(calldata.slice(10));
       const types = f.inputs.map((p: any) => p.format());
-      const args = ethers.utils.defaultAbiCoder.decode(types, hexedCallData)[0];
+      const args = ethers.utils.defaultAbiCoder.decode(types, hexedCallData);
       return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
     } catch (e) {
       console.log(e);
