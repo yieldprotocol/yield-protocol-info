@@ -11,7 +11,7 @@ const SubNav = ({ children }: { children: any }) => {
     <div className="flex justify-center sm:pt-8 md:pt-10 p-8">
       <div>
         <div className="block">
-          <h1 className="text-xl text-center font-bold">{contractMap[addr].name}</h1>
+          <h1 className="dark:text-white text-xl text-center font-bold">{contractMap[addr].name}</h1>
         </div>
         <AddressDisplay addr={addr} />
         {children}
