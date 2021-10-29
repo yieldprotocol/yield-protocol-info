@@ -5,14 +5,21 @@ import AddressDisplay from './AddressDisplay';
 const ArgsCell = ({ values, eventArgs }: any) => (
   <table>
     <tbody>
-      {eventArgs && values?.split(',').map((value: string, idx: number) => (
-        <tr key={uuid()}>
-          <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
-          <td>
-            <p>{(eventArgs && eventArgs[idx].type) === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}</p>
-          </td>
-        </tr>
-      ))}
+      {eventArgs &&
+        values?.split(',').map((value: string, idx: number) => (
+          <tr key={uuid()}>
+            <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
+            <td>
+              <p>
+                {(eventArgs && eventArgs[idx].type) === 'address' ? (
+                  <AddressDisplay addr={value} />
+                ) : (
+                  <code>{value}</code>
+                )}
+              </p>
+            </td>
+          </tr>
+        ))}
     </tbody>
   </table>
 );
@@ -34,19 +41,21 @@ const EventTable = ({ events, eventArgsProps }: any) => (
         </tr>
       </thead>
       <tbody className="bg-green divide-y divide-gray-200">
-        {[...events].map((e: any) => (
-          <tr key={e.id}>
-            {[...Object.values(e)].map((value: any, idx: number) => (
-              <td className="px-6 py-4" key={uuid()}>
-                <div className="justify-items-start">
-                  <div className="text-sm font-medium text-gray-900 justify-items-start">
-                    {idx === 3 ? <ArgsCell values={value} eventArgs={eventArgsProps[e.event]} /> : value}
+        {[...events]
+          .filter((e) => !!e.event)
+          .map((e: any) => (
+            <tr key={e.id}>
+              {[...Object.values(e)].map((value: any, idx: number) => (
+                <td className="px-6 py-4" key={uuid()}>
+                  <div className="justify-items-start">
+                    <div className="text-sm font-medium text-gray-900 justify-items-start">
+                      {idx === 3 ? <ArgsCell values={value} eventArgs={eventArgsProps[e.event]} /> : value}
+                    </div>
                   </div>
-                </div>
-              </td>
-            ))}
-          </tr>
-        ))}
+                </td>
+              ))}
+            </tr>
+          ))}
       </tbody>
     </table>
   </div>

@@ -11,26 +11,19 @@ const ProposalHashDecoder = () => {
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
 
-  useEffect(() => {
-    if (calls) {
-      const call = calls[1][0];
-      console.log('calls', calls);
-      console.log('func name', getFunctionName(call.target, call.data));
-      console.log('func args', getFunctionArguments(call.target, call.data));
-    }
-  }, [calls, getFunctionName, getFunctionArguments]);
+  const handleDecode = () => proposalHash && decodeProposalHash();
 
   return (
     <div className="w-1/2">
       <div className="h-14">
         <TextInput
           onChange={setProposalHash}
-          action={decodeProposalHash}
+          action={handleDecode}
           name="Proposal"
           value={proposalHash}
           placeHolder="Proposal hash"
         />
-        <Button label="Decode" action={decodeProposalHash} />
+        <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
         {loading && (
@@ -65,14 +58,22 @@ const ProposalHashDecoder = () => {
                     {getFunctionArguments(call.target, call.data).map((x: any) => {
                       const [typeName, value] = x;
                       const [type, name] = typeName.split(' ');
-
                       return (
                         <tr key={uuid()} className="pl-6">
                           <td className="font-bold">{name}</td>
-                          <td className="italic" style={{ minWidth: '5rem' }}>
+                          <td className="italic px-2" style={{ minWidth: '5rem' }}>
                             ({type})
                           </td>
-                          {type === 'address' ? <AddressDisplay addr={value} /> : <code>{value}</code>}
+                          <td>
+                            {value
+                              .toString()
+                              .split()
+                              .map((v: any, i: number) => (
+                                <div key={uuid()} className="px-2">
+                                  {type === 'address' ? <AddressDisplay addr={v} /> : <code>{v}</code>}
+                                </div>
+                              ))}
+                          </td>
                         </tr>
                       );
                     })}

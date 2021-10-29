@@ -63,18 +63,18 @@ const CallDisplay = ({ call }: any): any => (
 const BatchDecoder = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
-
+  const handleDecode = () => txHash && decodeTxHash;
   return (
     <div className="w-1/2">
       <div className="h-14">
         <TextInput
           onChange={setTxHash}
-          action={decodeTxHash}
+          action={handleDecode}
           name="Transaction"
           value={txHash}
           placeHolder="Transaction hash"
         />
-        <Button label="Decode" action={decodeTxHash} />
+        <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
         {loading && (
