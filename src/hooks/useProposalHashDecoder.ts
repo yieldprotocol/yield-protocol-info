@@ -146,16 +146,16 @@ const useProposalHashDecoder = (proposalHash: string) => {
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
+    console.log('f', f);
 
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
     }
 
     try {
-      const args = ethers.utils.defaultAbiCoder.decode(
-        [f.format(ethers.utils.FormatTypes.full)],
-        addHexPrefix(calldata.slice(2 + 2 * 4))
-      )[0];
+      const hexedCallData = addHexPrefix(calldata.slice(10));
+      const types = f.inputs.map((p: any) => p.format());
+      const args = ethers.utils.defaultAbiCoder.decode(types, hexedCallData)[0];
       return f.inputs.map((v: any, i: any) => [v.format(ethers.utils.FormatTypes.full), args[i]]);
     } catch (e) {
       console.log(e);
