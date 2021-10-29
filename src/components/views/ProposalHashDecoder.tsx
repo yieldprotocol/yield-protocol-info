@@ -11,6 +11,8 @@ const ProposalHashDecoder = () => {
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
 
+  const handleDecode = () => proposalHash && decodeProposalHash();
+
   useEffect(() => {
     if (calls) {
       const call = calls[1][0];
@@ -25,12 +27,12 @@ const ProposalHashDecoder = () => {
       <div className="h-14">
         <TextInput
           onChange={setProposalHash}
-          action={decodeProposalHash}
+          action={handleDecode}
           name="Proposal"
           value={proposalHash}
           placeHolder="Proposal hash"
         />
-        <Button label="Decode" action={decodeProposalHash} />
+        <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
         {loading && (
