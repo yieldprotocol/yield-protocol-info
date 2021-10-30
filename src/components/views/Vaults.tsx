@@ -8,18 +8,40 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';
 import SearchInput from '../SearchInput';
 
+const Select = ({ choices, onChange, label }: any) => (
+  <div className="block text-left" style={{ maxWidth: '400px' }}>
+    <span className="text-gray-700">Filter by {label}</span>
+    <select onChange={(e: any) => onChange(e.target.value)} className="form-select block w-full mt-1">
+      {choices.map((c: any) => (
+        <option key={c[0]} value={c[0]}>
+          {c[1]}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
 const Vaults = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
+  const seriesMap = useAppSelector((st) => st.chain.series);
+  const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
+    (x) => x !== '0x000000000000'
+  );
+  const seriesFilterChoices = [['', '']].concat(
+    seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : ''])
+  );
   const assets = useAppSelector((st) => st.chain.assets);
-
+  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].ilkId)));
+  const ilkFilterChoices = [['', '']].concat(ilkChoices.map((ic: any) => [ic, assets[ic].name]));
   const [allVaults, setAllVaults] = useState<any[]>([]);
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
   const [vaultSearch, setVaultSearch] = useState<string>('');
-
+  const [ilkFilter, setIlkFilter] = useState<string>('');
+  const [seriesFilter, setSeriesFilter] = useState<string>('');
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
   };
@@ -28,11 +50,13 @@ const Vaults = () => {
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
         .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true));
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true))
+        .filter((v: any) => (ilkFilter ? v.ilkId === ilkFilter : true))
+        .filter((v: any) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
-    [unhealthyFilter, vaultSearch]
+    [unhealthyFilter, vaultSearch, seriesFilter, ilkFilter]
   );
 
   useEffect(() => {
@@ -51,10 +75,10 @@ const Vaults = () => {
   }, [vaults, handleFilter]);
 
   useEffect(() => {
-    if (unhealthyFilter || vaultSearch) {
+    if (unhealthyFilter || vaultSearch || seriesFilter || ilkFilter) {
       handleFilter(allVaults);
     }
-  }, [unhealthyFilter, allVaults, handleFilter, vaultSearch]);
+  }, [unhealthyFilter, ilkFilter, allVaults, handleFilter, seriesFilter, vaultSearch]);
 
   if (!vaultsLoading && !Object.values(vaults).length) return <MainViewWrap>No Vaults</MainViewWrap>;
 
@@ -64,6 +88,10 @@ const Vaults = () => {
         <ClipLoader loading={vaultsLoading} />
       ) : (
         <div>
+          <div className="mb-4 w-1/3">
+            <Select onChange={setIlkFilter} label="Collateral" choices={ilkFilterChoices} />
+            <Select onChange={setSeriesFilter} label="Series" choices={seriesFilterChoices} />
+          </div>
           <div className="mb-4 w-1/3">
             <SearchInput
               name="search"
@@ -107,52 +135,54 @@ const Vaults = () => {
                 </tr>
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
-                {(unhealthyFilter || vaultSearch ? filteredVaults : allVaults).map((v: any) => {
-                  const debtAsset = assets[v.baseId];
-                  const collatAsset = assets[v.ilkId];
-                  const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
-                  const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
-                  return (
-                    <tr
-                      key={v.id}
-                      onClick={() => handleClick(v.id)}
-                      className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
-                    >
-                      <td className="px-6 py-2 text-center">
-                        <div className="flex items-center">
-                          <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate">
-                            {v.id}
+                {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map(
+                  (v: any) => {
+                    const debtAsset = assets[v.baseId];
+                    const collatAsset = assets[v.ilkId];
+                    const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
+                    const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
+                    return (
+                      <tr
+                        key={v.id}
+                        onClick={() => handleClick(v.id)}
+                        className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
+                      >
+                        <td className="px-6 py-2 text-center">
+                          <div className="flex items-center">
+                            <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate">
+                              {v.id}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            <span>{cleanValue(v.collatRatioPct, 1)}%</span>
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{cleanValue(v.collatRatioPct, 1)}%</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{v.art}</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          <span>{v.ink}</span>
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            <span>{v.art}</span>
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            <span>{v.ink}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
               </tbody>
             </table>
           </div>
