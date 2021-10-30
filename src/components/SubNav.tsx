@@ -18,7 +18,7 @@ const SubNav = ({ paths }: { paths: IPath[] }) => (
                   key={path.name}
                   to={`/${path.path}`}
                   activeClassName="underline text-gray-900 hover:underline dark:hover:underline flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none dark:text-white text-lg leading-5 px-3 py-2"
-                  className="text-gray-900 hover:underline dark:text-gray-200 dark:hover:underline dark:hover:text-white px-3 py-2 rounded-md text-lg font-medium"
+                  className="text-gray-900 hover:underline dark:text-gray-200 dark:hover:underline dark:hover:text-white px-3 py-2 rounded-lg text-lg font-medium"
                 >
                   {`${path.name[0].toUpperCase()}${path.name.slice(1)}`}
                 </NavLink>

@@ -11,7 +11,7 @@ const Strategy = () => {
 
   return strategy ? (
     <MainViewWrap>
-      <div className="rounded-md p-5 align-middle justify-items-start shadow-sm bg-green-50">
+      <div className="rounded-lg p-5 align-middle justify-items-start shadow-sm bg-green-50">
         <div className="text-md pb-4">
           <strong>{strategy.symbol}</strong>
         </div>

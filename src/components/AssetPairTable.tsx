@@ -4,7 +4,7 @@ import { markMap } from '../config/marks';
 
 const AssetPairTable = ({ data, assets }: any) =>
   data ? (
-    <div className="rounded-md shadow-sm px-8 py-4 bg-green-50">
+    <div className="rounded-lg shadow-sm px-8 py-4 bg-green-50">
       <table className="table min-w-full divide-y divide-gray-200">
         <thead>
           <tr>

@@ -18,7 +18,7 @@ const DarkModeToggle = () => {
     <button
       type="button"
       onClick={() => dispatch(toggleDarkMode(!darkMode))}
-      className="p-2 h-auto ml-3 rounded-md flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 text-base leading-5  dark:bg-gray-600 bg-gray-200 dark:active:bg-gray-700"
+      className="p-2 h-auto ml-3 rounded-lg flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition hover:bg-gray-300  text-base leading-5  bg-gray-200 dark:active:bg-gray-700"
     >
       {darkMode ? <FiMoon className="text-purple-500" /> : <FiSun className="text-amber-500" />}
     </button>
