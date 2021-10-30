@@ -74,7 +74,7 @@ const Vaults = () => {
           </div>
           <div>
             {numUnhealthy && unhealthyFilter && (
-              <div className="text-md text-center align-middle">{numUnhealthy} Unhealthy Vaults</div>
+              <div className="text-md text-center align-middle dark:text-white">{numUnhealthy} Unhealthy Vaults</div>
             )}
             <div className="mb-4 mr-4 w-44">
               <Button

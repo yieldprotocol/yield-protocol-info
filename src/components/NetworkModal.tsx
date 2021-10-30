@@ -41,7 +41,7 @@ const NetworkModal = () => {
                       {[...Object.keys(NETWORK_LABEL)].map((id: any) => (
                         <button
                           key={id}
-                          className="mx-2 my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300  flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:text-white dark:hover:bg-green-500 text-md leading-5 rounded-lg px-3 py-2"
+                          className="mx-2 my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300  flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition  dark:hover:bg-green-500 text-md leading-5 rounded-lg px-3 py-2"
                           onClick={(e) => handleClick(id)}
                           type="button"
                         >

@@ -75,12 +75,14 @@ const BatchDecoder = () => {
         <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
-        {loading && (
-          <div className="text-center">
-            <ClipLoader loading={loading} />
-          </div>
-        )}
-        {!loading && call && <CallDisplay call={call} />}
+        <div className="dark:bg-green-50 p-4 rounded-lg">
+          {loading && (
+            <div className="text-center">
+              <ClipLoader loading={loading} />
+            </div>
+          )}
+          {!loading && call && <CallDisplay call={call} />}
+        </div>
       </div>
     </div>
   );
