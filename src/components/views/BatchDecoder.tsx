@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
 import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
+import Spinner from '../Spinner';
 
 const CallDisplay = ({ call }: any): any => (
   <table>
@@ -75,14 +75,12 @@ const BatchDecoder = () => {
         <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
-        <div className="dark:bg-green-50 p-4 rounded-lg">
-          {loading && (
-            <div className="text-center">
-              <ClipLoader loading={loading} />
-            </div>
-          )}
-          {!loading && call && <CallDisplay call={call} />}
-        </div>
+        <Spinner loading={loading} />
+        {!loading && call && (
+          <div className="dark:bg-green-50 p-4 rounded-lg">
+            <CallDisplay call={call} />
+          </div>
+        )}
       </div>
     </div>
   );

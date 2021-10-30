@@ -48,7 +48,7 @@ const Series = () => {
 
   return series ? (
     <MainViewWrap>
-      <div className="rounded-lg p-5 align-middle justify-items-start shadow-sm bg-green-50">
+      <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm bg-green-50">
         <div className="text-md pb-4">
           <strong>{series.symbol}</strong>
           <div className="text-md pt-2">

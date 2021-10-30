@@ -11,7 +11,7 @@ const useBatchDecoder = (txHash: string) => {
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
   const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
-  const [finalCall, setFinalCall] = useState<any>();
+  const [finalCall, setFinalCall] = useState<any>(null);
   const [decoded, setDecoded] = useState<any>({
     abis: {},
     contracts: {},
