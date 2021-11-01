@@ -1,38 +1,54 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { useAppSelector } from '../../state/hooks/general';
 import { cleanValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';
 import SearchInput from '../SearchInput';
+import Spinner from '../Spinner';
+import Select from '../../Select';
 
 const Vaults = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
+  const seriesMap = useAppSelector((st) => st.chain.series);
+  const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
+    (x) => x !== '0x000000000000'
+  );
+  const seriesFilterChoices = seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']);
   const assets = useAppSelector((st) => st.chain.assets);
-
+  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].ilkId)));
+  const ilkFilterChoices = ilkChoices.map((ic: any) => [ic, assets[ic].name]);
   const [allVaults, setAllVaults] = useState<any[]>([]);
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
   const [vaultSearch, setVaultSearch] = useState<string>('');
-
+  const [ilkFilter, setIlkFilter] = useState<string>('');
+  const [seriesFilter, setSeriesFilter] = useState<string>('');
   const handleClick = (id: string) => {
     history.push(`/vaults/${id}`);
+  };
+
+  const handleClearFilters = () => {
+    setFilteredVaults(allVaults);
+    setIlkFilter('');
+    setSeriesFilter('');
   };
 
   const handleFilter = useCallback(
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
         .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true));
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true))
+        .filter((v: any) => (ilkFilter ? v.ilkId === ilkFilter : true))
+        .filter((v: any) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
-    [unhealthyFilter, vaultSearch]
+    [unhealthyFilter, vaultSearch, seriesFilter, ilkFilter]
   );
 
   useEffect(() => {
@@ -51,19 +67,33 @@ const Vaults = () => {
   }, [vaults, handleFilter]);
 
   useEffect(() => {
-    if (unhealthyFilter || vaultSearch) {
+    if (unhealthyFilter || vaultSearch || seriesFilter || ilkFilter) {
       handleFilter(allVaults);
     }
-  }, [unhealthyFilter, allVaults, handleFilter, vaultSearch]);
+  }, [unhealthyFilter, ilkFilter, allVaults, handleFilter, seriesFilter, vaultSearch]);
 
   if (!vaultsLoading && !Object.values(vaults).length) return <MainViewWrap>No Vaults</MainViewWrap>;
 
   return (
     <MainViewWrap>
       {vaultsLoading ? (
-        <ClipLoader loading={vaultsLoading} />
+        <Spinner loading={vaultsLoading} />
       ) : (
         <div>
+          <div className="mb-4 w-1/3">
+            <Select
+              onChange={(val: any) => setIlkFilter(val)}
+              label="Collateral"
+              options={ilkFilterChoices}
+              value={null}
+            />
+            <Select
+              onChange={(val: any) => setSeriesFilter(val)}
+              label="Series"
+              options={seriesFilterChoices}
+              value={null}
+            />
+          </div>
           <div className="mb-4 w-1/3">
             <SearchInput
               name="search"
@@ -107,50 +137,52 @@ const Vaults = () => {
                 </tr>
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
-                {(unhealthyFilter || vaultSearch ? filteredVaults : allVaults).map((v: any) => {
-                  const debtAsset = assets[v.baseId];
-                  const collatAsset = assets[v.ilkId];
-                  const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
-                  const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
-                  return (
-                    <tr
-                      key={v.id}
-                      onClick={() => handleClick(v.id)}
-                      className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
-                    >
-                      <td className="px-6 py-2 text-center">
-                        <div className="flex items-center">
-                          <span className="text-sm uppercase font-small text-gray-900 truncate">{v.id}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          <span>{cleanValue(v.collatRatioPct, 1)}%</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          <span>{v.art}</span>
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          <span>{v.ink}</span>
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map(
+                  (v: any) => {
+                    const debtAsset = assets[v.baseId];
+                    const collatAsset = assets[v.ilkId];
+                    const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
+                    const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
+                    return (
+                      <tr
+                        key={v.id}
+                        onClick={() => handleClick(v.id)}
+                        className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
+                      >
+                        <td className="px-6 py-2 text-center">
+                          <div className="flex items-center">
+                            <span className="text-sm uppercase font-small text-gray-900 truncate">{v.id}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            <span>{cleanValue(v.collatRatioPct, 1)}%</span>
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            <span>{v.art}</span>
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center items-center">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            <span>{v.ink}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
               </tbody>
             </table>
           </div>

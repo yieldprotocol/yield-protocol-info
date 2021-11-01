@@ -5,6 +5,7 @@
   "dependencies": {
     "@craco/craco": "^6.2.0",
     "@ethersproject/abi": "^5.4.1",
+    "@headlessui/react": "^1.4.1",
     "@web3-react/core": "^6.1.9",
     "@web3-react/network-connector": "^6.1.9",
     "axios": "^0.21.4",
