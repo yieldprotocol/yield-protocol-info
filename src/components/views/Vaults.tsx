@@ -74,7 +74,7 @@ const Vaults = () => {
           </div>
           <div>
             {numUnhealthy && unhealthyFilter && (
-              <div className="text-md text-center align-middle">{numUnhealthy} Unhealthy Vaults</div>
+              <div className="text-md text-center align-middle dark:text-white">{numUnhealthy} Unhealthy Vaults</div>
             )}
             <div className="mb-4 mr-4 w-44">
               <Button
@@ -84,7 +84,7 @@ const Vaults = () => {
             </div>
           </div>
 
-          <div className="rounded-md shadow-sm bg-green-50">
+          <div className="rounded-lg shadow-md bg-green-100 dark:bg-green-200">
             <table className="table min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -116,37 +116,35 @@ const Vaults = () => {
                     <tr
                       key={v.id}
                       onClick={() => handleClick(v.id)}
-                      className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-900 dark:hover:shadow-lg"
+                      className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
                     >
                       <td className="px-6 py-2 text-center">
                         <div className="flex items-center">
-                          <span className="text-sm uppercase font-small text-gray-900 dark:text-white truncate">
-                            {v.id}
-                          </span>
+                          <span className="text-sm uppercase font-small text-gray-900 truncate">{v.id}</span>
                         </div>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           <span>{cleanValue(v.collatRatioPct, 1)}%</span>
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           <span>{v.art}</span>
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           <span>{v.ink}</span>
                         </span>
                       </td>
