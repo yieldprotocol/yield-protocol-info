@@ -32,6 +32,12 @@ const Vaults = () => {
     history.push(`/vaults/${id}`);
   };
 
+  const handleClearFilters = () => {
+    setFilteredVaults(allVaults);
+    setIlkFilter('');
+    setSeriesFilter('');
+  };
+
   const handleFilter = useCallback(
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
@@ -75,8 +81,18 @@ const Vaults = () => {
       ) : (
         <div>
           <div className="mb-4 w-1/3">
-            <Select onChange={(val: any) => setIlkFilter(val)} label="Collateral" options={ilkFilterChoices} />
-            <Select onChange={(val: any) => setSeriesFilter(val)} label="Series" options={seriesFilterChoices} />
+            <Select
+              onChange={(val: any) => setIlkFilter(val)}
+              label="Collateral"
+              options={ilkFilterChoices}
+              value={null}
+            />
+            <Select
+              onChange={(val: any) => setSeriesFilter(val)}
+              label="Series"
+              options={seriesFilterChoices}
+              value={null}
+            />
           </div>
           <div className="mb-4 w-1/3">
             <SearchInput

@@ -9,8 +9,8 @@ const Selecty = ({ options, label, onChange }: any) => {
   const assets = useAppSelector((st) => st.chain.assets);
   const seriesMap = useAppSelector((st) => st.chain.series);
   const [selectedOption, setSelectedOption] = useState<any>(null);
-
   const [selectedLogo, setSelectedLogo] = useState(null);
+
   const handleChange = (val: any) => {
     setSelectedOption(val);
     onChange(val);
