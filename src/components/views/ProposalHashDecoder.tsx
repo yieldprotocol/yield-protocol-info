@@ -32,7 +32,7 @@ const ProposalHashDecoder = () => {
           </div>
         )}
         {!loading && calls && (
-          <>
+          <div className="dark:bg-green-200 p-4 rounded-lg">
             <div className="mb-4">
               <div className="mb-1">
                 <span className="font-bold">Transaction Hash: </span>
@@ -81,7 +81,7 @@ const ProposalHashDecoder = () => {
                 </div>
               </div>
             ))}
-          </>
+          </div>
         )}
       </div>
     </div>

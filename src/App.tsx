@@ -11,7 +11,7 @@ function App() {
   return (
     <div className="">
       <Navigation />
-      <div className="h-full dark:bg-gray-900">
+      <div className="h-full">
         <Routes />
       </div>
     </div>

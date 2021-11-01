@@ -4,7 +4,7 @@ import { markMap } from '../config/marks';
 
 const AssetPairTable = ({ data, assets }: any) =>
   data ? (
-    <div className="rounded-md shadow-sm px-8 py-4 bg-green-50">
+    <div className="rounded-lg shadow-sm px-8 py-4 bg-green-100 dark:bg-green-300">
       <table className="table min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
@@ -26,7 +26,7 @@ const AssetPairTable = ({ data, assets }: any) =>
             const baseAssetLogo = markMap?.get(baseAsset?.symbol!);
             const ilkAssetLogo = markMap?.get(ilkAsset?.symbol!);
             return (
-              <tr key={uuid()} className="items-center  dark:border-green-700 group">
+              <tr key={uuid()} className="items-center group">
                 <td className="px-2 py-2 text-center items-center">
                   <div className="flex relative">
                     <div className="h-7 w-7">
@@ -38,22 +38,22 @@ const AssetPairTable = ({ data, assets }: any) =>
                   </div>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <span className="text-sm font-medium text-gray-900  truncate">
                     <span>{x.minCollatRatioPct}</span>
                   </span>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <span className="text-sm font-medium text-gray-900  truncate">
                     <span>{x.maxDebt_}</span>
                   </span>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <span className="text-sm font-medium text-gray-900  truncate">
                     <span>{x.totalDebt_}</span>
                   </span>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  <span className="text-sm font-medium text-gray-900  truncate">
                     <span>{Number(x.maxDebt_) - Number(x.totalDebt_)}</span>
                   </span>
                 </td>

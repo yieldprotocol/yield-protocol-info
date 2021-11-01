@@ -7,7 +7,7 @@ const RolesTable = ({ roles, roleNames }: any) => {
   if (!roles) return null;
   const displayName = (bytes: string) => roleNames[bytes] || `unknown role (${bytes}) `;
   const displayGuys = (key: string) =>
-    Array.from(roles[key]).map(x => (
+    Array.from(roles[key]).map((x) => (
       <div key={uuid()}>
         <AddressDisplay addr={x} />
       </div>

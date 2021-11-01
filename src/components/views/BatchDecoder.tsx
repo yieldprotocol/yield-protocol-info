@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
 import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
+import Spinner from '../Spinner';
 
 const CallDisplay = ({ call }: any): any => (
   <table>
     <tbody>
-      <tr style={{ paddingTop: '1rem' }} className="font-bold">
+      <tr className="font-bold pt-4">
         <td>{call.method}</td>
       </tr>
       {call.arguments?.map((ogArgs: any, idx: number) => {
         const args: any = Array.isArray(ogArgs) ? ogArgs : [ogArgs];
         return (
-          <>
-            <tr style={{ paddingLeft: '2rem' }} className="no-wrap">
-              <td style={{ paddingLeft: '2rem', paddingRight: '2rem' }} className="italic">
-                {call.argProps[idx].name}
-              </td>
+          <div key={uuid()} className="">
+            <tr className="no-wrap">
+              <td className="italic px-4">{call.argProps[idx].name}</td>
               <td>
                 {/** If there's only one argument (and it's not an object), display it right next to the arg name */}
                 {args.length === 1 &&
@@ -38,14 +36,14 @@ const CallDisplay = ({ call }: any): any => (
                 <tr key={uuid()}>
                   {v instanceof Object ? (
                     <>
-                      <td style={{ paddingLeft: '2rem', paddingRight: '2rem' }} />
+                      <td className="px-4" />
                       <td>
                         <CallDisplay call={v} />
                       </td>
                     </>
                   ) : (
                     <>
-                      <td style={{ paddingLeft: '2rem', paddingRight: '2rem' }} />
+                      <td className="px-4" />
                       <td>
                         <code>{JSON.stringify(v)}</code>
                       </td>
@@ -53,7 +51,7 @@ const CallDisplay = ({ call }: any): any => (
                   )}
                 </tr>
               ))}
-          </>
+          </div>
         );
       })}
     </tbody>
@@ -63,7 +61,7 @@ const CallDisplay = ({ call }: any): any => (
 const BatchDecoder = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
-  const handleDecode = () => txHash && decodeTxHash;
+  const handleDecode = () => txHash && decodeTxHash();
   return (
     <div className="w-1/2">
       <div className="h-14">
@@ -77,12 +75,12 @@ const BatchDecoder = () => {
         <Button label="Decode" action={handleDecode} />
       </div>
       <div className="pt-20 align-middle justify-center">
-        {loading && (
-          <div className="text-center">
-            <ClipLoader loading={loading} />
+        <Spinner loading={loading} />
+        {!loading && call && (
+          <div className="dark:bg-green-200 p-4 rounded-lg">
+            <CallDisplay call={call} />
           </div>
         )}
-        {!loading && call && <CallDisplay call={call} />}
       </div>
     </div>
   );

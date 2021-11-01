@@ -8,7 +8,7 @@ const AddressDisplay = ({ addr, tx }: any) => {
 
   if (!addr) return null;
 
-  return ethers.utils.isAddress(addr) ? (
+  return ethers.utils.isAddress(addr) || tx ? (
     <a
       href={`https://${chainId === '1' ? '' : `${chainData[chainId]}.`}etherscan.io/${
         tx ? 'tx' : 'address'
@@ -16,10 +16,10 @@ const AddressDisplay = ({ addr, tx }: any) => {
       target="_blank"
       rel="noreferrer"
     >
-      <code className="text-smt hover:underline">{addr}</code>
+      <code className="dark:text-gray-900 text-smt hover:underline">{addr}</code>
     </a>
   ) : (
-    <code className="text-smt">{addr}</code>
+    <code className="dark:text-gray-900 text-smt">{addr}</code>
   );
 };
 
