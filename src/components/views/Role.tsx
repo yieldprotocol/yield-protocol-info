@@ -34,7 +34,7 @@ const Role = () => {
         {rolesLoading ? (
           <ClipLoader />
         ) : (
-          <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm bg-green-50">
+          <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm bg-green-100 dark:bg-green-200">
             <div className="text-lg pb-4 flex gap-x-2">
               {contractRoles && Object.keys(contractRoles).length ? (
                 <RolesTable roles={contractRoles} roleNames={roleNames} />

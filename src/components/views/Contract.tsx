@@ -29,21 +29,23 @@ const Contract = () => {
           { path: `contracts/${addr}/roles`, name: 'roles' },
         ]}
       />
-      <Header> </Header>
-      <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
-        {eventsLoading ? (
-          <ClipLoader />
-        ) : (
-          <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
-            <div className="text-lg pb-4 flex gap-x-2">
-              {contractEvents && contractEvents.length ? (
-                <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />
-              ) : (
-                <>No event data available</>
-              )}
+      <div className="ml-56">
+        <Header> </Header>
+        <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
+          {eventsLoading ? (
+            <ClipLoader />
+          ) : (
+            <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
+              <div className="text-lg pb-4 flex gap-x-2">
+                {contractEvents && contractEvents.length ? (
+                  <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />
+                ) : (
+                  <>No event data available</>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );

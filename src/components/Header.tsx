@@ -8,9 +8,9 @@ const SubNav = ({ children }: { children: any }) => {
   const contractMap = useAppSelector((st: any) => st.contracts.contractMap);
 
   return (
-    <div className="flex justify-start sm:pt-8 md:pt-10 py-8 align-middle mx-60 ">
-      <div className="rounded-xl bg-green-300 p-4">
-        <h1 className="text-start font-bold text-2xl align-middle pb-2">{contractMap[addr].name}</h1>
+    <div className="flex justify-center sm:pt-8 md:pt-10 py-8 align-middle mx-60 ">
+      <div className="rounded-xl dark:bg-green-300 p-6">
+        <h1 className="text-center font-bold text-2xl align-middle pb-2">{contractMap[addr].name}</h1>
         <div className="">
           <AddressDisplay addr={addr} />
         </div>
