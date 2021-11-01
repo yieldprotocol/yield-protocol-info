@@ -7,23 +7,7 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
-
-const Select = ({ choices, onChange, label }: any) => (
-  <div className="block text-left">
-    {/* <span className="text-gray-700">Filter by {label}</span> */}
-    <select
-      onChange={(e: any) => onChange(e.target.value)}
-      className="form-select block w-full mt-1"
-      placeholder={`Choose ${label}`}
-    >
-      {choices.map((c: any) => (
-        <option key={c[0]} value={c[0]}>
-          {c[1]}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+import Select from '../../Select';
 
 const Vaults = () => {
   const history = useHistory();
@@ -33,12 +17,10 @@ const Vaults = () => {
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'
   );
-  const seriesFilterChoices = [['', '']].concat(
-    seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : ''])
-  );
+  const seriesFilterChoices = seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']);
   const assets = useAppSelector((st) => st.chain.assets);
   const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].ilkId)));
-  const ilkFilterChoices = [['', '']].concat(ilkChoices.map((ic: any) => [ic, assets[ic].name]));
+  const ilkFilterChoices = ilkChoices.map((ic: any) => [ic, assets[ic].name]);
   const [allVaults, setAllVaults] = useState<any[]>([]);
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
@@ -93,8 +75,8 @@ const Vaults = () => {
       ) : (
         <div>
           <div className="mb-4 w-1/3">
-            <Select onChange={setIlkFilter} label="Collateral" choices={ilkFilterChoices} />
-            <Select onChange={setSeriesFilter} label="Series" choices={seriesFilterChoices} />
+            <Select onChange={(val: any) => setIlkFilter(val)} label="Collateral" options={ilkFilterChoices} />
+            <Select onChange={(val: any) => setSeriesFilter(val)} label="Series" options={seriesFilterChoices} />
           </div>
           <div className="mb-4 w-1/3">
             <SearchInput
