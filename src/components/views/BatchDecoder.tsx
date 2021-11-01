@@ -77,7 +77,7 @@ const BatchDecoder = () => {
       <div className="pt-20 align-middle justify-center">
         <Spinner loading={loading} />
         {!loading && call && (
-          <div className="dark:bg-green-50 p-4 rounded-lg">
+          <div className="dark:bg-green-200 p-4 rounded-lg">
             <CallDisplay call={call} />
           </div>
         )}

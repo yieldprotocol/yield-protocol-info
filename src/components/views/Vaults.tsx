@@ -84,7 +84,7 @@ const Vaults = () => {
             </div>
           </div>
 
-          <div className="rounded-lg shadow-sm bg-green-50">
+          <div className="rounded-lg shadow-md bg-green-100 dark:bg-green-200">
             <table className="table min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -116,7 +116,7 @@ const Vaults = () => {
                     <tr
                       key={v.id}
                       onClick={() => handleClick(v.id)}
-                      className="hover:bg-green-100 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
+                      className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
                     >
                       <td className="px-6 py-2 text-center">
                         <div className="flex items-center">

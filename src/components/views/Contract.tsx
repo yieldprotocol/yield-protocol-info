@@ -34,7 +34,7 @@ const Contract = () => {
         {eventsLoading ? (
           <ClipLoader />
         ) : (
-          <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm bg-green-50">
+          <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
             <div className="text-lg pb-4 flex gap-x-2">
               {contractEvents && contractEvents.length ? (
                 <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />

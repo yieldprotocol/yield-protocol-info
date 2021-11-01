@@ -40,7 +40,7 @@ const EventTable = ({ events, eventArgsProps }: any) => (
           ))}
         </tr>
       </thead>
-      <tbody className="bg-green divide-y divide-gray-200">
+      <tbody className="divide-y divide-gray-200">
         {[...events]
           .filter((e) => !!e.event)
           .map((e: any) => (

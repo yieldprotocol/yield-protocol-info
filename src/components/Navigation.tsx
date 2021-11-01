@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { NETWORK_LABEL } from '../config/networks';
+import { useAppSelector } from '../state/hooks/general';
 import DarkModeToggle from './DarkModeToggle';
 import YieldMark from './logos/YieldMark';
 import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
   const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance', 'liquidations'];
+  const darkMode = useAppSelector((st) => st.application.darkMode);
 
   return (
     <div className="sticky top-0 z-10 flex-none">
@@ -18,7 +19,7 @@ const Navigation = () => {
                 to="/"
                 className="rounded-lg overflow-hidden flex focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition"
               >
-                <YieldMark />
+                <YieldMark colors={darkMode ? ['white'] : ['black']} />
               </NavLink>
               <div className="flex">
                 <div className="ml-10 flex space-x-4">
