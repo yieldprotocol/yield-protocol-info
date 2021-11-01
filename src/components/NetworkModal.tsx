@@ -33,7 +33,7 @@ const NetworkModal = () => {
             onClick={() => setShowModal(false)}
           >
             <div className="relative my-6 mx-auto max-w-3xl w-1/3">
-              <div className="border-1 rounded-lg shadow-lg relative flex flex-col w-full dark:bg-gray-900 bg-white outline-none focus:outline-none">
+              <div className="border-1 rounded-lg shadow-lg relative flex flex-col w-full dark:bg-gray-800 bg-white outline-none focus:outline-none">
                 <div className="flex justify-between items-center pl-8 py-4 pr-6 border-b dark:border-gray-800">
                   <div className="text-lg leading-6 font-medium dark:text-white">Choose Network</div>
                   <div className="relative p-6">
