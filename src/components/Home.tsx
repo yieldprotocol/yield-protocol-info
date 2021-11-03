@@ -7,6 +7,12 @@ import Summary from './Summary';
 import TvlTable from './TvlTable';
 import MainViewWrap from './wraps/MainViewWrap';
 
+interface ITvl {
+  symbol: string;
+  id: string;
+  value: number;
+}
+
 const Home = () => {
   const dispatch = useAppDispatch();
   const provider = useAppSelector((st) => st.chain.provider);
@@ -14,6 +20,7 @@ const Home = () => {
   const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);
   const contractMap = useAppSelector((st) => st.contracts.contractMap);
   const [total, setTotal] = useState<number | null>(null);
+  const [tvlList, setTvlList] = useState<any[]>([]);
 
   useEffect(() => {
     dispatch(getAssetsTvl(assets, contractMap, provider));
@@ -23,6 +30,10 @@ const Home = () => {
   useEffect(() => {
     [...Object.values(assetsTvl)].length &&
       setTotal([...Object.values(assetsTvl)].reduce((acc: number, item: any) => acc + item.value, 0));
+  }, [assetsTvl]);
+
+  useEffect(() => {
+    setTvlList([...Object.values(assetsTvl as ITvl[]).sort((a: ITvl, b: ITvl) => b.value - a.value)]); // sort by largest tvl
   }, [assetsTvl]);
 
   return (
@@ -39,7 +50,7 @@ const Home = () => {
           </Summary>
         </div>
         <div className="dark:text-white p-10">
-          <TvlTable data={[...Object.values(assetsTvl)]} assets={assets} />
+          <TvlTable data={tvlList} assets={assets} />
         </div>
       </div>
     </MainViewWrap>

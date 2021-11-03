@@ -20,7 +20,7 @@ const TvlTable = ({ data, assets }: { data: any[]; assets: any[] }) =>
                     </div>
                   </div>
                   <span className="text-md font-medium text-gray-900  truncate">
-                    <span>${formatValue(x.value, 2)}</span>
+                    <span>${formatValue(x.value, 0)}</span>
                   </span>
                 </td>
               </tr>
