@@ -39,7 +39,7 @@ const Home = () => {
           </Summary>
         </div>
         <div className="dark:text-white p-10">
-          <TvlTable data={[...assetsTvl]} assets={assets} />
+          <TvlTable data={[...Object.values(assetsTvl)]} assets={assets} />
         </div>
       </div>
     </MainViewWrap>
