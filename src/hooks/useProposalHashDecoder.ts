@@ -139,7 +139,6 @@ const useProposalHashDecoder = (proposalHash: string) => {
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
-    console.log('f', f);
 
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
