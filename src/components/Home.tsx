@@ -42,11 +42,11 @@ const Home = () => {
         <div className="mt-10">
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
-            {total && (
+            {total ? (
               <div className="text-3xl flex">
                 $<AnimatedNum num={total} />
               </div>
-            )}
+            ) : null}
           </Summary>
         </div>
         <div className="dark:text-white p-10">
