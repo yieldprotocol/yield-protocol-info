@@ -13,7 +13,7 @@ const TvlTable = ({ data, assets }: { data: any[]; assets: any[] }) =>
             const assetLogo = markMap?.get(asset?.symbol!);
             return (
               <tr key={uuid()} className="items-center group">
-                <td className="px-4 py-3 text-start items-center flex gap-5">
+                <td className="px-8 py-3 text-start items-center flex gap-5">
                   <div className="flex relative">
                     <div className="h-6 w-6">
                       <div className="z-0">{assetLogo}</div>
