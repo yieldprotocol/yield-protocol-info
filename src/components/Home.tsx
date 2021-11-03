@@ -21,8 +21,8 @@ const Home = () => {
 
   // sets the total value locked for all assets combined
   useEffect(() => {
-    [...assetsTvl].length && setTotal([...assetsTvl].reduce((acc: number, item: any) => acc + item.value, 0));
-    console.log(total);
+    [...Object.values(assetsTvl)].length &&
+      setTotal([...assetsTvl].reduce((acc: number, item: any) => acc + item.value, 0));
   }, [assetsTvl]);
 
   return (
@@ -31,7 +31,11 @@ const Home = () => {
         <div className="mt-10">
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
-            <div className="text-3xl flex">${total && <AnimatedNum num={total} />}</div>
+            {total && (
+              <div className="text-3xl flex">
+                $<AnimatedNum num={total} />
+              </div>
+            )}
           </Summary>
         </div>
         <div className="dark:text-white p-10">
