@@ -1,8 +1,8 @@
 import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import { ONE_WEI_BN } from '../../utils/constants';
-import { calculateCollateralizationRatio } from '../../utils/yieldMath';
+import { WAD_BN } from '../../utils/constants';
+import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
 
 export function getVaults(contractMap: any, series: any, assets: any) {
   return async function _getVaults(dispatch: any) {
@@ -99,11 +99,15 @@ export function getVaults(contractMap: any, series: any, assets: any) {
   };
 }
 
-export async function getPrice(ilk: string, base: string, contractMap: any) {
+export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18) {
   try {
     const Oracle = (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any)
       .contract;
-    const [price] = await Oracle.peek(bytesToBytes32(ilk, 6), bytesToBytes32(base, 6), ONE_WEI_BN);
+    const [price] = await Oracle.peek(
+      bytesToBytes32(ilk, 6),
+      bytesToBytes32(base, 6),
+      decimal18ToDecimalN(WAD_BN, decimals)
+    );
     return price;
   } catch (e) {
     console.log(e);

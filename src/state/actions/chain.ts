@@ -1,8 +1,11 @@
 import { BigNumber, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
+import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
 import { getPrice } from './vaults';
+import * as contracts from '../../contracts';
 
+export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, provider });
 export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, chainId });
 export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, chainLoading });
 export const setSeriesLoading = (seriesLoading: boolean) => ({ type: ActionType.SERIES_LOADING, seriesLoading });
@@ -57,3 +60,63 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
 }
 
 export const reset = () => ({ type: ActionType.RESET });
+
+const updateAssetsTvl = (assetsTvl: any) => ({ type: ActionType.UPDATE_ASSETS_TVL, assetsTvl });
+
+export function getAssetsTvl(assets: any, contractMap: any, provider: any) {
+  return async function _getAssetsTvl(dispatch: any) {
+    // get the balance of the asset in the respective join
+    const _balances: any = await getAssetJoinBalances(assets, contractMap, provider);
+    const usdc: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+
+    if (provider && contractMap) {
+      // convert the balances to usdc denomination
+      const joinBalsInUSDC = await Promise.all(
+        [...Object.values(_balances)]?.map(async (bal: any) => {
+          const _price = await getPrice(bal.id, usdc.id, contractMap, bal.asset.decimals);
+          const price = decimalNToDecimal18(_price, usdc?.decimals);
+          const price_ = ethers.utils.formatUnits(price, 18);
+          const balance_ = bal.balance ? ethers.utils.formatUnits(bal.balance, bal.asset.decimals) : '0';
+          const _value = Number(price_) * Number(balance_);
+          const value = isNaN(_value) ? 0 : _value;
+          return {
+            symbol: bal.asset.symbol,
+            id: bal.id,
+            value,
+          };
+        })
+      );
+      return dispatch(updateAssetsTvl(joinBalsInUSDC));
+    }
+    return undefined;
+  };
+}
+
+async function getAssetJoinBalances(assets: any, contractMap: any, provider: any) {
+  try {
+    const balances = await Promise.all(
+      Object.values(assets).map(async (a: any) => ({
+        id: a.id,
+        balance: await getAssetJoinBalance(a, contractMap, provider),
+        asset: a,
+      }))
+    );
+    return balances;
+  } catch (e) {
+    console.log('error getting join balances');
+    console.log(e);
+    return undefined;
+  }
+}
+
+async function getAssetJoinBalance(asset: any, contractMap: any, provider: any) {
+  try {
+    const joinAddr = asset.joinAddress;
+    const Join = contracts.Join__factory.connect(joinAddr, provider);
+    return await Join.storedBalance();
+  } catch (e) {
+    console.log('error getting join balance for', asset);
+    console.log(e);
+    return undefined;
+  }
+}

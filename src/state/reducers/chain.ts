@@ -1,6 +1,8 @@
+import { ethers } from 'ethers';
 import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
+  provider: null as ethers.providers.JsonRpcProvider | null,
   chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) as number,
 
   /* flags */
@@ -13,12 +15,15 @@ const INITIAL_STATE = {
   series: {},
   strategies: {},
   assets: {},
+  assetsTvl: {},
   assetPairData: {},
   contractMap: {},
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
   switch (action.type) {
+    case ActionType.PROVIDER:
+      return { ...state, provider: action.provider };
     case ActionType.CHAIN_ID:
       return { ...state, chainId: action.chainId };
     case ActionType.CHAIN_LOADING:
@@ -49,6 +54,11 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return {
         ...state,
         assetPairData: { ...state.assetPairData, [action.payload.assetId]: action.payload.assetPairData },
+      };
+    case ActionType.UPDATE_ASSETS_TVL:
+      return {
+        ...state,
+        assetsTvl: action.assetsTvl,
       };
     case ActionType.RESET:
       return INITIAL_STATE;

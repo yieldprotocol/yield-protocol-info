@@ -11,6 +11,7 @@ import {
   updateSeries,
   updateStrategies,
   updateAssets,
+  updateProvider,
 } from '../actions/chain';
 
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
@@ -71,6 +72,8 @@ const useChain = () => {
 
   useEffect(() => {
     const provider = new ethers.providers.InfuraProvider(Number(chainId), '646dc0f33d2449878b28e0afa25267f6');
+    dispatch(updateProvider(provider));
+
     if (provider && chainId) {
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];

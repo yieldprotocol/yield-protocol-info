@@ -32,7 +32,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
               module: 'contract',
               action: 'getsourcecode',
               address: addHexPrefix(target),
-              apikey: '9C6JHFW1HK4TXJRF3WBWIMJMBYZ7NCW6AS',
+              apikey: 'CYR84B4D45QJB2223FT2CJD6N72S3ZU32W',
             }),
             (x) => console.warn(x)
           ).then((ret: any) => {
@@ -139,7 +139,6 @@ const useProposalHashDecoder = (proposalHash: string) => {
     const abi = decoded.abis[target];
     const selector = calldata.slice(0, 2 + 4 * 2);
     const f = abi.functions.get(selector);
-    console.log('f', f);
 
     if (!f) {
       return [['status', "Selector not found, that's bad"]];
