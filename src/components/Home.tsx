@@ -22,7 +22,7 @@ const Home = () => {
   // sets the total value locked for all assets combined
   useEffect(() => {
     [...Object.values(assetsTvl)].length &&
-      setTotal([...assetsTvl].reduce((acc: number, item: any) => acc + item.value, 0));
+      setTotal([...Object.values(assetsTvl)].reduce((acc: number, item: any) => acc + item.value, 0));
   }, [assetsTvl]);
 
   return (
