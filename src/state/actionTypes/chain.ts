@@ -1,4 +1,5 @@
 export enum ActionType {
+  PROVIDER = 'chain/PROVIDER',
   CHAIN_ID = 'chain/CHAIN_ID',
   CHAIN_LOADING = 'chain/CHAIN_LOADING',
   SERIES_LOADING = 'chain/SERIES_LOADING',
@@ -8,5 +9,6 @@ export enum ActionType {
   UPDATE_STRATEGIES = 'chain/UPDATE_STRATEGIES',
   UPDATE_ASSETS = 'chain/UPDATE_ASSETS',
   UPDATE_ASSET_PAIR_DATA = 'chain/UPDATE_ASSET_PAIR_DATA',
+  UPDATE_ASSETS_TVL = 'chain/UPDATE_ASSETS_TVL',
   RESET = 'chain/RESET',
 }

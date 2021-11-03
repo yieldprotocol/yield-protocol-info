@@ -1,5 +1,4 @@
 import { format, getMonth, subDays } from 'date-fns';
-import { BigNumber, BigNumberish, ethers } from 'ethers';
 import Identicon, { IdenticonOptions } from 'identicon.js';
 
 export const copyToClipboard = (str: string) => {
@@ -20,24 +19,6 @@ export const copyToClipboard = (str: string) => {
 export function bytesToBytes32(x: string, n: number): string {
   return x + '00'.repeat(32 - n);
 }
-
-/**
- * Convert a bignumber with any decimal to a bn with decimal of 18
- * @param x bn to convert.
- * @param decimals of the current bignumber
- * @returns BigNumber
- */
-export const decimalNToDecimal18 = (x: BigNumber, decimals: number): BigNumber =>
-  BigNumber.from(x.toString() + '0'.repeat(18 - decimals));
-
-/**
- * Convert a decimal18 to a bn of any decimal
- * @param x 18 decimal to reduce
- * @param decimals required
- * @returns BigNumber
- */
-export const decimal18ToDecimalN = (x: BigNumber, decimals: number): BigNumber =>
-  BigNumber.from(x.toString().substring(0, 18 - decimals));
 
 /**
  * Convert array to chunks of arrays with size n
@@ -201,3 +182,8 @@ export const buildGradient = (colorFrom: string, colorTo: string) => `linear-gra
       ${modColor(colorTo, 0)}, 
       ${modColor(colorTo, 0)})
     `;
+
+export const numberWithCommas = (x: number) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+export const formatValue = (x: string | number, decimals: number) =>
+  numberWithCommas(Number(cleanValue(x.toString(), decimals)));
