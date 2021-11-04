@@ -1,3 +1,15 @@
+export interface ISeriesMap {
+  [id: string]: ISeries;
+}
+
+export interface IAssetMap {
+  [id: string]: IAsset;
+}
+
+export interface IStrategyMap {
+  [id: string]: IStrategy;
+}
+
 export interface ISeries {
   id: string;
   baseId: string;
