@@ -1,5 +1,3 @@
-import { BigNumber } from 'ethers';
-
 export interface ISeries {
   id: string;
   baseId: string;
@@ -46,30 +44,4 @@ export interface IStrategy {
   version: string;
   baseId: string;
   decimals: string;
-
-  currentSeriesId: string;
-  currentPoolAddr: string;
-  nextSeriesId: string;
-
-  currentSeries: ISeries | undefined;
-  nextSeries: ISeries | undefined;
-  active: boolean;
-
-  strategyTotalSupply?: BigNumber;
-  strategyTotalSupply_?: string;
-
-  poolTotalSupply?: BigNumber;
-  poolTotalSupply_?: string;
-
-  strategyPoolBalance?: BigNumber;
-  strategyPoolBalance_?: string;
-  strategyPoolPercent?: string;
-
-  accountBalance?: BigNumber;
-  accountBalance_?: string;
-  accountStrategyPercent?: string | undefined;
-
-  accountPoolBalance?: BigNumber;
-  accountPoolBalance_?: string;
-  accountPoolPercent?: string | undefined;
 }
