@@ -3,6 +3,7 @@ import { getAssetsTvl } from '../state/actions/chain';
 import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { formatValue } from '../utils/appUtils';
 import AnimatedNum from './AnimatedNum';
+import Spinner from './Spinner';
 import Summary from './Summary';
 import TvlTable from './TvlTable';
 import MainViewWrap from './wraps/MainViewWrap';
@@ -17,14 +18,16 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const provider = useAppSelector((st) => st.chain.provider);
   const assets = useAppSelector((st) => st.chain.assets);
+  const series = useAppSelector((st) => st.chain.series);
   const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);
+  const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
   const contractMap = useAppSelector((st) => st.contracts.contractMap);
   const [total, setTotal] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
 
   useEffect(() => {
-    dispatch(getAssetsTvl(assets, contractMap, provider));
-  }, [assets, contractMap, dispatch, provider]);
+    dispatch(getAssetsTvl(assets, contractMap, series, provider));
+  }, [assets, contractMap, dispatch, provider, series]);
 
   // sets the total value locked for all assets combined
   useEffect(() => {
@@ -38,21 +41,22 @@ const Home = () => {
 
   return (
     <MainViewWrap>
-      <div className="bg-green-50 dark:bg-green-300 rounded-xl p-10 flex justify-center">
-        <div className="mt-10">
-          <Summary>
-            <div className="text-xl text-gray-500">Total Value Locked</div>
-            {total ? (
+      <Spinner loading={tvlLoading} />
+      {!tvlLoading && total ? (
+        <div className="bg-green-50 dark:bg-green-300 rounded-xl p-10 flex justify-center">
+          <div className="mt-10">
+            <Summary>
+              <div className="text-xl text-gray-500">Total Value Locked</div>
               <div className="text-3xl flex">
                 $<AnimatedNum num={total} />
               </div>
-            ) : null}
-          </Summary>
+            </Summary>
+          </div>
+          <div className="dark:text-white p-10">
+            <TvlTable data={tvlList} assets={assets} />
+          </div>
         </div>
-        <div className="dark:text-white p-10">
-          <TvlTable data={tvlList} assets={assets} />
-        </div>
-      </div>
+      ) : null}
     </MainViewWrap>
   );
 };

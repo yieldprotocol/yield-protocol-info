@@ -10,5 +10,6 @@ export enum ActionType {
   UPDATE_ASSETS = 'chain/UPDATE_ASSETS',
   UPDATE_ASSET_PAIR_DATA = 'chain/UPDATE_ASSET_PAIR_DATA',
   UPDATE_ASSETS_TVL = 'chain/UPDATE_ASSETS_TVL',
+  TVL_LOADING = 'chain/TVL_LOADING',
   RESET = 'chain/RESET',
 }
