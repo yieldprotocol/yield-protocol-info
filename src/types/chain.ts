@@ -10,6 +10,10 @@ export interface IStrategyMap {
   [id: string]: IStrategy;
 }
 
+export interface IAssetPairMap {
+  [id: string]: IAssetPairData;
+}
+
 export interface ISeries {
   id: string;
   baseId: string;
@@ -56,4 +60,16 @@ export interface IStrategy {
   version: string;
   baseId: string;
   decimals: string;
+}
+
+export interface IAssetPairData {
+  baseAssetId: string;
+  ilkAssetId: string;
+  minCollatRatioPct: string;
+  minDebt: string;
+  maxDebt: string;
+  minDebt_: string;
+  maxDebt_: string;
+  totalDebt_: string;
+  totalDebtInUSDC: string;
 }
