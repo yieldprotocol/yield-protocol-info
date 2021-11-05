@@ -55,7 +55,7 @@ const Home = () => {
         id: base?.id,
         symbol: base?.symbol,
         value: Object.values(assetData).reduce(
-          (sum: number, x: IAssetPairData) => sum + (x.baseAssetId === x.ilkAssetId ? 0 : +x.totalDebtInUSDC), // filter out when base equals ilk (meaning this was a borrow and pool)
+          (sum: number, x: IAssetPairData) => sum + (base?.id === x.ilkAssetId ? 0 : +x.totalDebtInUSDC), // filter out when base equals ilk (meaning this was a borrow and pool)
           0
         ),
       };
