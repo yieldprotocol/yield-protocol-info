@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAssetsTvl } from '../state/actions/chain';
 import { useAppDispatch, useAppSelector } from '../state/hooks/general';
-import { IAssetPairData, IAssetPairMap } from '../types/chain';
+import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Spinner from './Spinner';
 import Summary from './Summary';
@@ -39,23 +39,28 @@ const Home = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList([...Object.values(assetsTvl as ITvl[]).sort((a: ITvl, b: ITvl) => b.value - a.value)]); // sort by largest tvl
+    setTvlList([
+      ...Object.values(assetsTvl as ITvl[])
+        .filter((x) => x.value !== 0)
+        .sort((a: ITvl, b: ITvl) => b.value - a.value),
+    ]); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
-    const assetPairList = Object.values(assetPairData as IAssetPairMap).map((asset: IAssetPairData) => {
-      const base = assets[asset.baseAssetId];
+    const assetPairList = Object.values(assetPairData as IAssetPairMap).map((assetData: IAssetPairData) => {
+      const base: IAsset = assets[(assetData as any)[0]?.baseAssetId];
       const newItem = {
         id: base?.id,
         symbol: base?.symbol,
-        value: Object.values(asset).reduce((sum: number, x: IAssetPairData) => sum + +x.totalDebtInUSDC, 0),
+        value: Object.values(assetData).reduce((sum: number, x: IAssetPairData) => sum + +x.totalDebtInUSDC, 0),
       };
       return newItem;
     });
-    setTotalDebtList(assetPairList.sort((a, b) => b.value - a.value)); // sort by largest debt
+    setTotalDebtList(assetPairList.filter((x) => x.value !== 0).sort((a, b) => b.value - a.value)); // sort by largest debt and filter out 0
   }, [assetPairData, assets]);
 
   useEffect(() => {
+    console.log(totalDebtList);
     setTotalDebt(totalDebtList.reduce((sum: number, x: ITvl) => sum + +x.value, 0));
   }, [totalDebtList]);
 
@@ -63,23 +68,28 @@ const Home = () => {
     <MainViewWrap>
       <Spinner loading={tvlLoading} />
       {!tvlLoading && tvl && totalDebt ? (
-        <div className="bg-green-50 dark:bg-green-300 rounded-xl p-10 flex justify-center">
-          <div className="mt-10">
+        <div className="bg-green-50 dark:bg-green-300 rounded-xl p-8">
+          <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
             <Summary>
               <div className="text-xl text-gray-500">Total Value Locked</div>
               <div className="text-3xl flex">
                 $<AnimatedNum num={tvl} />
               </div>
             </Summary>
+            <div className="w-1/2">
+              <TvlTable data={tvlList} assets={assets} />
+            </div>
+          </div>
+          <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
             <Summary>
               <div className="text-xl text-gray-500">Total Borrowed</div>
               <div className="text-3xl flex">
                 $<AnimatedNum num={totalDebt} />
               </div>
             </Summary>
-          </div>
-          <div className="dark:text-white p-10">
-            <TvlTable data={tvlList} assets={assets} />
+            <div className="w-1/2">
+              <TvlTable data={totalDebtList} assets={assets} />
+            </div>
           </div>
         </div>
       ) : null}
