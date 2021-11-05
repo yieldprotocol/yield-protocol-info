@@ -60,7 +60,6 @@ const Home = () => {
   }, [assetPairData, assets]);
 
   useEffect(() => {
-    console.log(totalDebtList);
     setTotalDebt(totalDebtList.reduce((sum: number, x: ITvl) => sum + +x.value, 0));
   }, [totalDebtList]);
 
