@@ -27,6 +27,7 @@ const assetDigitFormatMap = new Map([
   ['DAI', 2],
   ['USDC', 2],
   ['USDT', 2],
+  ['STETH', 6],
 ]);
 
 interface IChainData {
@@ -136,11 +137,23 @@ const useChain = () => {
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
 
+              let symbol_;
+              switch (symbol) {
+                case 'WETH':
+                  symbol_ = 'ETH';
+                  break;
+                case 'wstETH':
+                  symbol_ = 'WSTETH';
+                  break;
+                default:
+                  symbol_ = symbol;
+              }
+
               const newAsset = {
                 id,
                 address,
                 name,
-                symbol: symbol !== 'WETH' ? symbol : 'ETH',
+                symbol: symbol_,
                 decimals,
                 version,
                 joinAddress: joinMap.get(id),
