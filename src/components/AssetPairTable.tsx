@@ -32,7 +32,7 @@ const AssetPairTable = ({ data, assets }: any) =>
                     <div className="h-7 w-7">
                       <div className="z-0">{baseAssetLogo}</div>
                     </div>
-                    <div className="z-10 -ml-2">
+                    <div className="z-1 -ml-2">
                       <div className="h-7 w-7">{ilkAssetLogo}</div>
                     </div>
                   </div>
