@@ -5,6 +5,7 @@ import { ActionType } from '../actionTypes/chain';
 import { getPrice } from './vaults';
 import * as contracts from '../../contracts';
 import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
+import { IContract, IContractMap } from '../../types/contracts';
 
 export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, provider });
 export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, chainId });
@@ -26,18 +27,21 @@ export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
 export function getAssetPairData(asset: any, assets: any, contractMap: any) {
   return async function _getAssetPairData(dispatch: any) {
     try {
-      const Cauldron = (Object.values(contractMap).filter((x: any) => x.name === 'Cauldron')[0] as any).contract;
+      const Cauldron = Object.values(contractMap as IContractMap).filter((x: IContract) => x.name === 'Cauldron')[0]
+        .contract;
 
       const assetPairData = await Promise.all(
-        [...Object.values(assets)].map(async (x: any) => {
+        Object.values(assets as IAssetMap).map(async (x: IAsset) => {
           const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
             await Cauldron.debt(asset.id, x.id),
             await Cauldron.spotOracles(asset.id, x.id),
             (await Cauldron.debt(asset.id, x.id)).sum,
           ]);
 
-          const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-          const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const minDebt: string = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const maxDebt: string = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const totalDebt_: string = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
+          const USDC: IAsset = Object.values(assets as IAssetMap).filter((a: IAsset) => a.symbol === 'USDC')[0];
 
           return {
             baseAssetId: asset.id,
@@ -47,7 +51,8 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
             maxDebt,
             minDebt_: ethers.utils.formatUnits(minDebt, decimals),
             maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
-            totalDebt_: cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2),
+            totalDebt_,
+            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap), 2),
           };
         })
       );
@@ -210,4 +215,25 @@ const mapAssetToPoolAddr = (seriesMap: ISeriesMap, assets: IAssetMap) => {
     return newMap;
   }
   return {};
+};
+
+/**
+ * Converts a string value from one asset to another using oracle prices
+ * @param fromValue
+ * @param fromAsset
+ * @param toAsset
+ * @param assetMap
+ * @param contractMap
+ * @returns string
+ */
+const convertValue = async (
+  fromValue: string | undefined,
+  fromAsset: IAsset,
+  toAsset: IAsset,
+  contractMap: IContractMap
+) => {
+  const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals);
+  const price = decimalNToDecimal18(_price, toAsset.decimals);
+  const price_ = ethers.utils.formatUnits(price, 18);
+  return (+price_ * +fromValue! || '0').toString();
 };

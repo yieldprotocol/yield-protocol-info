@@ -12,6 +12,7 @@ import {
   updateStrategies,
   updateAssets,
   updateProvider,
+  getAssetPairData,
 } from '../actions/chain';
 
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
@@ -20,6 +21,7 @@ import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
+import { IAsset, IAssetMap } from '../../types/chain';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -158,10 +160,16 @@ const useChain = () => {
                 version,
                 joinAddress: joinMap.get(id),
               };
-              newAssets[id] = _chargeAsset(newAsset);
+              (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
             })
           );
           dispatch(updateAssets(newAssets));
+
+          // get asset pair data
+          Object.values(newAssets as IAssetMap).map((a: IAsset) =>
+            dispatch(getAssetPairData(a, newAssets, newContractMap))
+          );
+
           dispatch(setAssetsLoading(false));
           console.log('Yield Protocol Asset data updated.');
         } catch (e) {
