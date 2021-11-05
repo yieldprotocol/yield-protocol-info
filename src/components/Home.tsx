@@ -22,6 +22,7 @@ const Home = () => {
   const series = useAppSelector((st) => st.chain.series);
   const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);
   const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
+  const assetsLoading = useAppSelector((st) => st.chain.assetsLoading);
   const contractMap = useAppSelector((st) => st.contracts.contractMap);
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
@@ -49,10 +50,14 @@ const Home = () => {
   useEffect(() => {
     const assetPairList = Object.values(assetPairData as IAssetPairMap).map((assetData: IAssetPairData) => {
       const base: IAsset = assets[(assetData as any)[0]?.baseAssetId];
+
       const newItem = {
         id: base?.id,
         symbol: base?.symbol,
-        value: Object.values(assetData).reduce((sum: number, x: IAssetPairData) => sum + +x.totalDebtInUSDC, 0),
+        value: Object.values(assetData).reduce(
+          (sum: number, x: IAssetPairData) => sum + (x.baseAssetId === x.ilkAssetId ? 0 : +x.totalDebtInUSDC), // filter out when base equals ilk (meaning this was a borrow and pool)
+          0
+        ),
       };
       return newItem;
     });
@@ -65,8 +70,8 @@ const Home = () => {
 
   return (
     <MainViewWrap>
-      <Spinner loading={tvlLoading} />
-      {!tvlLoading && tvl && totalDebt ? (
+      <Spinner loading={tvlLoading || assetsLoading} />
+      {!tvlLoading && !assetsLoading && tvl && totalDebt ? (
         <div className="bg-green-50 dark:bg-green-300 rounded-xl p-8">
           <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
             <Summary>
