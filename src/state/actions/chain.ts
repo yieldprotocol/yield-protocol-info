@@ -183,19 +183,24 @@ async function getAssetPoolBalances(assets: any, provider: any) {
 async function getAssetPoolBalance(asset: any, provider: any) {
   try {
     const Pool = contracts.Pool__factory.connect(asset.poolAddr, provider);
+    const decimals = await Pool.decimals();
     const base = await Pool.getBaseBalance();
+    const base_: string = ethers.utils.formatUnits(base, decimals);
     const fyToken = await Pool.getFYTokenBalance();
+    const fyToken_ = ethers.utils.formatUnits(fyToken, decimals);
 
     // estimate how much base you would get from selling the fyToken in the pool
-    let fyTokenToBaseEstimate;
     try {
-      fyTokenToBaseEstimate = await Pool.sellFYTokenPreview(fyToken);
+      const fyTokenToBaseCostEstimate = await Pool.sellFYTokenPreview(
+        BigNumber.from(1).mul(BigNumber.from(10).pow(decimals))
+      ); // estimate the base value of 1 fyToken unit
+      const fyTokenToBaseCostEstimate_ = cleanValue(ethers.utils.formatUnits(fyTokenToBaseCostEstimate, decimals), 6);
+      const fyTokenToBaseValueEstimate: number = +fyToken_ * +fyTokenToBaseCostEstimate_; // estimated base cost of fyToken by the fyToken amount
+      return fyTokenToBaseValueEstimate ? fyTokenToBaseValueEstimate + +base_ : base_;
     } catch (e) {
       console.log(e);
     }
-    const total = fyTokenToBaseEstimate ? fyTokenToBaseEstimate.add(base) : base;
-    const total_ = ethers.utils.formatUnits(total, await Pool.decimals());
-    return total_;
+    return '0';
   } catch (e) {
     console.log('error getting pool balance for', asset);
     console.log(e);
