@@ -236,7 +236,7 @@ const useChain = () => {
                 const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
                 const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
                 // const baseContract = contracts.ERC20__factory.connect(fyToken, fallbackLibrary);
-                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol] = await Promise.all([
+                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol, currentInvariant] = await Promise.all([
                   fyTokenContract.name(),
                   fyTokenContract.symbol(),
                   fyTokenContract.version(),
@@ -244,7 +244,7 @@ const useChain = () => {
                   poolContract.name(),
                   poolContract.version(),
                   poolContract.symbol(),
-                  // poolContract.decimals(),
+                  poolContract.invariant(),
                 ]);
                 const newSeries = {
                   id,
@@ -284,13 +284,26 @@ const useChain = () => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              const [name, symbol, baseId, decimals, version] = await Promise.all([
+              const [name, symbol, baseId, decimals, version, totalSupply, currSeriesId,uupool,] = await Promise.all([
                 Strategy.name(),
                 Strategy.symbol(),
                 Strategy.baseId(),
                 Strategy.decimals(),
                 Strategy.version(),
+                Strategy.totalSupply(),
+            Strategy.seriesId(),
+            Strategy.pool(),
+            Strategy.nextSeriesId(),
               ]);
+
+              const [currentInvariant, initInvariant] = currentSeries.seriesIsMature
+                ? [ZERO_BN, ZERO_BN]
+                : [ZERO_BN, ZERO_BN];
+              // TODO Re-include invariant
+              // : await Promise.all([
+              //     currentSeries.poolContract.invariant(),
+              //     _strategy.strategyContract.invariants(currentPoolAddr),
+              //   ]);
 
               const newStrategy = {
                 id: strategyAddr,
@@ -303,7 +316,7 @@ const useChain = () => {
               };
               // update state and cache
               newStrategies[strategyAddr] = newStrategy;
-            })
+            };)
           );
           dispatch(updateStrategies(newStrategies));
           dispatch(setStrategiesLoading(false));
