@@ -322,7 +322,6 @@ const useChain = () => {
           );
           dispatch(updateStrategies(newStrategies));
           dispatch(setStrategiesLoading(false));
-          console.log('Yield Protocol Strategy data updated.');
         } catch (e) {
           dispatch(setStrategiesLoading(false));
           dispatch(updateStrategies({}));

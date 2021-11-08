@@ -37,7 +37,6 @@ const Home = () => {
   useEffect(() => {
     Object.values(assetsTvl).length &&
       setTvl(Object.values(assetsTvl).reduce((acc: number, item: any) => acc + item.value, 0));
-    console.log('assets tvl', assetsTvl);
   }, [assetsTvl]);
 
   useEffect(() => {

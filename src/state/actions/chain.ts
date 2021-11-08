@@ -58,7 +58,6 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
       );
 
       dispatch(updateAssetPairData(asset.id, assetPairData));
-      console.log('Yield Protocol Asset Pair data updated.');
     } catch (e) {
       console.log('Error getting asset pair data', e);
     }
