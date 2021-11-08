@@ -12,6 +12,7 @@ import {
   updateStrategies,
   updateAssets,
   updateProvider,
+  getAssetPairData,
 } from '../actions/chain';
 
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
@@ -20,6 +21,7 @@ import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
+import { IAsset, IAssetMap } from '../../types/chain';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -27,6 +29,7 @@ const assetDigitFormatMap = new Map([
   ['DAI', 2],
   ['USDC', 2],
   ['USDT', 2],
+  ['STETH', 6],
 ]);
 
 interface IChainData {
@@ -136,19 +139,37 @@ const useChain = () => {
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
 
+              let symbol_;
+              switch (symbol) {
+                case 'WETH':
+                  symbol_ = 'ETH';
+                  break;
+                case 'wstETH':
+                  symbol_ = 'WSTETH';
+                  break;
+                default:
+                  symbol_ = symbol;
+              }
+
               const newAsset = {
                 id,
                 address,
                 name,
-                symbol: symbol !== 'WETH' ? symbol : 'ETH',
+                symbol: symbol_,
                 decimals,
                 version,
                 joinAddress: joinMap.get(id),
               };
-              newAssets[id] = _chargeAsset(newAsset);
+              (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
             })
           );
           dispatch(updateAssets(newAssets));
+
+          // get asset pair data
+          Object.values(newAssets as IAssetMap).map((a: IAsset) =>
+            dispatch(getAssetPairData(a, newAssets, newContractMap))
+          );
+
           dispatch(setAssetsLoading(false));
           console.log('Yield Protocol Asset data updated.');
         } catch (e) {
@@ -214,7 +235,7 @@ const useChain = () => {
                 const poolAddress: string = poolMap.get(id) as string;
                 const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
                 const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
-                // const baseContract = contracts.ERC20__factory.connect(fyToken, fallbackLibrary);
+
                 const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol] = await Promise.all([
                   fyTokenContract.name(),
                   fyTokenContract.symbol(),
@@ -223,7 +244,6 @@ const useChain = () => {
                   poolContract.name(),
                   poolContract.version(),
                   poolContract.symbol(),
-                  // poolContract.decimals(),
                 ]);
                 const newSeries = {
                   id,
@@ -263,13 +283,30 @@ const useChain = () => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              const [name, symbol, baseId, decimals, version] = await Promise.all([
+
+              const [name, symbol, seriesId, poolAddress, baseId, decimals, version] = await Promise.all([
                 Strategy.name(),
                 Strategy.symbol(),
+                Strategy.seriesId(),
+                Strategy.pool(),
                 Strategy.baseId(),
                 Strategy.decimals(),
                 Strategy.version(),
+                Strategy.totalSupply(),
+                Strategy.invariants(await Strategy.pool()),
               ]);
+
+              const Pool = contracts.Pool__factory.connect(poolAddress, provider);
+              console.log('pool', Pool);
+              console.log('strat', Strategy);
+
+              // const [currentInvariant, initInvariant] = await Promise.all([
+              //   Strategy.invariants(await Strategy.pool()),
+              //   Pool.invariant(),
+              // ]);
+
+              // console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
+              // console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
 
               const newStrategy = {
                 id: strategyAddr,
@@ -277,6 +314,8 @@ const useChain = () => {
                 symbol,
                 name,
                 version,
+                seriesId,
+                poolAddress,
                 baseId,
                 decimals,
               };

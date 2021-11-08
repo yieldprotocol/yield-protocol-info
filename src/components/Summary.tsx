@@ -1,7 +1,5 @@
 import React from 'react';
 
-const Summary = ({ children }: any) => (
-  <div className="border-green-400 p-5 text-center justify-center">{children}</div>
-);
+const Summary = ({ children }: any) => <div className="border-green-400 text-start justify-start">{children}</div>;
 
 export default Summary;

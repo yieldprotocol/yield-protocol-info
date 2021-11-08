@@ -2,7 +2,7 @@ import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { WAD_BN } from '../../utils/constants';
-import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
+import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
 
 export function getVaults(contractMap: any, series: any, assets: any) {
   return async function _getVaults(dispatch: any) {

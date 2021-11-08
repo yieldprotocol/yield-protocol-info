@@ -10,6 +10,7 @@ const INITIAL_STATE = {
   seriesLoading: false,
   strategiesLoading: false,
   assetsLoading: false,
+  tvlLoading: false,
 
   /* Data */
   series: {},
@@ -50,7 +51,6 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
         assets: action.assets,
       };
     case ActionType.UPDATE_ASSET_PAIR_DATA:
-      console.log(action.payload.assetId);
       return {
         ...state,
         assetPairData: { ...state.assetPairData, [action.payload.assetId]: action.payload.assetPairData },
@@ -59,6 +59,11 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
       return {
         ...state,
         assetsTvl: action.assetsTvl,
+      };
+    case ActionType.TVL_LOADING:
+      return {
+        ...state,
+        tvlLoading: action.tvlLoading,
       };
     case ActionType.RESET:
       return INITIAL_STATE;
