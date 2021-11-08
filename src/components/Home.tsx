@@ -35,16 +35,17 @@ const Home = () => {
 
   // sets the total value locked for all assets combined
   useEffect(() => {
-    [...Object.values(assetsTvl)].length &&
-      setTvl([...Object.values(assetsTvl)].reduce((acc: number, item: any) => acc + item.value, 0));
+    Object.values(assetsTvl).length &&
+      setTvl(Object.values(assetsTvl).reduce((acc: number, item: any) => acc + item.value, 0));
+    console.log('assets tvl', assetsTvl);
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList([
-      ...Object.values(assetsTvl as ITvl[])
+    setTvlList(
+      Object.values(assetsTvl as ITvl[])
         .filter((x) => x.value !== 0)
-        .sort((a: ITvl, b: ITvl) => b.value - a.value),
-    ]); // sort by largest tvl
+        .sort((a: ITvl, b: ITvl) => b.value - a.value)
+    ); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
