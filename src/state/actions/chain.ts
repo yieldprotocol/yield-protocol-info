@@ -1,6 +1,6 @@
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
-import { decimalNToDecimal18, sellFYToken } from '../../utils/yieldMath';
+import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
 import { getPrice } from './vaults';
 import * as contracts from '../../contracts';
@@ -58,7 +58,6 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
       );
 
       dispatch(updateAssetPairData(asset.id, assetPairData));
-      console.log('Yield Protocol Asset Pair data updated.');
     } catch (e) {
       console.log('Error getting asset pair data', e);
     }
@@ -88,25 +87,31 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
       // get the balance of the asset in the respective join
       const _joinBalances: any = await getAssetJoinBalances(assets, contractMap, provider);
 
-      // map through series to get the relevant asset
-      const assetWithPoolAddrMap = mapAssetToPoolAddr(seriesMap, assets);
-
-      // get the balance of the asset in the respective pool
-      const _poolBalances: any = await getAssetPoolBalances(assetWithPoolAddrMap, provider);
+      // map through series to get the relevant pool to asset
+      const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
+      const _poolBalances: any = await getPoolBalances(poolAddrToAssetMap, provider);
 
       // denominate balance in usdc
-      const usdc: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+      const USDC: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+
+      // consolidate pool address asset balances
+      const totalPoolBalances = _poolBalances.reduce((balMap: any, bal: any) => {
+        const newMap: any = balMap;
+        const prevBalance: number = +balMap[bal.id]?.balance! || 0;
+        const newBalance: number = prevBalance + Number(bal.balance);
+        newMap[bal.id as string] = { id: bal.id, asset: bal.asset, balance: newBalance.toString() };
+        return newMap;
+      }, {});
 
       // convert the balances to usdc denomination
       const totalTvl = await Promise.all(
-        [...Object.values(_joinBalances)]?.map(async (bal: any) => {
+        Object.values(_joinBalances)?.map(async (bal: any) => {
           // get the usdc price of the asset
-          const _price = await getPrice(bal.id, usdc.id, contractMap, bal.asset.decimals);
-          const price = decimalNToDecimal18(_price, usdc?.decimals);
+          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals);
+          const price = decimalNToDecimal18(_price, USDC?.decimals);
           const price_ = ethers.utils.formatUnits(price, 18);
-
-          const joinBalance_ = bal.balance ? ethers.utils.formatUnits(bal.balance, bal.asset.decimals) : '0';
-          const poolBalance_ = _poolBalances[bal.id]?.balance! || 0;
+          const joinBalance_ = bal.balance;
+          const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
           const totalBalance = +joinBalance_ + +poolBalance_;
           const _value = +price_ * +totalBalance;
           const value = isNaN(_value) ? 0 : _value;
@@ -130,7 +135,7 @@ async function getAssetJoinBalances(assets: any, contractMap: any, provider: any
     const balances = await Promise.all(
       Object.values(assets).map(async (a: any) => ({
         id: a.id,
-        balance: await getAssetJoinBalance(a, contractMap, provider),
+        balance: await getAssetJoinBalance(a, provider),
         asset: a,
       }))
     );
@@ -142,28 +147,29 @@ async function getAssetJoinBalances(assets: any, contractMap: any, provider: any
   }
 }
 
-async function getAssetJoinBalance(asset: any, contractMap: any, provider: any) {
+async function getAssetJoinBalance(asset: any, provider: any) {
   try {
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
-    return await Join.storedBalance();
+    return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);
     console.log(e);
-    return undefined;
+    return '0';
   }
 }
 
-async function getAssetPoolBalances(assets: any, provider: any) {
+async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
   try {
-    const balances: any = {};
+    const balances: any = [];
     await Promise.all(
-      Object.values(assets).map(async (a: any) => {
-        balances[a.id] = {
-          id: a.id,
-          balance: await getAssetPoolBalance(a, provider),
-          asset: a,
-        };
+      Object.values(poolAddrToAssetMap).map(async (pool: any) => {
+        const Pool: Contract = contracts.Pool__factory.connect(pool.poolAddress, provider);
+        balances.push({
+          id: pool.id,
+          balance: await getPoolBalance(Pool),
+          asset: pool,
+        });
       })
     );
     return balances;
@@ -176,51 +182,37 @@ async function getAssetPoolBalances(assets: any, provider: any) {
 
 /**
  * Gets a pool's associated asset balance by combining pool base with fyToken
- * @param asset
- * @param provider
+ * @param pool
  * @returns string
  */
-async function getAssetPoolBalance(asset: any, provider: any) {
+async function getPoolBalance(pool: any) {
   try {
-    const Pool = contracts.Pool__factory.connect(asset.poolAddr, provider);
-    const decimals = await Pool.decimals();
-    const base = await Pool.getBaseBalance();
+    const decimals = await pool.decimals();
+    const base = await pool.getBaseBalance();
     const base_: string = ethers.utils.formatUnits(base, decimals);
-    const fyToken = await Pool.getFYTokenBalance();
+    const fyToken = await pool.getFYTokenBalance();
     const fyToken_ = ethers.utils.formatUnits(fyToken, decimals);
 
     // estimate how much base you would get from selling the fyToken in the pool
     try {
-      const fyTokenToBaseCostEstimate = await Pool.sellFYTokenPreview(
+      const fyTokenToBaseCostEstimate = await pool.sellFYTokenPreview(
         BigNumber.from(1).mul(BigNumber.from(10).pow(decimals))
       ); // estimate the base value of 1 fyToken unit
       const fyTokenToBaseCostEstimate_ = cleanValue(ethers.utils.formatUnits(fyTokenToBaseCostEstimate, decimals), 6);
-      const fyTokenToBaseValueEstimate: number = +fyToken_ * +fyTokenToBaseCostEstimate_; // estimated base cost of fyToken by the fyToken amount
-      return fyTokenToBaseValueEstimate ? fyTokenToBaseValueEstimate + +base_ : base_;
+      const fyTokenToBaseValueEstimate: number = fyTokenToBaseCostEstimate_
+        ? +fyToken_ * +fyTokenToBaseCostEstimate_
+        : +fyToken_; // estimated base cost of fyToken by the fyToken amount
+      return fyTokenToBaseValueEstimate ? (fyTokenToBaseValueEstimate + +base_).toString() : base_;
     } catch (e) {
       console.log(e);
     }
     return '0';
   } catch (e) {
-    console.log('error getting pool balance for', asset);
+    console.log('error getting pool balance for', pool.id);
     console.log(e);
     return '0';
   }
 }
-
-const mapAssetToPoolAddr = (seriesMap: ISeriesMap, assets: IAssetMap) => {
-  if (seriesMap && assets) {
-    const newMap: any = {};
-    Object.values(seriesMap).map((s: ISeries) => {
-      const asset = assets[s.baseId];
-      const poolAddr = s.poolAddress;
-      newMap[asset.id as string] = { ...asset, poolAddr };
-      return asset;
-    });
-    return newMap;
-  }
-  return {};
-};
 
 /**
  * Converts a string value from one asset to another using oracle prices
@@ -231,14 +223,24 @@ const mapAssetToPoolAddr = (seriesMap: ISeriesMap, assets: IAssetMap) => {
  * @param contractMap
  * @returns string
  */
-const convertValue = async (
-  fromValue: string | undefined,
-  fromAsset: IAsset,
-  toAsset: IAsset,
-  contractMap: IContractMap
-) => {
+const convertValue = async (fromValue: string, fromAsset: IAsset, toAsset: IAsset, contractMap: IContractMap) => {
+  if (fromAsset === toAsset) return fromValue;
   const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals);
   const price = decimalNToDecimal18(_price, toAsset.decimals);
   const price_ = ethers.utils.formatUnits(price, 18);
-  return (+price_ * +fromValue! || '0').toString();
+  return (+price_ * +fromValue).toString();
+};
+
+const mapPoolAddrToAsset = (seriesMap: ISeriesMap, assets: IAssetMap) => {
+  if (seriesMap && assets) {
+    const newMap: any = {};
+    Object.values(seriesMap).map((s: ISeries) => {
+      const asset = assets[s.baseId];
+      const { poolAddress } = s;
+      newMap[poolAddress as string] = { ...asset, poolAddress };
+      return asset;
+    });
+    return newMap;
+  }
+  return {};
 };

@@ -138,6 +138,7 @@ const useChain = () => {
 
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
+              const joinAddress = joinMap.get(id);
 
               let symbol_;
               switch (symbol) {
@@ -158,9 +159,9 @@ const useChain = () => {
                 symbol: symbol_,
                 decimals,
                 version,
-                joinAddress: joinMap.get(id),
+                joinAddress,
               };
-              (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
+              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
             })
           );
           dispatch(updateAssets(newAssets));
@@ -171,7 +172,6 @@ const useChain = () => {
           );
 
           dispatch(setAssetsLoading(false));
-          console.log('Yield Protocol Asset data updated.');
         } catch (e) {
           dispatch(updateAssets({}));
           dispatch(setAssetsLoading(false));
@@ -266,7 +266,6 @@ const useChain = () => {
           ]);
           dispatch(updateSeries(newSeriesObj));
           dispatch(setSeriesLoading(false));
-          console.log('Yield Protocol Series data updated.');
         } catch (e) {
           dispatch(updateSeries({}));
           dispatch(setSeriesLoading(false));
@@ -297,8 +296,6 @@ const useChain = () => {
               ]);
 
               const Pool = contracts.Pool__factory.connect(poolAddress, provider);
-              console.log('pool', Pool);
-              console.log('strat', Strategy);
 
               // const [currentInvariant, initInvariant] = await Promise.all([
               //   Strategy.invariants(await Strategy.pool()),
@@ -325,7 +322,6 @@ const useChain = () => {
           );
           dispatch(updateStrategies(newStrategies));
           dispatch(setStrategiesLoading(false));
-          console.log('Yield Protocol Strategy data updated.');
         } catch (e) {
           dispatch(setStrategiesLoading(false));
           dispatch(updateStrategies({}));
