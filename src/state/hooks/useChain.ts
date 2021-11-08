@@ -138,6 +138,7 @@ const useChain = () => {
 
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
+              const joinAddress = joinMap.get(id);
 
               let symbol_;
               switch (symbol) {
@@ -158,9 +159,9 @@ const useChain = () => {
                 symbol: symbol_,
                 decimals,
                 version,
-                joinAddress: joinMap.get(id),
+                joinAddress,
               };
-              (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
+              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
             })
           );
           dispatch(updateAssets(newAssets));
