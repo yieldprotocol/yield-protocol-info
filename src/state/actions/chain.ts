@@ -94,7 +94,7 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
 
       // denominate balance in usdc
       const USDC: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
-      console.log('_poolbalances', _poolBalances);
+
       // consolidate pool address asset balances
       const totalPoolBalances = _poolBalances.reduce((balMap: any, bal: any) => {
         const newMap: any = balMap;
@@ -103,9 +103,6 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
         newMap[bal.id as string] = { id: bal.id, asset: bal.asset, balance: newBalance.toString() };
         return newMap;
       }, {});
-
-      console.log('total pool balances', totalPoolBalances);
-      console.log('total join balances', _joinBalances);
 
       // convert the balances to usdc denomination
       const totalTvl = await Promise.all(
