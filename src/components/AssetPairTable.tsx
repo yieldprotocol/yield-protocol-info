@@ -1,6 +1,7 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
+import { formatValue } from '../utils/appUtils';
 
 const AssetPairTable = ({ data, assets }: any) =>
   data ? (
@@ -8,12 +9,8 @@ const AssetPairTable = ({ data, assets }: any) =>
       <table className="table min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
-            {['', 'Min Collat Ratio', 'Max Debt', 'Total Debt', 'Diff (Max - Total)'].map((x) => (
-              <th
-                key={x}
-                scope="col"
-                className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider justify-items-start text-center"
-              >
+            {['Debt/Collateral', 'Min Collat Ratio', 'Max Debt', 'Total Debt', 'Diff (Max - Total)'].map((x) => (
+              <th key={x} scope="col" className="px-3 py-2 text-xs font-medium text-gray-500 uppercase text-center">
                 {x}
               </th>
             ))}
@@ -28,7 +25,7 @@ const AssetPairTable = ({ data, assets }: any) =>
             return (
               <tr key={uuid()} className="items-center group">
                 <td className="px-2 py-2 text-center items-center">
-                  <div className="flex relative">
+                  <div className="flex justify-center">
                     <div className="h-7 w-7">
                       <div className="z-0">{baseAssetLogo}</div>
                     </div>
@@ -44,17 +41,17 @@ const AssetPairTable = ({ data, assets }: any) =>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900  truncate">
-                    <span>{x.maxDebt_}</span>
+                    <span>{formatValue(x.maxDebt_, baseAsset.digitFormat)}</span>
                   </span>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900  truncate">
-                    <span>{x.totalDebt_}</span>
+                    <span>{formatValue(x.totalDebt_, baseAsset.digitFormat)}</span>
                   </span>
                 </td>
                 <td className="px-6 py-3 text-center items-center">
                   <span className="text-sm font-medium text-gray-900  truncate">
-                    <span>{Number(x.maxDebt_) - Number(x.totalDebt_)}</span>
+                    <span>{formatValue(Number(x.maxDebt_) - Number(x.totalDebt_), baseAsset.digitFormat)}</span>
                   </span>
                 </td>
               </tr>
