@@ -10,7 +10,7 @@ const AddressDisplay = ({ addr, tx }: any) => {
 
   return ethers.utils.isAddress(addr) || tx ? (
     <a
-      href={`https://${chainId === ('1' || 1) ? '' : `${chainData[chainId]}.`}etherscan.io/${
+      href={`https://${+chainId === 1 ? '' : `${chainData[chainId]}.`}etherscan.io/${
         tx ? 'tx' : 'address'
       }/${addr.trim()}`}
       target="_blank"
