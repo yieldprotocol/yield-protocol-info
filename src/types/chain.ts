@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers';
+
 export interface ISeriesMap {
   [id: string]: ISeries;
 }
@@ -28,6 +30,7 @@ export interface ISeries {
   poolVersion: string;
   poolName: string;
   poolSymbol: string; // for signing
+  totalSupply: BigNumber;
   fullDate: Date;
   displayName: string;
   season: string;
@@ -60,6 +63,7 @@ export interface IStrategy {
   version: string;
   baseId: string;
   decimals: string;
+  poolAddress: string;
 }
 
 export interface IAssetPairData {

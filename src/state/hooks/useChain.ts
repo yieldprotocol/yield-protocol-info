@@ -236,15 +236,17 @@ const useChain = () => {
                 const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
                 const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
 
-                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol] = await Promise.all([
-                  fyTokenContract.name(),
-                  fyTokenContract.symbol(),
-                  fyTokenContract.version(),
-                  fyTokenContract.decimals(),
-                  poolContract.name(),
-                  poolContract.version(),
-                  poolContract.symbol(),
-                ]);
+                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol, totalSupply] =
+                  await Promise.all([
+                    fyTokenContract.name(),
+                    fyTokenContract.symbol(),
+                    fyTokenContract.version(),
+                    fyTokenContract.decimals(),
+                    poolContract.name(),
+                    poolContract.version(),
+                    poolContract.symbol(),
+                    poolContract.totalSupply(),
+                  ]);
                 const newSeries = {
                   id,
                   baseId,
@@ -259,6 +261,7 @@ const useChain = () => {
                   poolVersion,
                   poolName,
                   poolSymbol,
+                  totalSupply,
                 };
                 newSeriesObj[id] = _chargeSeries(newSeries);
               }
