@@ -40,11 +40,7 @@ const Home = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(
-      Object.values(assetsTvl as ITvl[])
-        .filter((x) => x.value !== 0)
-        .sort((a: ITvl, b: ITvl) => b.value - a.value)
-    ); // sort by largest tvl
+    setTvlList(Object.values(assetsTvl as ITvl[]).sort((a: ITvl, b: ITvl) => b.value - a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
