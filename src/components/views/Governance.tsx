@@ -13,12 +13,12 @@ const Governance = () => {
       <SubNav
         paths={[
           { path: `governance/batchDecoder`, name: 'Batch Decoder' },
-          { path: `governance/proposalDecoder`, name: 'proposal decoder' },
+          { path: `governance/proposalDecoder`, name: 'Proposal Decoder' },
         ]}
       />
       <MainViewWrap>
         {subnav === 'batchDecoder' && <BatchDecoder />}
-        {subnav === 'proposalDecoder' && <ProposalHashDecoder/>}
+        {subnav === 'proposalDecoder' && <ProposalHashDecoder />}
       </MainViewWrap>
     </>
   );
