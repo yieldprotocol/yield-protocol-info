@@ -14,12 +14,9 @@ const Navigation = () => {
       <nav className="dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 bg-white">
         <div className="mx-auto px-2 sm:px-4 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
-            <div className="flex items-center px-2 lg:px-0 lg:space-x-2">
-              <NavLink
-                to="/"
-                className="rounded-lg overflow-hidden flex focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-gray-800 focus-visible:ring-offset-gray-900 transition"
-              >
-                <YieldMark colors={darkMode ? ['white'] : ['black']} />
+            <div className="flex items-center px-2">
+              <NavLink to="/" className="rounded-lg" style={{ textDecoration: 'none' }}>
+                <YieldMark colors={darkMode ? ['white'] : ['black']} height="1.75em" />
               </NavLink>
               <div className="flex">
                 <div className="ml-10 flex space-x-4">
