@@ -48,7 +48,7 @@ const Routes = () => (
       </Route>
       <Route path="/vaults/:id" component={Vault} />
 
-      <Route exact path="/governance">
+      <Route exact path="/decode">
         <Governance />
       </Route>
       <Route path="/governance/:subnav" component={Governance} />

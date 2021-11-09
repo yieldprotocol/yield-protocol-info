@@ -6,7 +6,7 @@ import YieldMark from './logos/YieldMark';
 import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
-  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'governance', 'liquidations'];
+  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'decode', 'liquidations'];
   const darkMode = useAppSelector((st) => st.application.darkMode);
 
   return (
