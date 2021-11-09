@@ -295,15 +295,19 @@ const useChain = () => {
                 Strategy.invariants(await Strategy.pool()),
               ]);
 
-              const Pool = contracts.Pool__factory.connect(poolAddress, provider);
+              const PoolView = contracts.PoolExtensions__factory.connect(poolAddress, provider);
 
-              // const [currentInvariant, initInvariant] = await Promise.all([
-              //   Strategy.invariants(await Strategy.pool()),
-              //   Pool.invariant(),
-              // ]);
+              try {
+                const [currentInvariant, initInvariant] = await Promise.all([
+                  PoolView.invariant(poolAddress),
+                  Strategy.invariants(poolAddress),
+                ]);
 
-              // console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
-              // console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
+                console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
+                console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
+              } catch (e) {
+                console.log(`could not get invariant for ${symbol}`);
+              }
 
               const newStrategy = {
                 id: strategyAddr,
