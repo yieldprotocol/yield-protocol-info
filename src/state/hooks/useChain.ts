@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { format } from 'date-fns';
@@ -13,7 +13,6 @@ import {
   updateAssets,
   updateProvider,
   getAssetPairData,
-  getAssetsTvl,
 } from '../actions/chain';
 
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
