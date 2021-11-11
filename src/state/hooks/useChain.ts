@@ -58,6 +58,8 @@ const useChain = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const chainId: number = useAppSelector((st) => st.chain.chainId);
+  console.log(process.env);
+  console.log(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );

@@ -40,7 +40,7 @@ const useBatchDecoder = (txHash: string) => {
         module: 'contract',
         action: 'getsourcecode',
         address: addHexPrefix(target),
-        apikey: 'CYR84B4D45QJB2223FT2CJD6N72S3ZU32W',
+        apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
       }),
       (x) => console.log(x)
     );

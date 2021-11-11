@@ -33,7 +33,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
               module: 'contract',
               action: 'getsourcecode',
               address: addHexPrefix(target),
-              apikey: 'CYR84B4D45QJB2223FT2CJD6N72S3ZU32W',
+              apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
             }),
             (x) => console.warn(x)
           ).then((ret: any) => {
@@ -90,7 +90,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
           address: addHexPrefix(ADDRESS_TIMELOCK),
           topic0: addHexPrefix(PROPOSE_EVENT),
           topic1: addHexPrefix(hash),
-          apikey: '9C6JHFW1HK4TXJRF3WBWIMJMBYZ7NCW6AS',
+          apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
         }),
         (x) => console.warn(x)
       );
