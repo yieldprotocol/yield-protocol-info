@@ -10,6 +10,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';
 
+  const provider = useAppSelector((st) => st.chain.provider);
   const chainId = useAppSelector((st) => st.chain.chainId);
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
@@ -63,10 +64,9 @@ const useProposalHashDecoder = (proposalHash: string) => {
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
-    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(hash);
+    const tx = await provider.getTransaction(hash);
     const input = tx.data;
     const callsArr = ethers.utils.defaultAbiCoder.decode([PROPOSE_ARGUMENTS], addHexPrefix(input.slice(2 + 4 * 2)))[0];
-    // 0x4a6c405fad393b24f0fd889bb8ae715b3fcca1f0a12c9ae079d072958c9dbbc7
     const newCalls = [
       epoch,
       callsArr.map((call: any) => ({

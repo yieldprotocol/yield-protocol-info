@@ -7,6 +7,7 @@ import { NETWORK_LABEL } from '../config/networks';
 import { useAppSelector } from '../state/hooks/general';
 
 const useBatchDecoder = (txHash: string) => {
+  const provider = useAppSelector((st: any) => st.chain.provider);
   const chainId = useAppSelector((st: any) => st.chain.chainId);
   const network = NETWORK_LABEL[chainId]?.toLowerCase();
   const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
@@ -121,7 +122,7 @@ const useBatchDecoder = (txHash: string) => {
   async function decodeTxHash() {
     setLoading(true);
     try {
-      const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(txHash);
+      const tx = await provider.getTransaction(txHash);
       if (!tx?.to) {
         console.log(`Transaction without address: ${tx}`);
         return;
