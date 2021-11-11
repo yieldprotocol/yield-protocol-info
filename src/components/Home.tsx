@@ -89,7 +89,7 @@ const Home = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Borrowed</div>
             <div className="text-3xl flex">
-              {totalDebt && !assetPairDataLoading ? (
+              {totalDebt && !tvlLoading ? (
                 <>
                   $<AnimatedNum num={totalDebt} />
                 </>
