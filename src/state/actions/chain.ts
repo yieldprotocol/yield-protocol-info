@@ -192,7 +192,6 @@ async function getPoolBalance(pool: any) {
     const base_: string = ethers.utils.formatUnits(base, decimals);
     const fyToken = await pool.getFYTokenBalance();
     const fyToken_ = ethers.utils.formatUnits(fyToken, decimals);
-
     // estimate how much base you would get from selling the fyToken in the pool
     try {
       const fyTokenToBaseCostEstimate = await pool.sellFYTokenPreview(

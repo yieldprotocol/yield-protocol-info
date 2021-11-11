@@ -32,20 +32,6 @@ const assetDigitFormatMap = new Map([
   ['STETH', 6],
 ]);
 
-interface IChainData {
-  name: string;
-  color: string;
-  supported: boolean;
-}
-
-const chainData = new Map<number, IChainData>();
-chainData.set(1, { name: 'Mainnet', color: '#29b6af', supported: false });
-chainData.set(3, { name: 'Ropsten', color: '#ff4a8d', supported: false });
-chainData.set(4, { name: 'Rinkeby', color: '#f6c343', supported: false });
-chainData.set(5, { name: 'Goerli', color: '#3099f2', supported: false });
-chainData.set(10, { name: 'Optimism', color: '#EB0822', supported: false });
-chainData.set(42, { name: 'Kovan', color: '#7F7FFE', supported: true });
-
 const getEventArgProps = (contract: any) =>
   Object.entries(contract.interface.events).reduce((acc: any, curr: any): any => {
     // example interface:
@@ -71,10 +57,12 @@ const getEventArgProps = (contract: any) =>
 const useChain = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const chainId = useAppSelector((st) => st.chain.chainId);
+  const chainId: number = useAppSelector((st) => st.chain.chainId);
+  const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
+    process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
+  );
 
   useEffect(() => {
-    const provider = new ethers.providers.InfuraProvider(Number(chainId), '646dc0f33d2449878b28e0afa25267f6');
     dispatch(updateProvider(provider));
 
     if (provider && chainId) {
@@ -294,16 +282,6 @@ const useChain = () => {
                 Strategy.totalSupply(),
                 Strategy.invariants(await Strategy.pool()),
               ]);
-
-              const Pool = contracts.Pool__factory.connect(poolAddress, provider);
-
-              // const [currentInvariant, initInvariant] = await Promise.all([
-              //   Strategy.invariants(await Strategy.pool()),
-              //   Pool.invariant(),
-              // ]);
-
-              // console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
-              // console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
 
               const newStrategy = {
                 id: strategyAddr,

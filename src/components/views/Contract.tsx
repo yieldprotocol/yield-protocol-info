@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getEvents } from '../../state/actions/contracts';
