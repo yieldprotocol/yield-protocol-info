@@ -7,6 +7,7 @@ import WBTCMark from '../components/logos/WBTCMark';
 import USDTMark from '../components/logos/USDTMark';
 import StEthMark from '../components/logos/StEthMark';
 import LinkMark from '../components/logos/LinkMark';
+import ENSMark from '../components/logos/ENSMark';
 
 export const markMap = new Map<string, any>([
   ['DAI', <DaiMark key="dai" />],
@@ -14,7 +15,8 @@ export const markMap = new Map<string, any>([
   ['WBTC', <WBTCMark key="wbtc" />],
   ['TST', <TSTMark key="tst" />],
   ['ETH', <EthMark key="eth" />],
-  ['USDT', <USDTMark key="eth" />],
+  ['USDT', <USDTMark key="usdt" />],
   ['WSTETH', <StEthMark key="wsteth" />],
   ['LINK', <LinkMark key="link" />],
+  ['ENS', <ENSMark key="ens" />],
 ]);
