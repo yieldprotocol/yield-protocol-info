@@ -26,6 +26,7 @@ export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
 
 export function getAssetPairData(asset: any, assets: any, contractMap: any) {
   return async function _getAssetPairData(dispatch: any) {
+    dispatch(assetPairDataLoading(true));
     try {
       const Cauldron = Object.values(contractMap as IContractMap).filter((x: IContract) => x.name === 'Cauldron')[0]
         .contract;
@@ -58,8 +59,10 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
       );
 
       dispatch(updateAssetPairData(asset.id, assetPairData));
+      dispatch(assetPairDataLoading(false));
     } catch (e) {
       console.log('Error getting asset pair data', e);
+      dispatch(assetPairDataLoading(false));
     }
   };
 }
@@ -68,6 +71,10 @@ export const reset = () => ({ type: ActionType.RESET });
 
 const updateAssetsTvl = (assetsTvl: any) => ({ type: ActionType.UPDATE_ASSETS_TVL, assetsTvl });
 const tvlLoading = (loading: boolean) => ({ type: ActionType.TVL_LOADING, tvlLoading: loading });
+const assetPairDataLoading = (loading: boolean) => ({
+  type: ActionType.ASSET_PAIR_DATA_LOADING,
+  assetPairDataLoading: loading,
+});
 
 /**
  * Gets the USDC denominated TVL by asset

@@ -13,6 +13,7 @@ import {
   updateAssets,
   updateProvider,
   getAssetPairData,
+  getAssetsTvl,
 } from '../actions/chain';
 
 import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
