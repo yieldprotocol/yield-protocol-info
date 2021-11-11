@@ -3,7 +3,7 @@ import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
-import { NETWORK_LABEL } from '../config/networks';
+import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const useProposalHashDecoder = (proposalHash: string) => {
@@ -12,9 +12,9 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   const provider = useAppSelector((st) => st.chain.provider);
   const chainId = useAppSelector((st) => st.chain.chainId);
-  const network = NETWORK_LABEL[chainId]?.toLowerCase();
+  const network = CHAIN_INFO.get(chainId)?.name.toLowerCase();
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
   const [decoded, setDecoded] = useState<any>({
