@@ -24,9 +24,9 @@ const Home = () => {
   const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
   const assetsLoading = useAppSelector((st) => st.chain.assetsLoading);
   const contractMap = useAppSelector((st) => st.contracts.contractMap);
-  const [tvl, setTvl] = useState<number | null>(null);
+  const [tvl, setTvl] = useState<number>(0);
   const [tvlList, setTvlList] = useState<any[]>([]);
-  const [totalDebt, setTotalDebt] = useState<number | null>(null);
+  const [totalDebt, setTotalDebt] = useState<number>(0);
   const [totalDebtList, setTotalDebtList] = useState<ITvl[]>([]);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const Home = () => {
   return (
     <MainViewWrap>
       <Spinner loading={tvlLoading || assetsLoading} />
-      {!tvlLoading && !assetsLoading && tvl && totalDebt ? (
+      {!tvlLoading && !assetsLoading ? (
         <div className="bg-green-50 dark:bg-green-300 rounded-xl p-8">
           <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
             <Summary>
@@ -87,9 +87,7 @@ const Home = () => {
                 $<AnimatedNum num={totalDebt} />
               </div>
             </Summary>
-            <div className="w-1/2">
-              <TvlTable data={totalDebtList} assets={assets} />
-            </div>
+            <div className="w-1/2">{totalDebt > 0 && <TvlTable data={totalDebtList} assets={assets} />}</div>
           </div>
         </div>
       ) : null}
