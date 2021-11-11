@@ -30,6 +30,7 @@
       "ChainlinkMultiOracle": "0xBcdc8bad83ca8053DFA6B1CBAEB7E71699254a3b",
       "CompositeMultiOracle": "0x30A947446FF5fC99ff8BAAa05688A0e57102bF61",
       "LidoOracle": "0xaF45D0277399E79Bf599d72fF4521f8Dc4A060E1",
+      "lidoWrapHandler": "0x491aB93faa921C8E634F891F96512Be14fD3DbB1",
       "JoinFactory": "0x2DdAB027254452763D2301024fE1058f9410532c",
       "FYTokenFactory": "0x21BF7B997aB272eeeBCF7086F09e6A069C3B8a38",
       "PoolFactory": "0xA37e1866CAD311B19f76a8C39370b1c4e849567e",
@@ -69,7 +70,9 @@
     "WBTC": "#5A5564",
     "TST": "#D15034",
     "WETH": "#FFFFFF",
-    "USDT": "#50af95"
+    "USDT": "#50af95",
+    "wstETH": "#00A3FF",
+    "LINK": "#2A5ADA"
   },
   "seasonColors": {
     "WINTER": ["#D9D9D9", "#67F2FC", "#333333"],
