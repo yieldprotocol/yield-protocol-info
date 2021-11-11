@@ -58,8 +58,6 @@ const useChain = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const chainId: number = useAppSelector((st) => st.chain.chainId);
-  console.log(process.env);
-  console.log(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );
@@ -284,16 +282,6 @@ const useChain = () => {
                 Strategy.totalSupply(),
                 Strategy.invariants(await Strategy.pool()),
               ]);
-
-              const Pool = contracts.Pool__factory.connect(poolAddress, provider);
-
-              // const [currentInvariant, initInvariant] = await Promise.all([
-              //   Strategy.invariants(await Strategy.pool()),
-              //   Pool.invariant(),
-              // ]);
-
-              // console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
-              // console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
 
               const newStrategy = {
                 id: strategyAddr,
