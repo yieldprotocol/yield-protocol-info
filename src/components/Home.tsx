@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAssetsTvl } from '../state/actions/chain';
-import { useAppDispatch, useAppSelector } from '../state/hooks/general';
+import { useAppSelector } from '../state/hooks/general';
 import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
@@ -15,24 +14,15 @@ interface ITvl {
 }
 
 const Home = () => {
-  const dispatch = useAppDispatch();
-  const provider = useAppSelector((st) => st.chain.provider);
   const assets = useAppSelector((st) => st.chain.assets);
   const assetPairData = useAppSelector((st) => st.chain.assetPairData);
-  const assetPairDataLoading = useAppSelector((st) => st.chain.assetPairDataLoading);
-  const series = useAppSelector((st) => st.chain.series);
   const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);
   const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
   const [totalDebt, setTotalDebt] = useState<number | null>(null);
   const [totalDebtList, setTotalDebtList] = useState<ITvl[]>([]);
-
-  useEffect(() => {
-    dispatch(getAssetsTvl(assets, contractMap, series, provider));
-  }, [assets, contractMap, dispatch, provider, series]);
 
   // sets the total value locked for all assets combined
   useEffect(() => {
