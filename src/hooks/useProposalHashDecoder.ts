@@ -3,17 +3,18 @@ import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
-import { NETWORK_LABEL } from '../config/networks';
+import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const useProposalHashDecoder = (proposalHash: string) => {
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';
 
+  const provider = useAppSelector((st) => st.chain.provider);
   const chainId = useAppSelector((st) => st.chain.chainId);
-  const network = NETWORK_LABEL[chainId]?.toLowerCase();
+  const network = CHAIN_INFO.get(chainId)?.name.toLowerCase();
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
   const [decoded, setDecoded] = useState<any>({
@@ -32,7 +33,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
               module: 'contract',
               action: 'getsourcecode',
               address: addHexPrefix(target),
-              apikey: 'CYR84B4D45QJB2223FT2CJD6N72S3ZU32W',
+              apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
             }),
             (x) => console.warn(x)
           ).then((ret: any) => {
@@ -63,10 +64,9 @@ const useProposalHashDecoder = (proposalHash: string) => {
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
-    const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(hash);
+    const tx = await provider.getTransaction(hash);
     const input = tx.data;
     const callsArr = ethers.utils.defaultAbiCoder.decode([PROPOSE_ARGUMENTS], addHexPrefix(input.slice(2 + 4 * 2)))[0];
-    // 0x4a6c405fad393b24f0fd889bb8ae715b3fcca1f0a12c9ae079d072958c9dbbc7
     const newCalls = [
       epoch,
       callsArr.map((call: any) => ({
@@ -90,7 +90,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
           address: addHexPrefix(ADDRESS_TIMELOCK),
           topic0: addHexPrefix(PROPOSE_EVENT),
           topic1: addHexPrefix(hash),
-          apikey: '9C6JHFW1HK4TXJRF3WBWIMJMBYZ7NCW6AS',
+          apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
         }),
         (x) => console.warn(x)
       );

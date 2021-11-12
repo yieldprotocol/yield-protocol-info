@@ -1,22 +1,18 @@
 import React from 'react';
 import { ethers } from 'ethers';
 import { useAppSelector } from '../state/hooks/general';
-import { NETWORK_LABEL as chainData } from '../config/networks';
 import { useEnsName } from '../state/hooks/useEnsName';
+import { CHAIN_INFO } from '../config/chainData';
 
 const AddressDisplay = ({ addr, tx }: any) => {
   const chainId = useAppSelector((st: any) => st.chain.chainId);
-  const validAddress = ethers.utils.isAddress(addr);
-
   const ensName = useEnsName(addr);
 
   if (!addr) return null;
 
   return ethers.utils.isAddress(addr) || tx ? (
     <a
-      href={`https://${+chainId === 1 ? '' : `${chainData[chainId]}.`}etherscan.io/${
-        tx ? 'tx' : 'address'
-      }/${addr.trim()}`}
+      href={`${CHAIN_INFO.get(chainId)?.explorer}/${tx ? 'tx' : 'address'}/${addr.trim()}`}
       target="_blank"
       rel="noreferrer"
     >

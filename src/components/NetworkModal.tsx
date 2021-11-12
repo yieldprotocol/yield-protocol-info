@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
-import { NETWORK_LABEL } from '../config/networks';
+import { CHAIN_INFO, SUPPORTED_CHAIN_IDS } from '../config/chainData';
 import { updateChainId } from '../state/actions/chain';
 import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 
@@ -9,9 +9,6 @@ const NetworkModal = () => {
   const dispatch = useAppDispatch();
   const chainId = useAppSelector((st) => st.chain.chainId);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const handleClick = (id: number) => {
-    dispatch(updateChainId(id));
-  };
 
   return (
     <>
@@ -22,7 +19,7 @@ const NetworkModal = () => {
             onClick={() => setShowModal(!showModal)}
             className="text-gray-900 hover:bg-green-500 bg-green-300  flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:text-gray-900 dark:hover:bg-green-500  text-md leading-5 rounded-lg px-3 py-2"
           >
-            {NETWORK_LABEL[chainId]}
+            {CHAIN_INFO.get(+chainId)?.name}
           </button>
         )}
       </div>
@@ -38,14 +35,14 @@ const NetworkModal = () => {
                   <div className="text-lg leading-6 font-medium dark:text-white">Choose Network</div>
                   <div className="relative p-6">
                     <div className="my-4 text-gray-900 text-lg leading-relaxed">
-                      {[...Object.keys(NETWORK_LABEL)].map((id: any) => (
+                      {SUPPORTED_CHAIN_IDS.map((id: number) => (
                         <button
                           key={id}
                           className="mx-2 my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300  flex-shrink-0 inline-flex items-center justify-center overflow-hidden font-medium truncate focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition  dark:hover:bg-green-500 text-md leading-5 rounded-lg px-3 py-2"
-                          onClick={(e) => handleClick(id)}
+                          onClick={(e) => dispatch(updateChainId(id))}
                           type="button"
                         >
-                          <div className="text-sm">{NETWORK_LABEL[id]}</div>
+                          <div className="text-sm">{CHAIN_INFO.get(id)?.name}</div>
                         </button>
                       ))}
                     </div>

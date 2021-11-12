@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
-import { NETWORK_LABEL } from '../config/networks';
+import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const useBatchDecoder = (txHash: string) => {
+  const provider = useAppSelector((st: any) => st.chain.provider);
   const chainId = useAppSelector((st: any) => st.chain.chainId);
-  const network = NETWORK_LABEL[chainId]?.toLowerCase();
+  const network = CHAIN_INFO.get(chainId)?.name.toLowerCase();
+
   const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>(null);
@@ -38,7 +40,7 @@ const useBatchDecoder = (txHash: string) => {
         module: 'contract',
         action: 'getsourcecode',
         address: addHexPrefix(target),
-        apikey: 'CYR84B4D45QJB2223FT2CJD6N72S3ZU32W',
+        apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
       }),
       (x) => console.log(x)
     );
@@ -121,7 +123,7 @@ const useBatchDecoder = (txHash: string) => {
   async function decodeTxHash() {
     setLoading(true);
     try {
-      const tx = await ethers.getDefaultProvider(network === 'ethereum' ? 'homestead' : network).getTransaction(txHash);
+      const tx = await provider.getTransaction(txHash);
       if (!tx?.to) {
         console.log(`Transaction without address: ${tx}`);
         return;

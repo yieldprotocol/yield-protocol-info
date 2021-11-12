@@ -26,6 +26,7 @@ export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
 
 export function getAssetPairData(asset: any, assets: any, contractMap: any) {
   return async function _getAssetPairData(dispatch: any) {
+    dispatch(assetPairDataLoading(true));
     try {
       const Cauldron = Object.values(contractMap as IContractMap).filter((x: IContract) => x.name === 'Cauldron')[0]
         .contract;
@@ -58,8 +59,10 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
       );
 
       dispatch(updateAssetPairData(asset.id, assetPairData));
+      dispatch(assetPairDataLoading(false));
     } catch (e) {
       console.log('Error getting asset pair data', e);
+      dispatch(assetPairDataLoading(false));
     }
   };
 }
@@ -68,6 +71,10 @@ export const reset = () => ({ type: ActionType.RESET });
 
 const updateAssetsTvl = (assetsTvl: any) => ({ type: ActionType.UPDATE_ASSETS_TVL, assetsTvl });
 const tvlLoading = (loading: boolean) => ({ type: ActionType.TVL_LOADING, tvlLoading: loading });
+const assetPairDataLoading = (loading: boolean) => ({
+  type: ActionType.ASSET_PAIR_DATA_LOADING,
+  assetPairDataLoading: loading,
+});
 
 /**
  * Gets the USDC denominated TVL by asset
@@ -181,7 +188,7 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
 }
 
 /**
- * Gets a pool's associated asset balance by combining pool base with fyToken
+ * Gets a pool's associated asset balance by combining pool base with the estimated amount of converting fyTokenRealBalance to base
  * @param pool
  * @returns string
  */
@@ -190,8 +197,9 @@ async function getPoolBalance(pool: any) {
     const decimals = await pool.decimals();
     const base = await pool.getBaseBalance();
     const base_: string = ethers.utils.formatUnits(base, decimals);
-    const fyToken = await pool.getFYTokenBalance();
-    const fyToken_ = ethers.utils.formatUnits(fyToken, decimals);
+    const fyTokenVirtualBalance = await pool.getFYTokenBalance();
+    const poolTotalSupply = await pool.totalSupply();
+    const fyTokenRealBalance_ = ethers.utils.formatUnits(fyTokenVirtualBalance.sub(poolTotalSupply), decimals);
 
     // estimate how much base you would get from selling the fyToken in the pool
     try {
@@ -200,8 +208,8 @@ async function getPoolBalance(pool: any) {
       ); // estimate the base value of 1 fyToken unit
       const fyTokenToBaseCostEstimate_ = cleanValue(ethers.utils.formatUnits(fyTokenToBaseCostEstimate, decimals), 6);
       const fyTokenToBaseValueEstimate: number = fyTokenToBaseCostEstimate_
-        ? +fyToken_ * +fyTokenToBaseCostEstimate_
-        : +fyToken_; // estimated base cost of fyToken by the fyToken amount
+        ? +fyTokenRealBalance_ * +fyTokenToBaseCostEstimate_
+        : +fyTokenRealBalance_; // estimated base cost of fyToken by the fyToken amount
       return fyTokenToBaseValueEstimate ? (fyTokenToBaseValueEstimate + +base_).toString() : base_;
     } catch (e) {
       console.log(e);
