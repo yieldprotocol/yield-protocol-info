@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { cleanValue } from '../../utils/appUtils';
+import { cleanValue, formatValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';
@@ -156,7 +156,7 @@ const Vaults = () => {
                         </td>
                         <td className="px-6 py-3 text-center items-center">
                           <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{cleanValue(v.collatRatioPct, 1)}%</span>
+                            <span>{formatValue(v.collatRatioPct, 1)}%</span>
                           </span>
                         </td>
                         <td className="px-6 py-3 text-center items-center">
@@ -166,7 +166,7 @@ const Vaults = () => {
                         </td>
                         <td className="px-6 py-3 text-center items-center">
                           <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{v.art}</span>
+                            <span>{formatValue(v.art, debtAsset.digitFormat)}</span>
                           </span>
                         </td>
                         <td className="px-6 py-3 text-center items-center">
