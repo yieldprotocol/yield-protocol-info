@@ -286,7 +286,6 @@ const useChain = () => {
                 Strategy.invariants(await Strategy.pool()),
               ]);
 
-<<<<<<< HEAD
               const PoolView = contracts.PoolExtensions__factory.connect(poolAddress, provider);
 
               try {
@@ -301,8 +300,6 @@ const useChain = () => {
                 console.log(`could not get invariant for ${symbol}`);
               }
 
-=======
->>>>>>> main
               const newStrategy = {
                 id: strategyAddr,
                 address: strategyAddr,
