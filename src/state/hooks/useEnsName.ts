@@ -11,7 +11,11 @@ export const useEnsName = (account: string) => {
   useEffect(() => {
     if (provider && chainId === 1 && ethers.utils.isAddress(account)) {
       (async () => {
-        setEnsName(await provider.lookupAddress(account));
+        try {
+          setEnsName(await provider.lookupAddress(account));
+        } catch (e) {
+          console.log(e);
+        }
       })();
     }
   }, [account, provider, chainId]);

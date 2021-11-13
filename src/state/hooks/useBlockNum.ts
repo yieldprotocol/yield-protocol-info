@@ -6,12 +6,16 @@ import { useAppSelector } from './general';
 export const useBlockNum = () => {
   const provider: ethers.providers.JsonRpcProvider = useAppSelector((st) => st.chain.provider);
 
-  const [blockNum, setBlockNum] = useState<string | null>(null);
+  const [blockNum, setBlockNum] = useState<number | null>(null);
 
   useEffect(() => {
     if (provider) {
       (async () => {
-        setBlockNum((await provider.getBlockNumber()).toString());
+        try {
+          setBlockNum(await provider.getBlockNumber());
+        } catch (e) {
+          console.log(e);
+        }
       })();
     }
   }, [provider]);

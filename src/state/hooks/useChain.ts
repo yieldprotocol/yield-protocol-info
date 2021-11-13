@@ -22,6 +22,7 @@ import * as contracts from '../../contracts';
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
+import { useBlockNum } from './useBlockNum';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -61,6 +62,9 @@ const useChain = () => {
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );
+
+  const currentBlockNum = useBlockNum();
+  const compareBlockNum = Number(currentBlockNum) - 1000;
 
   useEffect(() => {
     dispatch(updateProvider(provider));
@@ -290,12 +294,10 @@ const useChain = () => {
 
               try {
                 const [currentInvariant, initInvariant] = await Promise.all([
-                  PoolView.invariant(poolAddress),
+                  PoolView.invariant(poolAddress, { blockTag: currentBlockNum?.toString() }),
+                  PoolView.invariant(poolAddress, { blockTag: currentBlockNum?.toString() }),
                   Strategy.invariants(poolAddress),
                 ]);
-
-                console.log('init invariant', ethers.utils.formatUnits(initInvariant, decimals));
-                console.log('curr invariant', ethers.utils.formatUnits(currentInvariant, decimals));
               } catch (e) {
                 console.log(`could not get invariant for ${symbol}`);
               }
