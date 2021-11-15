@@ -2,7 +2,7 @@ import { ActionType } from '../actionTypes/application';
 
 const INITIAL_STATE = {
   darkMode: false as boolean,
-  version: '1.0.0' as string,
+  version: process.env.REACT_APP_VERSION as string,
 };
 
 export default function rootReducer(state = INITIAL_STATE, action: any) {
