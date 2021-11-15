@@ -10,6 +10,7 @@ const useResetApp = () => {
 
   useEffect(() => {
     if (process.env.REACT_APP_VERSION !== version) {
+      console.log(process.env.REACT_APP_VERSION);
       dispatch(resetChain());
       dispatch(resetContracts());
       dispatch(resetVaults());

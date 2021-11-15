@@ -228,15 +228,17 @@ const useChain = () => {
                 const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
                 const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
 
-                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol] = await Promise.all([
-                  fyTokenContract.name(),
-                  fyTokenContract.symbol(),
-                  fyTokenContract.version(),
-                  fyTokenContract.decimals(),
-                  poolContract.name(),
-                  poolContract.version(),
-                  poolContract.symbol(),
-                ]);
+                const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol, totalSupply] =
+                  await Promise.all([
+                    fyTokenContract.name(),
+                    fyTokenContract.symbol(),
+                    fyTokenContract.version(),
+                    fyTokenContract.decimals(),
+                    poolContract.name(),
+                    poolContract.version(),
+                    poolContract.symbol(),
+                    poolContract.totalSupply(),
+                  ]);
                 const newSeries = {
                   id,
                   baseId,
@@ -251,6 +253,7 @@ const useChain = () => {
                   poolVersion,
                   poolName,
                   poolSymbol,
+                  totalSupply,
                 };
                 newSeriesObj[id] = _chargeSeries(newSeries);
               }
@@ -286,6 +289,19 @@ const useChain = () => {
                 Strategy.totalSupply(),
                 Strategy.invariants(await Strategy.pool()),
               ]);
+
+              const PoolView = contracts.PoolExtensions__factory.connect(poolAddress, provider);
+              let currentInvariant;
+              let initInvariant;
+
+              try {
+                [currentInvariant, initInvariant] = await Promise.all([
+                  PoolView.invariant(poolAddress),
+                  Strategy.invariants(poolAddress),
+                ]);
+              } catch (e) {
+                console.log(`could not get invariant for ${symbol}`);
+              }
 
               const newStrategy = {
                 id: strategyAddr,
