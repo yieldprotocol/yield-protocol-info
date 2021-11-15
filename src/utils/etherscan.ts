@@ -1,3 +1,5 @@
+import { CHAIN_INFO } from '../config/chainData';
+
 export function addHexPrefix(addrLike: string) {
   if (addrLike.startsWith('0x')) {
     return addrLike;
@@ -14,7 +16,7 @@ async function* asyncGenerator(max: number) {
 }
 
 export async function fetchEtherscan(
-  network: string,
+  chainId: number,
   params: URLSearchParams,
   logger: (arg0: string) => void
 ): Promise<any> {
@@ -23,7 +25,8 @@ export async function fetchEtherscan(
   const maxAttempts = 5;
   for await (const attempt of asyncGenerator(maxAttempts)) {
     logger('Querying Etherscan');
-    const url = `https://api${network === 'ethereum' ? '' : `-${network}`}.etherscan.io/api?${params}`;
+    const url = `${CHAIN_INFO.get(chainId)?.etherscanApi}?${params}`;
+    console.log('url', url);
     resp = await fetch(url);
     respJson = await resp.json();
 
@@ -47,10 +50,10 @@ export async function fetchEtherscan(
   return Promise.reject(new Error(`Failed to quest etherscan: ${respJson.message} - ${respJson.result}`));
 }
 
-export async function fetchTransactionInput(network: string, tx_hash: string, logger: (arg0: string) => void) {
+export async function fetchTransactionInput(chainId: number, tx_hash: string, logger: (arg0: string) => void) {
   const transaction: any = (
     await fetchEtherscan(
-      network,
+      chainId,
       new URLSearchParams({
         module: 'proxy',
         action: 'eth_getTransactionByHash',

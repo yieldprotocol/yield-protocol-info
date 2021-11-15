@@ -3,13 +3,11 @@ import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
-import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const useBatchDecoder = (txHash: string) => {
   const provider = useAppSelector((st: any) => st.chain.provider);
   const chainId = useAppSelector((st: any) => st.chain.chainId);
-  const network = CHAIN_INFO.get(chainId)?.name?.toLowerCase();
 
   const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
@@ -35,7 +33,7 @@ const useBatchDecoder = (txHash: string) => {
   async function getABI(target: string) {
     if (target in decoded.abis) return decoded.abis[target];
     const ret = await fetchEtherscan(
-      network!,
+      chainId!,
       new URLSearchParams({
         module: 'contract',
         action: 'getsourcecode',
