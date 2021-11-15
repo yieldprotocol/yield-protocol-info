@@ -34,7 +34,7 @@ const Strategy = () => {
       <div className="rounded-lg p-8 align-middle justify-items-start shadow-md dark:bg-green-400 bg-green-100">
         <div className="text-md pb-4">
           <strong>{strategy.symbol}</strong>
-          <div>
+          <div className="pt-2">
             <i>
               {poolReturns ? (
                 <>
