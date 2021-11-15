@@ -97,14 +97,13 @@ const useBatchDecoder = (txHash: string) => {
       argsCalldata
     );
 
-    if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'batch') {
+    if (ethers.utils.getAddress(call.to) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => new Call(call.to, x))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
-      // } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'execute') {
     } else if (func.name === 'execute') {
       _args = [_args[0].map((x: any) => new Call(x[0], x[1]))];
       await Promise.all(_args[0].map((x: any) => resolveCall(x)));
-    } else if (ethers.utils.getAddress(call.to) === ethers.utils.getAddress(ADDRESS_LADLE) && func.name === 'route') {
+    } else if (ethers.utils.getAddress(call.to) && func.name === 'route') {
       _args = [new Call(_args[0], _args[1])];
       await resolveCall(_args[0]);
     } else {
@@ -122,6 +121,7 @@ const useBatchDecoder = (txHash: string) => {
     setLoading(true);
     try {
       const tx = await provider.getTransaction(txHash);
+      console.log(tx);
       if (!tx?.to) {
         console.log(`Transaction without address: ${tx}`);
         return;
