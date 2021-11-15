@@ -16,7 +16,7 @@ const Asset = () => {
 
   return asset ? (
     <MainViewWrap>
-      <div className="flex gap-10">
+      <div className="lg:flex gap-10 px-4">
         <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-400">
           <div className="text-lg pb-4 flex gap-x-2">
             {logo && <div className="h-6 w-6">{logo}</div>}
