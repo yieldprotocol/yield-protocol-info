@@ -291,11 +291,12 @@ const useChain = () => {
               ]);
 
               const PoolView = contracts.PoolExtensions__factory.connect(poolAddress, provider);
+              let currentInvariant;
+              let initInvariant;
 
               try {
-                const [currentInvariant, initInvariant] = await Promise.all([
-                  PoolView.invariant(poolAddress, { blockTag: currentBlockNum?.toString() }),
-                  PoolView.invariant(poolAddress, { blockTag: currentBlockNum?.toString() }),
+                [currentInvariant, initInvariant] = await Promise.all([
+                  PoolView.invariant(poolAddress),
                   Strategy.invariants(poolAddress),
                 ]);
               } catch (e) {
