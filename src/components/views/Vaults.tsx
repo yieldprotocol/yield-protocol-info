@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { cleanValue, formatValue } from '../../utils/appUtils';
+import { formatValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';

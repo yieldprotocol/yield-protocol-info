@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
