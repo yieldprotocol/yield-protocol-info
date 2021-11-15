@@ -72,14 +72,14 @@ export const usePoolReturns = (series: ISeries, previousBlocks: number) => {
           const periods = SECONDS_PER_YEAR / secondsBetween;
 
           const apy = (1 + returns / periods) ** periods - 1;
-          const apy_ = (apy * 100).toString();
+          const apy_ = isNaN(apy) ? 'Could not get APY' : (apy * 100).toString();
           setPoolReturns(apy_);
           return apy_;
         } catch (e) {
           console.log(e);
         }
       }
-      return 0;
+      return 'Could not get APY';
     };
     _getPoolReturns();
   }, [series, currentBlock, previousBlock, currBlockTimestamp, previousBlockTimestamp, provider]);
