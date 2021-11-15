@@ -65,3 +65,5 @@ export const updateEventArgPropsMap = (eventArgPropsMap: any) => ({
   type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
   eventArgPropsMap,
 });
+
+export const reset = () => ({ type: ActionType.RESET });

@@ -12,7 +12,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   const provider = useAppSelector((st) => st.chain.provider);
   const chainId = useAppSelector((st) => st.chain.chainId);
-  const network = CHAIN_INFO.get(chainId)?.name.toLowerCase();
+  const network = CHAIN_INFO.get(chainId)?.name?.toLowerCase() || '';
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
   const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();

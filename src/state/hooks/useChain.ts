@@ -22,7 +22,7 @@ import * as contracts from '../../contracts';
 
 import { getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
-import { useBlockNum } from './useBlockNum';
+import { updateVersion } from '../actions/application';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -58,13 +58,13 @@ const getEventArgProps = (contract: any) =>
 const useChain = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+
+  dispatch(updateVersion(process.env.REACT_APP_VERSION!));
+
   const chainId: number = useAppSelector((st) => st.chain.chainId);
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );
-
-  const currentBlockNum = useBlockNum();
-  const compareBlockNum = Number(currentBlockNum) - 1000;
 
   useEffect(() => {
     dispatch(updateProvider(provider));
