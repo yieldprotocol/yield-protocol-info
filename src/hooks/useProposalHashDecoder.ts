@@ -3,7 +3,6 @@ import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
-import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const useProposalHashDecoder = (proposalHash: string) => {
@@ -12,7 +11,6 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   const provider = useAppSelector((st) => st.chain.provider);
   const chainId = useAppSelector((st) => st.chain.chainId);
-  const network = CHAIN_INFO.get(chainId)?.name?.toLowerCase() || '';
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
   const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
@@ -28,7 +26,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
       [...targets.values()].map((target: any) => {
         if (!(target in decoded.abis)) {
           fetchEtherscan(
-            network,
+            chainId,
             new URLSearchParams({
               module: 'contract',
               action: 'getsourcecode',
@@ -83,7 +81,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   async function decodeHash(hash: string) {
     try {
       const tx: any = await fetchEtherscan(
-        network,
+        chainId,
         new URLSearchParams({
           module: 'logs',
           action: 'getLogs',
