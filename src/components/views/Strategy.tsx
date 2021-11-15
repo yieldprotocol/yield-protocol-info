@@ -1,7 +1,9 @@
 import React from 'react';
+import { formatDistanceStrict } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import { usePoolReturns } from '../../state/hooks/usePoolReturns';
+import { ISeries } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
@@ -9,10 +11,14 @@ import SkeletonWrap from '../wraps/SkeletonWrap';
 
 const Strategy = () => {
   const { id } = useParams<{ id: string }>();
-  const provider = useAppSelector((st) => st.chain.provider);
   const strategies = useAppSelector((st) => st.chain.strategies);
+  const seriesMap = useAppSelector((st) => st.chain.series);
   const strategy = strategies[id];
-  const { poolReturns, timeframe } = usePoolReturns(strategy.poolAddress, provider);
+  const strategySeries: ISeries = seriesMap[strategy.seriesId];
+  const { poolReturns, secondsCompare } = usePoolReturns(strategySeries, 50000);
+  const secondsToDays = formatDistanceStrict(new Date(1, 1, 0, 0, 0, 0), new Date(1, 1, 0, 0, 0, secondsCompare || 0), {
+    unit: 'day',
+  });
 
   return strategy ? (
     <MainViewWrap>
@@ -23,7 +29,7 @@ const Strategy = () => {
             <i>
               {poolReturns ? (
                 <>
-                  APY: {cleanValue(poolReturns?.toString(), 2)}% using last {timeframe}
+                  APY: {cleanValue(poolReturns?.toString(), 2)}% using last {secondsToDays}
                 </>
               ) : (
                 <SkeletonWrap />
