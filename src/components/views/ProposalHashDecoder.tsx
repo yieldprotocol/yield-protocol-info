@@ -5,13 +5,29 @@ import TextInput from '../TextInput';
 import { useProposalHashDecoder } from '../../hooks/useProposalHashDecoder';
 import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
+import { useAppSelector } from '../../state/hooks/general';
+import { markMap } from '../../config/marks';
+import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
 
 const ProposalHashDecoder = () => {
+  const assets = useAppSelector((st) => st.chain.assets);
+  const series = useAppSelector((st) => st.chain.series);
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
 
   const handleDecode = () => proposalHash && decodeProposalHash();
+
+  // check if we can use an asset logo or series name
+  const getLogo = (arg: string) => {
+    const asset = assets[arg]
+      ? assets[arg]
+      : Object.values(assets as IAssetMap).filter((a: IAsset) => a.address === arg)[0];
+    const logo = asset ? markMap?.get(assets[asset.id].symbol!) : null;
+
+    if (logo) return logo;
+    return null;
+  };
 
   return (
     <div className="w-1/2">
@@ -69,8 +85,9 @@ const ProposalHashDecoder = () => {
                               .toString()
                               .split()
                               .map((v: any, i: number) => (
-                                <div key={uuid()} className="px-2">
+                                <div key={uuid()} className="flex px-2 gap-1">
                                   {type === 'address' ? <AddressDisplay addr={v} /> : <code>{v}</code>}
+                                  {getLogo(v) && <div className="h-4 w-4 m-auto">{getLogo(v)}</div>}
                                 </div>
                               ))}
                           </td>
