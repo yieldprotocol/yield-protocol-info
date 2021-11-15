@@ -14,7 +14,7 @@ async function* asyncGenerator(max: number) {
 }
 
 export async function fetchEtherscan(
-  network: string | undefined,
+  network: string,
   params: URLSearchParams,
   logger: (arg0: string) => void
 ): Promise<any> {
