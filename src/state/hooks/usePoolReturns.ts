@@ -1,75 +1,80 @@
 import { useEffect, useState } from 'react';
-import { BigNumber, Contract, ethers } from 'ethers';
-import { formatDistanceStrict } from 'date-fns';
-import { useAppSelector } from './general';
-import * as contracts from '../../contracts';
-import { ISeries } from '../../types/chain';
-import { IContract, IContractMap } from '../../types/contracts';
+import { BigNumber } from 'ethers';
 import { useBlockNum } from './useBlockNum';
+import { ISeries } from '../../types/chain';
+import { useAppSelector } from './general';
 import { SECONDS_PER_YEAR } from '../../utils/yieldMath';
+import * as contracts from '../../contracts';
 
-export const usePoolReturns = (poolAddress: string, provider: ethers.providers.JsonRpcProvider) => {
-  const seriesMap: ISeries = useAppSelector((st) => st.chain.series);
-  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
-  const Ladle: Contract = Object.values(contractMap).filter((c: IContract) => c.name === 'Ladle')[0].contract;
-  const ladleAddress = Ladle.address;
-  const series = Object.values(seriesMap).filter((s: ISeries) => s.poolAddress === poolAddress)[0];
-
-  const currentBlock = useBlockNum(); // current block
-
-  const [poolReturns, setPoolReturns] = useState<number | null>(null);
-  const [timeframe, setTimeframe] = useState<string | null>(null);
-  const [currPool, setCurrPool] = useState<contracts.Pool>();
+/**
+ * returns the series' corresponding pool's apy estimated based on the current block num and a previous block num (using last 7-8 days)
+ * @param series
+ * @param previousBlocks number of blocks to use for comparison (lookback window)
+ */
+export const usePoolReturns = (series: ISeries, previousBlocks: number) => {
+  const provider = useAppSelector((st) => st.chain.provider);
+  const currentBlock = useBlockNum();
   const [previousBlock, setPreviousBlock] = useState<number>();
+
+  const [poolReturns, setPoolReturns] = useState<string | null>(null);
+  // number of seconds between comparison timeframe curr and pre
+  const [secondsCompare, setSecondsCompare] = useState<number | null>(null);
   const [previousBlockTimestamp, setPreviousBlockTimestamp] = useState<any>();
   const [currBlockTimestamp, setCurrBlockTimestamp] = useState<any>();
 
   useEffect(() => {
-    const _getPoolBaseValuePerShare = async (pool: contracts.Pool, blockNum: number) => {
+    const _getPoolBaseValuePerShare = async (blockNum: number) => {
       try {
-        const [base, fyTokenVirtual] = await pool.getCache({ blockTag: blockNum });
-        const totalSupply = await pool.totalSupply({ blockTag: blockNum });
-        const decimals = await pool.decimals({ blockTag: blockNum });
-        const fyTokenToBaseCostEstimate = await pool.sellFYTokenPreview(
-          BigNumber.from(1).mul(BigNumber.from(10).pow(decimals)),
-          { blockTag: blockNum }
-        ); // estimate the base value of 1 fyToken unit
+        const poolContract = contracts.Pool__factory.connect(series.poolAddress, provider);
 
+        const [[base, fyTokenVirtual], totalSupply, decimals, fyTokenToBaseCostEstimate] = await Promise.all([
+          await poolContract.getCache({ blockTag: blockNum }),
+          await poolContract.totalSupply({ blockTag: blockNum }),
+          await poolContract.decimals({ blockTag: blockNum }),
+          await poolContract.sellFYTokenPreview(
+            BigNumber.from(1).mul(BigNumber.from(10).pow(await poolContract.decimals())),
+            {
+              blockTag: blockNum,
+            }
+          ), // estimate the base value of 1 fyToken unit
+        ]);
+
+        // the real balance of fyTokens in the pool
         const fyTokenReal = (fyTokenVirtual as BigNumber).sub(totalSupply as BigNumber);
 
+        // the estimated base value of all fyToken in the pool
         const fyTokenToBaseValueEstimate = fyTokenReal
           .mul(fyTokenToBaseCostEstimate)
           .div(BigNumber.from(1).mul(BigNumber.from(10).pow(decimals)));
 
+        // total estimated base value in pool
         const totalValue = base.add(fyTokenToBaseValueEstimate);
 
-        const valuePerShare_ = Number(totalValue.toString()) / Number(totalSupply.toString());
-        return valuePerShare_;
+        // the amount of base per LP token
+        const valuePerShare = Number(totalValue.toString()) / Number(totalSupply.toString());
+        return valuePerShare;
       } catch (e) {
         console.log('error getting pool per share value', e);
-        return [ethers.constants.Zero, ethers.constants.Zero];
+        return 0;
       }
     };
 
+    /* Compare base per share value for the current block versus the previous to compute apy */
     const _getPoolReturns = async () => {
-      if (currPool && ladleAddress && series && currentBlock && previousBlock) {
-        // burn for base timeframe 1 compared to burn for base timeframe 2 in the future to extrapolate pool returns
+      if (series && currentBlock && previousBlock && currBlockTimestamp && previousBlockTimestamp) {
         try {
-          const baseValueTimeframeCurr = await _getPoolBaseValuePerShare(currPool, Number(currentBlock));
-          const baseValueTimeframePre = await _getPoolBaseValuePerShare(currPool, Number(previousBlock));
+          const baseValuePerShareCurr = await _getPoolBaseValuePerShare(Number(currentBlock));
+          const baseValuePerSharePre = await _getPoolBaseValuePerShare(Number(previousBlock));
+          const returns = Number(baseValuePerShareCurr) / Number(baseValuePerSharePre) - 1;
 
-          const returns = Number(baseValueTimeframeCurr) / Number(baseValueTimeframePre);
           const secondsBetween = currBlockTimestamp - previousBlockTimestamp;
+          setSecondsCompare(secondsBetween);
           const periods = SECONDS_PER_YEAR / secondsBetween;
-          const secondsToDays = formatDistanceStrict(
-            new Date(1, 1, 0, 0, 0, 0),
-            new Date(1, 1, 0, 0, 0, secondsBetween || 0),
-            { unit: 'day' }
-          );
-          setTimeframe(secondsToDays);
-          const _apr = (1 + returns / periods) ** periods - 1;
-          setPoolReturns(_apr);
-          return _apr;
+
+          const apy = (1 + returns / periods) ** periods - 1;
+          const apy_ = (apy * 100).toString();
+          setPoolReturns(apy_);
+          return apy_;
         } catch (e) {
           console.log(e);
         }
@@ -77,32 +82,23 @@ export const usePoolReturns = (poolAddress: string, provider: ethers.providers.J
       return 0;
     };
     _getPoolReturns();
-  }, [
-    currPool,
-    series,
-    ladleAddress,
-    poolAddress,
-    currentBlock,
-    previousBlock,
-    currBlockTimestamp,
-    previousBlockTimestamp,
-  ]);
+  }, [series, currentBlock, previousBlock, currBlockTimestamp, previousBlockTimestamp, provider]);
 
-  useEffect(() => {
-    const _pool: contracts.Pool = contracts.Pool__factory.connect(poolAddress, provider);
-    _pool && setCurrPool(_pool);
-  }, [poolAddress, provider]);
-
+  /* Get blocks to use for comparison, and corresponding timestamps */
   useEffect(() => {
     (async () => {
-      if (currentBlock) {
-        const _preBlock = Number(currentBlock) - 50000; // use around 7-8 days ago timeframe in blocktime
-        setPreviousBlock(_preBlock);
-        setPreviousBlockTimestamp((await provider.getBlock(_preBlock)).timestamp);
-        setCurrBlockTimestamp((await provider.getBlock(currentBlock)).timestamp);
+      if (currentBlock && provider) {
+        try {
+          const _preBlock = Number(currentBlock) - previousBlocks; // use around 7 days ago timeframe in blocktime
+          setPreviousBlock(_preBlock);
+          setPreviousBlockTimestamp((await provider.getBlock(Number(_preBlock))).timestamp);
+          setCurrBlockTimestamp((await provider.getBlock(Number(currentBlock))).timestamp);
+        } catch (e) {
+          console.log('could not get timestamps', e);
+        }
       }
     })();
-  }, [currentBlock, provider]);
+  }, [currentBlock, provider, previousBlocks]);
 
-  return { poolReturns, timeframe };
+  return { poolReturns, secondsCompare };
 };
