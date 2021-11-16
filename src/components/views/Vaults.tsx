@@ -176,7 +176,7 @@ const Vaults = () => {
                         </td>
                         <td className="px-6 py-3 text-center items-center">
                           <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{v.ink}</span>
+                            <span>{formatValue(v.ink, 2)}</span>
                           </span>
                         </td>
                       </tr>
