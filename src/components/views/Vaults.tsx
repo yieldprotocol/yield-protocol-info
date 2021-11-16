@@ -42,7 +42,7 @@ const Vaults = () => {
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
         .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true))
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
         .filter((v: any) => (ilkFilter ? v.ilkId === ilkFilter : true))
         .filter((v: any) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
