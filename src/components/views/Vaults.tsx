@@ -54,7 +54,7 @@ const Vaults = () => {
   useEffect(() => {
     const _allVaults: any = [...Object.values(vaults)]
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
-      .filter((v: any) => v.baseId !== v.ilkId)
+      // .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty
       .filter((v: any) => Number(v.art) !== 0 && Number(v.ink) !== 0)
       // sorting by debt balance
