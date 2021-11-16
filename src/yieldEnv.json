@@ -93,9 +93,12 @@
     "TST": "#D15034",
     "WETH": "#FFFFFF",
     "USDT": "#50af95",
+    "stETH": "#00A3FF",
     "wstETH": "#00A3FF",
-    "LINK": "#2A5ADA"
+    "LINK": "#2A5ADA",
+    "ENS": "#000000"
   },
+
   "seasonColors": {
     "WINTER": ["#D9D9D9", "#67F2FC", "#333333"],
     "SPRING": ["#6AD99E", "#FF6BE4", "#333333"],

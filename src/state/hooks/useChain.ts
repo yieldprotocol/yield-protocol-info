@@ -31,6 +31,7 @@ const assetDigitFormatMap = new Map([
   ['USDC', 2],
   ['USDT', 2],
   ['STETH', 6],
+  ['WSTETH', 6],
 ]);
 
 const getEventArgProps = (contract: any) =>
@@ -131,7 +132,7 @@ const useChain = () => {
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
               const joinAddress = joinMap.get(id);
-
+              console.log('symbol', symbol);
               let symbol_;
               switch (symbol) {
                 case 'WETH':
@@ -139,6 +140,9 @@ const useChain = () => {
                   break;
                 case 'wstETH':
                   symbol_ = 'WSTETH';
+                  break;
+                case 'stETH':
+                  symbol_ = 'STETH';
                   break;
                 default:
                   symbol_ = symbol;
@@ -153,7 +157,7 @@ const useChain = () => {
                 version,
                 joinAddress,
               };
-              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
+              (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
             })
           );
           dispatch(updateAssets(newAssets));

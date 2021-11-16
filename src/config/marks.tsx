@@ -17,6 +17,7 @@ export const markMap = new Map<string, any>([
   ['ETH', <EthMark key="eth" />],
   ['USDT', <USDTMark key="usdt" />],
   ['WSTETH', <StEthMark key="wsteth" />],
+  ['STETH', <StEthMark key="steth" />],
   ['LINK', <LinkMark key="link" />],
   ['ENS', <ENSMark key="ens" />],
 ]);

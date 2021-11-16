@@ -155,15 +155,17 @@ async function getAssetJoinBalances(assets: any, contractMap: any, provider: any
 }
 
 async function getAssetJoinBalance(asset: any, provider: any) {
-  try {
-    const joinAddr = asset.joinAddress;
-    const Join = contracts.Join__factory.connect(joinAddr, provider);
-    return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
-  } catch (e) {
-    console.log('error getting join balance for', asset);
-    console.log(e);
-    return '0';
+  if (asset.joinAddress) {
+    try {
+      const Join = contracts.Join__factory.connect(asset.joinAddress, provider);
+      return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
+    } catch (e) {
+      console.log('error getting join balance for', asset);
+      console.log(e);
+      return '0';
+    }
   }
+  return '0';
 }
 
 async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
