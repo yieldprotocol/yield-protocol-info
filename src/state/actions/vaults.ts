@@ -73,8 +73,8 @@ export function getVaults(contractMap: any, series: any, assets: any) {
               ...vault,
               owner,
               isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
-              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}%`,
-              minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
+              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}`,
+              minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}`, // collat ratios always have 6 decimals
               ink: ilk ? cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat) : '',
               art: base ? cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat) : '',
               decimals,

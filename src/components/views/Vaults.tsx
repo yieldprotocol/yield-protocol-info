@@ -42,7 +42,7 @@ const Vaults = () => {
     (_vaults: any) => {
       const _filteredVaults: any[] = _vaults
         .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 : true))
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
         .filter((v: any) => (ilkFilter ? v.ilkId === ilkFilter : true))
         .filter((v: any) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
@@ -54,7 +54,7 @@ const Vaults = () => {
   useEffect(() => {
     const _allVaults: any = [...Object.values(vaults)]
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
-      .filter((v: any) => v.baseId !== v.ilkId)
+      // .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty
       .filter((v: any) => Number(v.art) !== 0 && Number(v.ink) !== 0)
       // sorting by debt balance
@@ -176,7 +176,7 @@ const Vaults = () => {
                         </td>
                         <td className="px-6 py-3 text-center items-center">
                           <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{v.ink}</span>
+                            <span>{formatValue(v.ink, 2)}</span>
                           </span>
                         </td>
                       </tr>
