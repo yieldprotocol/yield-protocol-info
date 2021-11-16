@@ -132,27 +132,12 @@ const useChain = () => {
               // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
               const version = id === '0x555344430000' ? '2' : '1';
               const joinAddress = joinMap.get(id);
-              console.log('symbol', symbol);
-              let symbol_;
-              switch (symbol) {
-                case 'WETH':
-                  symbol_ = 'ETH';
-                  break;
-                case 'wstETH':
-                  symbol_ = 'WSTETH';
-                  break;
-                case 'stETH':
-                  symbol_ = 'STETH';
-                  break;
-                default:
-                  symbol_ = symbol;
-              }
 
               const newAsset = {
                 id,
                 address,
                 name,
-                symbol: symbol_,
+                symbol: symbol === 'WETH' ? 'ETH' : symbol.toUpperCase(),
                 decimals,
                 version,
                 joinAddress,
