@@ -1,3 +1,5 @@
+import { FunctionFragment } from '@ethersproject/abi';
+import { Interface } from 'readline';
 import { CHAIN_INFO } from '../config/chainData';
 
 export function addHexPrefix(addrLike: string) {
@@ -63,4 +65,19 @@ export async function fetchTransactionInput(chainId: number, tx_hash: string, lo
     )
   ).result;
   return transaction.input;
+}
+
+export async function getABI(chainId: number, target: string) {
+  const ret = await fetchEtherscan(
+    chainId!,
+    new URLSearchParams({
+      module: 'contract',
+      action: 'getsourcecode',
+      address: addHexPrefix(target),
+      apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
+    }),
+    (x) => console.log(x)
+  );
+
+  return JSON.parse(ret.result[0].ABI);
 }

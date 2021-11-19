@@ -23,6 +23,9 @@ import * as contracts from '../../contracts';
 import { getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
+import { IContract, IContractMap } from '../../types/contracts';
+import { calculateAPR } from '../../utils/yieldMath';
+import { SECONDS_PER_YEAR } from '../../utils/constants';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -277,8 +280,24 @@ const useChain = () => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
+              const poolViewAddr: string = Object.values(newContractMap as IContractMap).filter(
+                (c: IContract) => c.name === 'PoolView'
+              )[0].contract.address;
+              const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
+              const invariantBlockNumCompare = -1000; // 45000 blocks ago
 
-              const [name, symbol, seriesId, poolAddress, baseId, decimals, version] = await Promise.all([
+              const [
+                name,
+                symbol,
+                seriesId,
+                poolAddress,
+                baseId,
+                decimals,
+                version,
+                totalSupply,
+                currInvariant,
+                preInvariant,
+              ] = await Promise.all([
                 Strategy.name(),
                 Strategy.symbol(),
                 Strategy.seriesId(),
@@ -287,8 +306,21 @@ const useChain = () => {
                 Strategy.decimals(),
                 Strategy.version(),
                 Strategy.totalSupply(),
-                Strategy.invariants(await Strategy.pool()),
+                PoolView.invariant(await Strategy.pool()),
+                PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
               ]);
+
+              const currentBlock: number = await provider.getBlockNumber();
+              const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
+              const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
+
+              // calculate apy based on invariants
+              const returns: number = Number(currInvariant) / Number(preInvariant) - 1;
+              const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
+              const periods: number = SECONDS_PER_YEAR / secondsBetween;
+
+              const apy: number = (1 + returns / periods) ** periods - 1;
+              const apy_: string = (apy * 100).toString();
 
               const newStrategy = {
                 id: strategyAddr,
@@ -300,6 +332,9 @@ const useChain = () => {
                 poolAddress,
                 baseId,
                 decimals,
+                currInvariant: currInvariant.toString(),
+                preInvariant: preInvariant.toString(),
+                invariantCalcAPY: apy_,
               };
               // update state and cache
               newStrategies[strategyAddr] = newStrategy;

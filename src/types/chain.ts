@@ -64,6 +64,7 @@ export interface IStrategy {
   baseId: string;
   decimals: string;
   poolAddress: string;
+  currInvariant: string;
 }
 
 export interface IAssetPairData {
