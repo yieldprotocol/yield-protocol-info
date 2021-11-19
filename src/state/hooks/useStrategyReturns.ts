@@ -25,7 +25,6 @@ export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) 
   const [previousBlockTimestamp, setPreviousBlockTimestamp] = useState<any>();
   const [currBlockTimestamp, setCurrBlockTimestamp] = useState<any>();
 
-  console.log('is address', ethers.utils.isAddress('0xc2c747e0f7004f9e8817db2ca4997657a7746928/5891'));
   useEffect(() => {
     const _getStrategyBaseValuePerShare = async (blockNum: number) => {
       try {
@@ -85,14 +84,14 @@ export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) 
           const periods: number = SECONDS_PER_YEAR / secondsBetween;
 
           const apy: number = (1 + returns / periods) ** periods - 1;
-          const apy_: string = cleanValue((apy * 100).toString(), 1);
+          const apy_: string = (apy * 100).toString();
           setStrategyReturns(apy_);
           return apy_;
         } catch (e) {
           console.log(e);
         }
       }
-      return '0';
+      return 'Could not get returns';
     };
     _getStrategyReturns();
   }, [strategy, currentBlock, previousBlock, currBlockTimestamp, previousBlockTimestamp, provider]);

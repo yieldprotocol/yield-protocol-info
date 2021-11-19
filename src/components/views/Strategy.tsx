@@ -3,31 +3,18 @@ import { formatDistanceStrict } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import { usePoolReturns } from '../../state/hooks/usePoolReturns';
-import { ISeries } from '../../types/chain';
+import { ISeries, IStrategy } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import SkeletonWrap from '../wraps/SkeletonWrap';
+import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
 const Strategy = () => {
   const { id } = useParams<{ id: string }>();
   const strategies = useAppSelector((st) => st.chain.strategies);
-  const seriesMap = useAppSelector((st) => st.chain.series);
-  const strategy = strategies[id];
-  const strategySeries: ISeries = seriesMap[strategy.seriesId];
-  const { poolReturns, secondsCompare } = usePoolReturns(strategySeries, 50000);
-  const [secondsToDays, setSecondsToDays] = useState<string | null>(null);
-
-  useEffect(() => {
-    const _secondsToDays = formatDistanceStrict(
-      new Date(1, 1, 0, 0, 0, 0),
-      new Date(1, 1, 0, 0, 0, secondsCompare || 0),
-      {
-        unit: 'day',
-      }
-    );
-    setSecondsToDays(_secondsToDays);
-  }, [secondsCompare]);
+  const strategy: IStrategy = strategies[id];
+  const { strategyReturns, secondsToDays } = useStrategyReturns(strategy, 50000);
 
   return strategy ? (
     <MainViewWrap>
@@ -36,9 +23,9 @@ const Strategy = () => {
           <strong>{strategy.symbol}</strong>
           <div className="pt-2">
             <i>
-              {poolReturns ? (
+              {strategyReturns ? (
                 <>
-                  APY: {cleanValue(poolReturns?.toString(), 2)}% using last {secondsToDays}
+                  APY: {cleanValue(strategyReturns?.toString(), 2)}% using last {secondsToDays}
                 </>
               ) : (
                 <SkeletonWrap />
