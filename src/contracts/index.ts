@@ -16,6 +16,7 @@ export type { MakerImportModule } from "./MakerImportModule";
 export type { Pool } from "./Pool";
 export type { PoolExtensions } from "./PoolExtensions";
 export type { PoolExtensionsWrapper } from "./PoolExtensionsWrapper";
+export type { PoolView } from "./PoolView";
 export type { Strategy } from "./Strategy";
 export type { TLMModule } from "./TLMModule";
 export type { UniswapV3Oracle } from "./UniswapV3Oracle";
@@ -37,6 +38,7 @@ export { MakerImportModule__factory } from "./factories/MakerImportModule__facto
 export { Pool__factory } from "./factories/Pool__factory";
 export { PoolExtensions__factory } from "./factories/PoolExtensions__factory";
 export { PoolExtensionsWrapper__factory } from "./factories/PoolExtensionsWrapper__factory";
+export { PoolView__factory } from "./factories/PoolView__factory";
 export { Strategy__factory } from "./factories/Strategy__factory";
 export { TLMModule__factory } from "./factories/TLMModule__factory";
 export { UniswapV3Oracle__factory } from "./factories/UniswapV3Oracle__factory";

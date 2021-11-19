@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ethers } from 'ethers';
-import { format } from 'date-fns';
+import { BigNumber, ethers } from 'ethers';
+import { format, formatDistanceStrict } from 'date-fns';
 import { useAppDispatch, useAppSelector } from './general';
 import {
   setChainLoading,
@@ -20,9 +20,12 @@ import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts'
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
-import { getSeason, SeasonType } from '../../utils/appUtils';
+import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
+import { IContract, IContractMap } from '../../types/contracts';
+import { calculateAPR } from '../../utils/yieldMath';
+import { SECONDS_PER_YEAR } from '../../utils/constants';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -277,8 +280,31 @@ const useChain = () => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
+              const poolViewAddr: string = Object.values(newContractMap as IContractMap).filter(
+                (c: IContract) => c.name === 'PoolView'
+              )[0].contract.address;
+              const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
+              const invariantBlockNumCompare = -1000; // 45000 blocks ago
+              const secondsToDays: string = formatDistanceStrict(
+                new Date(1, 1, 0, 0, 0, 0),
+                new Date(1, 1, 0, 0, 0, Math.abs(invariantBlockNumCompare) || 0),
+                {
+                  unit: 'day',
+                }
+              );
 
-              const [name, symbol, seriesId, poolAddress, baseId, decimals, version] = await Promise.all([
+              const [
+                name,
+                symbol,
+                seriesId,
+                poolAddress,
+                baseId,
+                decimals,
+                version,
+                totalSupply,
+                currInvariant,
+                preInvariant,
+              ] = await Promise.all([
                 Strategy.name(),
                 Strategy.symbol(),
                 Strategy.seriesId(),
@@ -287,8 +313,22 @@ const useChain = () => {
                 Strategy.decimals(),
                 Strategy.version(),
                 Strategy.totalSupply(),
-                Strategy.invariants(await Strategy.pool()),
+                PoolView.invariant(await Strategy.pool()),
+                PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
               ]);
+
+              const initInvariant = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
+              const currentBlock: number = await provider.getBlockNumber();
+              const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
+              const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
+
+              // calculate apy based on invariants
+              const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
+              const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
+              const periods: number = SECONDS_PER_YEAR / secondsBetween;
+
+              const apy: number = (1 + returns / periods) ** periods - 1;
+              const apy_: string = `${cleanValue((apy * 100).toString(), 2)}%`;
 
               const newStrategy = {
                 id: strategyAddr,
@@ -300,6 +340,11 @@ const useChain = () => {
                 poolAddress,
                 baseId,
                 decimals,
+                currInvariant: currInvariant.toString(),
+                // preInvariant: preInvariant.toString(),
+                initInvariant: initInvariant.toString(),
+                invariantCalcAPY: apy_,
+                // daysCompared: secondsToDays,
               };
               // update state and cache
               newStrategies[strategyAddr] = newStrategy;

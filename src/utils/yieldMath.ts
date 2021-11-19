@@ -812,7 +812,9 @@ export const calculateAPR = (
   if (maturity > Math.round(new Date().getTime() / 1000)) {
     const secsToMaturity = maturity - fromDate;
     const propOfYear = new Decimal(secsToMaturity / SECONDS_PER_YEAR);
+    console.log('propofyear', propOfYear);
     const priceRatio = amount_.div(tradeValue_);
+    console.log('priceratio', priceRatio);
     const powRatio = ONE.div(propOfYear);
     const apr = priceRatio.pow(powRatio).sub(ONE);
 
