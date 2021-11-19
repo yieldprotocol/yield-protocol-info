@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ethers } from 'ethers';
-import { format } from 'date-fns';
+import { BigNumber, ethers } from 'ethers';
+import { format, formatDistanceStrict } from 'date-fns';
 import { useAppDispatch, useAppSelector } from './general';
 import {
   setChainLoading,
@@ -20,7 +20,7 @@ import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts'
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
-import { getSeason, SeasonType } from '../../utils/appUtils';
+import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContract, IContractMap } from '../../types/contracts';
@@ -285,6 +285,13 @@ const useChain = () => {
               )[0].contract.address;
               const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
               const invariantBlockNumCompare = -1000; // 45000 blocks ago
+              const secondsToDays: string = formatDistanceStrict(
+                new Date(1, 1, 0, 0, 0, 0),
+                new Date(1, 1, 0, 0, 0, Math.abs(invariantBlockNumCompare) || 0),
+                {
+                  unit: 'day',
+                }
+              );
 
               const [
                 name,
@@ -310,17 +317,18 @@ const useChain = () => {
                 PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
               ]);
 
+              const initInvariant = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
               const currentBlock: number = await provider.getBlockNumber();
               const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
               const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
 
               // calculate apy based on invariants
-              const returns: number = Number(currInvariant) / Number(preInvariant) - 1;
+              const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
               const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
               const periods: number = SECONDS_PER_YEAR / secondsBetween;
 
               const apy: number = (1 + returns / periods) ** periods - 1;
-              const apy_: string = (apy * 100).toString();
+              const apy_: string = `${cleanValue((apy * 100).toString(), 2)}%`;
 
               const newStrategy = {
                 id: strategyAddr,
@@ -333,8 +341,10 @@ const useChain = () => {
                 baseId,
                 decimals,
                 currInvariant: currInvariant.toString(),
-                preInvariant: preInvariant.toString(),
+                // preInvariant: preInvariant.toString(),
+                initInvariant: initInvariant.toString(),
                 invariantCalcAPY: apy_,
+                // daysCompared: secondsToDays,
               };
               // update state and cache
               newStrategies[strategyAddr] = newStrategy;
