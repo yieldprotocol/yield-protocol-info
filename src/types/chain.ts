@@ -100,7 +100,6 @@ export interface IChainTvlLoadingAction {
 
 export interface IChainResetAction {
   type: ActionType.RESET;
-  payload: IChainState;
 }
 
 export interface ISeriesMap {
