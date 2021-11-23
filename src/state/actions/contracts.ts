@@ -1,5 +1,5 @@
-import { Contract } from 'ethers';
-import { IContractMap } from '../../types/contracts';
+import { Contract, Event } from 'ethers';
+import { IContractMap, IEventArgsPropsMap, IEventsMap } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
 
 export function getEvents(contractMap: IContractMap, name: string, filter: any = '*') {
@@ -11,14 +11,14 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, undefined, undefined);
 
-        const updatedEvents = events.map((e: any, i: number) => ({
+        const updatedEvents = events.map((e: Event, i: number) => ({
           id: i,
           event: e.event,
           blockNumber: e.blockNumber,
           args: e.args ? e.args.join(', ') : '',
         }));
 
-        const eventsMap = { [name]: updatedEvents };
+        const eventsMap: IEventsMap = { [name]: updatedEvents };
 
         dispatch(updateEvents(eventsMap));
         dispatch(setEventsLoading(false));
@@ -29,10 +29,6 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
     }
   };
 }
-
-export const updateEvents = (events: any) => ({ type: ActionType.UPDATE_EVENTS, events });
-export const setEventsLoading = (eventsLoading: boolean) => ({ type: ActionType.EVENTS_LOADING, eventsLoading });
-export const updateContractMap = (contractMap: IContractMap) => ({ type: ActionType.UPDATE_CONTRACT_MAP, contractMap });
 
 const getEventArgProps = (contract: Contract) =>
   Object.entries(contract.interface.events).reduce((acc: any, curr: any): any => {
@@ -59,7 +55,7 @@ const getEventArgProps = (contract: Contract) =>
 export function getEventArg(contractMap: IContractMap, name: string) {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
-    const newEventArgPropsMap: any = {};
+    const newEventArgPropsMap: IEventArgsPropsMap = {};
     [...Object.keys(contractMap)].forEach((_name: string) => {
       newEventArgPropsMap[name] = getEventArgProps(contractMap[_name]);
     });
@@ -67,9 +63,17 @@ export function getEventArg(contractMap: IContractMap, name: string) {
   };
 }
 
-export const updateEventArgPropsMap = (eventArgPropsMap: any) => ({
+export const updateEventArgPropsMap = (eventArgPropsMap: IEventArgsPropsMap) => ({
   type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
   payload: eventArgPropsMap,
 });
-
+export const updateEvents = (events: any) => ({ type: ActionType.UPDATE_EVENTS, events });
+export const setEventsLoading = (eventsLoading: boolean) => ({
+  type: ActionType.EVENTS_LOADING,
+  payload: eventsLoading,
+});
+export const updateContractMap = (contractMap: IContractMap) => ({
+  type: ActionType.UPDATE_CONTRACT_MAP,
+  payload: contractMap,
+});
 export const reset = () => ({ type: ActionType.RESET });

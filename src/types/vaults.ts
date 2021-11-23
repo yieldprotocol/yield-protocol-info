@@ -1,9 +1,31 @@
 import { BigNumber } from 'ethers';
+import { ActionType } from '../state/actionTypes/vaults';
 
 export interface IVaultState {
   vaultsLoading: boolean;
   vaults: IVaultMap;
   prices: IPriceMap;
+}
+
+export type IVaultAction = IVaultsLoadingAction | IUpdateVaultsAction | IUpdatePricesAction | IVaultsResetAction;
+
+export interface IVaultsLoadingAction {
+  type: ActionType.VAULTS_LOADING;
+  payload: boolean;
+}
+
+export interface IUpdateVaultsAction {
+  type: ActionType.UPDATE_VAULTS;
+  payload: IVaultMap;
+}
+
+export interface IUpdatePricesAction {
+  type: ActionType.UPDATE_PRICES;
+  payload: any;
+}
+
+export interface IVaultsResetAction {
+  type: ActionType.RESET;
 }
 
 export interface IVaultMap {

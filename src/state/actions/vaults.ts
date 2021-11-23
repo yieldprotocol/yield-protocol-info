@@ -159,7 +159,10 @@ export async function getPrice(
   }
 }
 
-export const updateVaults = (vaults: any) => ({ type: ActionType.UPDATE_VAULTS, vaults });
-export const setVaultsLoading = (vaultsLoading: boolean) => ({ type: ActionType.VAULTS_LOADING, vaultsLoading });
+export const updateVaults = (vaults: IVaultMap) => ({ type: ActionType.UPDATE_VAULTS, payload: vaults });
+export const setVaultsLoading = (vaultsLoading: boolean) => ({
+  type: ActionType.VAULTS_LOADING,
+  payload: vaultsLoading,
+});
 export const reset = () => ({ type: ActionType.RESET });
 export const updatePrices = (prices: IPriceMap) => ({ type: ActionType.UPDATE_PRICES, prices });

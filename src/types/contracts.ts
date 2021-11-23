@@ -1,10 +1,10 @@
-import { Contract } from 'ethers';
+import { Contract, Event } from 'ethers';
 import { ActionType } from '../state/actionTypes/contracts';
 
 export interface IContractState {
   eventsLoading: boolean;
   rolesLoading: boolean;
-  events: {};
+  events: IEventsMap;
   roles: {};
   contractMap: IContractMap;
   eventArgsPropsMap: IEventArgsPropsMap;
@@ -17,6 +17,7 @@ export type IContractAction =
   | IEventArgsPropsMapAction
   | IRolesLoadingAction
   | IUpdateRolesAction
+  | IUpdateEventsAction
   | IResetAction;
 
 export interface IEventsLoadingAction {
@@ -26,7 +27,7 @@ export interface IEventsLoadingAction {
 
 export interface IUpdateEventsAction {
   type: ActionType.UPDATE_EVENTS;
-  payload: any;
+  payload: IEventsMap;
 }
 
 export interface IUpdateContractMapAction {
@@ -65,7 +66,18 @@ export interface IEventArgsProps {
   [name: string]: IEventArgs[];
 }
 
-interface IEventArgs {
+export interface IEventArgs {
   name: string;
   type: string;
+}
+
+export interface IEventsMap {
+  [name: string]: IEvents[];
+}
+
+export interface IEvents {
+  id: number;
+  event: string | undefined;
+  blockNumber: number;
+  args: string;
 }
