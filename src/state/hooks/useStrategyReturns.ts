@@ -3,7 +3,6 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { formatDistanceStrict } from 'date-fns';
 import { useBlockNum } from './useBlockNum';
 import { burnFromStrategy, SECONDS_PER_YEAR } from '../../utils/yieldMath';
-import { cleanValue } from '../../utils/appUtils';
 import { useAppSelector } from './general';
 import { IStrategy } from '../../types/chain';
 import * as contracts from '../../contracts';
