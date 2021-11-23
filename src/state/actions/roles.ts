@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { Contract, EventFilter } from 'ethers';
+import { IContractMap } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
 
 const ROLE_GRANTED = 'RoleGranted';
@@ -72,19 +74,19 @@ export function calcRoles(events: any) {
   return [updatedRoles, roleBytesSeen];
 }
 
-export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
+export function getRoles(contractMap: IContractMap, name: string, filter: any = '*') {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
-    const contract = contractMap[contractAddr]?.contract!;
+    const contract: Contract = contractMap[name];
     if (contract) {
       try {
         dispatch(setRolesLoading(true));
 
-        const events = await contract.queryFilter(filter, null, null);
+        const events = await contract.queryFilter(filter, undefined, undefined);
 
         const [updatedRoles, roleBytesSeen] = calcRoles(events);
 
-        const rolesMap = { [contractAddr]: updatedRoles };
+        const rolesMap = { [name]: updatedRoles };
 
         const roleNames: any = {
           [ROOT]: 'admin',

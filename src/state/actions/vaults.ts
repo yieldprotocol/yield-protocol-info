@@ -1,17 +1,26 @@
 import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import { ENS, WAD_BN } from '../../utils/constants';
+import {
+  CAULDRON,
+  CHAINLINK_MULTI_ORACLE,
+  CHAINLINK_USD_ORACLE,
+  COMPOSITE_MULTI_ORACLE,
+  WAD_BN,
+  WITCH,
+} from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
+import { IContractMap } from '../../types/contracts';
+import { IPriceMap, IVault, IVaultMap } from '../../types/vaults';
 
-export function getVaults(contractMap: any, series: any, assets: any, chainId: number) {
+export function getVaults(contractMap: IContractMap, series: any, assets: any, chainId: number, priceMap: IPriceMap) {
   return async function _getVaults(dispatch: any) {
     try {
       dispatch(setVaultsLoading(true));
 
       const fromBlock = 1;
-      const Cauldron = (Object.values(contractMap).filter((x: any) => x.name === 'Cauldron')[0] as any).contract;
-      const Witch = (Object.values(contractMap).filter((x: any) => x.name === 'Witch')[0] as any).contract;
+      const Cauldron = contractMap[CAULDRON];
+      const Witch = contractMap[WITCH];
 
       if (Object.keys(Cauldron.filters).length) {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
@@ -63,7 +72,7 @@ export function getVaults(contractMap: any, series: any, assets: any, chainId: n
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
+                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId, priceMap),
               ]);
 
             const base = assets[vault.baseId];
@@ -83,7 +92,7 @@ export function getVaults(contractMap: any, series: any, assets: any, chainId: n
           })
         );
 
-        const newVaultMap = vaultListMod.reduce((acc: any, item: any) => {
+        const newVaultMap = vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
           acc[item.id] = item;
           return acc;
         }, {});
@@ -99,33 +108,50 @@ export function getVaults(contractMap: any, series: any, assets: any, chainId: n
   };
 }
 
-export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18, chainId: number) {
+export async function getPrice(
+  ilk: string,
+  base: string,
+  contractMap: any,
+  decimals: number = 18,
+  chainId: number,
+  priceMap: IPriceMap
+) {
+  // check if the price map already has the price
+  console.log('price map', priceMap);
+  if (priceMap[ilk][base]) return priceMap[ilk][base];
+  let Oracle;
   try {
-    let Oracle;
-    switch (chainId) {
+    switch (chainId as number) {
       case 1:
         Oracle =
           base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
-            ? contractMap.get('CompositeMultiOracle')
-            : contractMap.get('ChainlinkMultiOracle');
+            ? contractMap[COMPOSITE_MULTI_ORACLE]
+            : contractMap[CHAINLINK_MULTI_ORACLE];
         break;
       case 42:
         Oracle =
           base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
-            ? contractMap.get('CompositeMultiOracle')
-            : contractMap.get('ChainlinkMultiOracle');
+            ? contractMap[COMPOSITE_MULTI_ORACLE]
+            : contractMap[CHAINLINK_MULTI_ORACLE];
         break;
       case 421611:
-        contractMap.get('ChainlinkUSDOracle');
+        Oracle = contractMap[CHAINLINK_USD_ORACLE];
         break;
       default:
         break;
     }
+
     const [price] = await Oracle.peek(
       bytesToBytes32(ilk, 6),
       bytesToBytes32(base, 6),
       decimal18ToDecimalN(WAD_BN, decimals)
     );
+
+    // update price map
+    const newPriceMap = priceMap;
+    newPriceMap[ilk][base] = price;
+    updatePrices(newPriceMap);
+
     return price;
   } catch (e) {
     console.log(e);
@@ -136,3 +162,4 @@ export async function getPrice(ilk: string, base: string, contractMap: any, deci
 export const updateVaults = (vaults: any) => ({ type: ActionType.UPDATE_VAULTS, vaults });
 export const setVaultsLoading = (vaultsLoading: boolean) => ({ type: ActionType.VAULTS_LOADING, vaultsLoading });
 export const reset = () => ({ type: ActionType.RESET });
+export const updatePrices = (prices: IPriceMap) => ({ type: ActionType.UPDATE_PRICES, prices });

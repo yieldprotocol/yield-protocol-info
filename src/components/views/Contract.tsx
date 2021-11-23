@@ -6,27 +6,28 @@ import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
+import { IContractMap, IEventArgsProps, IEventArgsPropsMap } from '../../types/contracts';
 
 const Contract = () => {
-  const { addr } = useParams<{ addr: string }>();
+  const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
-  const eventArgsPropsMap = useAppSelector((st) => st.contracts.eventArgsPropsMap);
-  const eventArgsProps = eventArgsPropsMap[addr];
+  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
+  const eventArgsPropsMap: IEventArgsPropsMap = useAppSelector((st) => st.contracts.eventArgsPropsMap);
+  const eventArgsProps: IEventArgsProps = eventArgsPropsMap[name];
   const events = useAppSelector((st) => st.contracts.events);
-  const eventsLoading = useAppSelector((st) => st.contracts.eventsLoading);
-  const contractEvents = events[addr];
+  const eventsLoading: boolean = useAppSelector((st) => st.contracts.eventsLoading);
+  const contractEvents = events[name];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && addr) dispatch(getEvents(contractMap, addr));
-  }, [contractMap, dispatch, addr]);
+    if (Object.keys(contractMap).length && name) dispatch(getEvents(contractMap, name, undefined));
+  }, [contractMap, dispatch, name]);
 
   return (
     <>
       <SubNav
         paths={[
-          { path: `contracts/${addr}/events`, name: 'events' },
-          { path: `contracts/${addr}/roles`, name: 'roles' },
+          { path: `contracts/${name}/events`, name: 'events' },
+          { path: `contracts/${name}/roles`, name: 'roles' },
         ]}
       />
       <div className="ml-56">
