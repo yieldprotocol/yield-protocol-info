@@ -1,10 +1,27 @@
 import { Contract } from 'ethers';
 
-export interface IContractMap {
-  [id: string]: IContract;
+export interface IContractState {
+  eventsLoading: boolean;
+  rolesLoading: boolean;
+  events: {};
+  roles: {};
+  contractMap: IContractMap;
+  eventArgsPropsMap: IEventArgPropsMap;
 }
 
-export interface IContract {
-  contract: Contract;
+export interface IContractMap {
+  [name: string]: Contract;
+}
+
+export interface IEventArgPropsMap {
+  [name: string]: IEventArgProps;
+}
+
+export interface IEventArgProps {
+  [name: string]: IEventArg[];
+}
+
+interface IEventArg {
   name: string;
+  type: string;
 }

@@ -1,3 +1,4 @@
+import { IVaultState } from '../../types/vaults';
 import { ActionType } from '../actionTypes/vaults';
 
 const INITIAL_STATE = {
@@ -9,7 +10,7 @@ const INITIAL_STATE = {
   prices: {},
 };
 
-export default function rootReducer(state = INITIAL_STATE, action: any) {
+export default function rootReducer(state: IVaultState = INITIAL_STATE, action: any): IVaultState {
   switch (action.type) {
     case ActionType.VAULTS_LOADING:
       return { ...state, vaultsLoading: action.vaultsLoading };
@@ -21,10 +22,7 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
     case ActionType.UPDATE_PRICES:
       return {
         ...state,
-        prices: {
-          ...state.prices,
-          [action.price.ilk]: { ...(state.prices as any)[action.price.ilk], [action.price.base]: action.price.price },
-        },
+        prices: action.prices,
       };
     case ActionType.RESET:
       return INITIAL_STATE;
