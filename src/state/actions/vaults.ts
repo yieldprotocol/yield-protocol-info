@@ -165,4 +165,4 @@ export const setVaultsLoading = (vaultsLoading: boolean) => ({
   payload: vaultsLoading,
 });
 export const reset = () => ({ type: ActionType.RESET });
-export const updatePrices = (prices: IPriceMap) => ({ type: ActionType.UPDATE_PRICES, prices });
+export const updatePrices = (prices: IPriceMap) => ({ type: ActionType.UPDATE_PRICES, payload: prices });
