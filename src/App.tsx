@@ -9,7 +9,7 @@ import useResetApp from './state/hooks/useResetApp';
 function App() {
   useResetApp();
   useChain();
-  useTvl();
+  // useTvl();
 
   return (
     <>
