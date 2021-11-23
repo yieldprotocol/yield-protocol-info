@@ -8,12 +8,16 @@ import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
 import Select from '../../Select';
+import { useVaults } from '../../state/hooks/useVaults';
 
 const Vaults = () => {
   const history = useHistory();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
   const seriesMap = useAppSelector((st) => st.chain.series);
+
+  useVaults();
+
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'
   );
