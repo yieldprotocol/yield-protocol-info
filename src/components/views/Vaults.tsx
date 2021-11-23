@@ -16,7 +16,7 @@ const Vaults = () => {
   const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
   const seriesMap = useAppSelector((st) => st.chain.series);
 
-  useVaults();
+  // useVaults();
 
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'

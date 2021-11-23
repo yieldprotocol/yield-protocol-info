@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { formatDistanceStrict } from 'date-fns';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { usePoolReturns } from '../../state/hooks/usePoolReturns';
-import { ISeries, IStrategy } from '../../types/chain';
+import { IStrategy } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';

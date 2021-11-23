@@ -119,5 +119,5 @@ export function getRoles(contractMap: IContractMap, name: string, filter: any = 
     }
   };
 }
-export const setRolesLoading = (rolesLoading: boolean) => ({ type: ActionType.ROLES_LOADING, rolesLoading });
+export const setRolesLoading = (rolesLoading: boolean) => ({ type: ActionType.ROLES_LOADING, payload: rolesLoading });
 export const updateRoles = (payload: any) => ({ type: ActionType.UPDATE_ROLES, payload });
