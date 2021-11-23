@@ -9,29 +9,6 @@ import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
 import { IPriceMap } from '../../types/vaults';
 
-export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, payload: provider });
-export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, payload: chainId });
-export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, payload: chainLoading });
-export const setSeriesLoading = (seriesLoading: boolean) => ({
-  type: ActionType.SERIES_LOADING,
-  payload: seriesLoading,
-});
-export const setStrategiesLoading = (strategiesLoading: boolean) => ({
-  type: ActionType.STRATEGIES_LOADING,
-  payload: strategiesLoading,
-});
-export const setAssetsLoading = (assetsLoading: boolean) => ({
-  type: ActionType.ASSETS_LOADING,
-  payload: assetsLoading,
-});
-export const updateSeries = (series: any) => ({ type: ActionType.UPDATE_SERIES, payload: series });
-export const updateStrategies = (strategies: any) => ({ type: ActionType.UPDATE_STRATEGIES, payload: strategies });
-export const updateAssets = (assets: any) => ({ type: ActionType.UPDATE_ASSETS, payload: assets });
-export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
-  type: ActionType.UPDATE_ASSET_PAIR_DATA,
-  payload: { assetId, assetPairData },
-});
-
 export function getAssetPairData(
   asset: IAsset,
   assets: IAssetMap,
@@ -280,3 +257,26 @@ const mapPoolAddrToAsset = (seriesMap: ISeriesMap, assets: IAssetMap) => {
   }
   return {};
 };
+
+export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, payload: provider });
+export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, payload: chainId });
+export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, payload: chainLoading });
+export const setSeriesLoading = (seriesLoading: boolean) => ({
+  type: ActionType.SERIES_LOADING,
+  payload: seriesLoading,
+});
+export const setStrategiesLoading = (strategiesLoading: boolean) => ({
+  type: ActionType.STRATEGIES_LOADING,
+  payload: strategiesLoading,
+});
+export const setAssetsLoading = (assetsLoading: boolean) => ({
+  type: ActionType.ASSETS_LOADING,
+  payload: assetsLoading,
+});
+export const updateSeries = (series: any) => ({ type: ActionType.UPDATE_SERIES, payload: series });
+export const updateStrategies = (strategies: any) => ({ type: ActionType.UPDATE_STRATEGIES, payload: strategies });
+export const updateAssets = (assets: any) => ({ type: ActionType.UPDATE_ASSETS, payload: assets });
+export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
+  type: ActionType.UPDATE_ASSET_PAIR_DATA,
+  payload: { assetId, assetPairData },
+});
