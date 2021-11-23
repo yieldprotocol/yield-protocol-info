@@ -9,12 +9,14 @@ export const useVaults = () => {
   const series = useAppSelector((st) => st.chain.series);
   const assets = useAppSelector((st) => st.chain.assets);
   const prices = useAppSelector((st) => st.vaults.prices);
+  const vaults = useAppSelector((st) => st.vaults.vaults);
 
   useEffect(() => {
+    if (Object.values(vaults).length) return;
     if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length) {
       dispatch(getVaults(contractMap, series, assets, chainId));
     } else {
       dispatch(updateVaults({}));
     }
-  }, [contractMap, series, assets, prices, dispatch, chainId]);
+  }, [contractMap, series, assets, prices, dispatch, chainId, vaults]);
 };
