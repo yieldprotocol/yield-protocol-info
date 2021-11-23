@@ -1,10 +1,10 @@
 import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import { WAD_BN } from '../../utils/constants';
+import { ENS, WAD_BN } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
 
-export function getVaults(contractMap: any, series: any, assets: any) {
+export function getVaults(contractMap: any, series: any, assets: any, chainId: number) {
   return async function _getVaults(dispatch: any) {
     try {
       dispatch(setVaultsLoading(true));
@@ -63,7 +63,7 @@ export function getVaults(contractMap: any, series: any, assets: any) {
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap),
+                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
               ]);
 
             const base = assets[vault.baseId];
@@ -99,10 +99,28 @@ export function getVaults(contractMap: any, series: any, assets: any) {
   };
 }
 
-export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18) {
+export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18, chainId: number) {
   try {
-    const Oracle = (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any)
-      .contract;
+    let Oracle;
+    switch (chainId) {
+      case 1:
+        Oracle =
+          base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
+            ? contractMap.get('CompositeMultiOracle')
+            : contractMap.get('ChainlinkMultiOracle');
+        break;
+      case 42:
+        Oracle =
+          base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
+            ? contractMap.get('CompositeMultiOracle')
+            : contractMap.get('ChainlinkMultiOracle');
+        break;
+      case 421611:
+        contractMap.get('ChainlinkUSDOracle');
+        break;
+      default:
+        break;
+    }
     const [price] = await Oracle.peek(
       bytesToBytes32(ilk, 6),
       bytesToBytes32(base, 6),

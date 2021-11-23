@@ -163,7 +163,7 @@ const useChain = () => {
 
           // get asset pair data
           Object.values(newAssets as IAssetMap).map((a: IAsset) =>
-            dispatch(getAssetPairData(a, newAssets, newContractMap))
+            dispatch(getAssetPairData(a, newAssets, newContractMap, chainId))
           );
 
           dispatch(setAssetsLoading(false));
