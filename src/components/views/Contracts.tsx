@@ -1,11 +1,11 @@
+import React, { FC, useEffect, useState } from 'react';
 import { Contract } from 'ethers';
-import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '../../state/hooks/general';
 import { IContractMap } from '../../types/contracts';
 import ContractItem from '../ContractItem';
 import MainViewWrap from '../wraps/MainViewWrap';
 
-const Contracts = () => {
+const Contracts: FC = () => {
   const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
   const [contractsList, setContractsList] = useState<Contract[]>([]);
 

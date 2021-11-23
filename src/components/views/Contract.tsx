@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getEvents } from '../../state/actions/contracts';
@@ -8,7 +8,7 @@ import Header from '../Header';
 import Spinner from '../Spinner';
 import { IContractMap, IEventArgsProps, IEventArgsPropsMap } from '../../types/contracts';
 
-const Contract = () => {
+const Contract: FC = () => {
   const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
   const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);

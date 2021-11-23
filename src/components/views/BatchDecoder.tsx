@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
@@ -76,7 +76,7 @@ const CallDisplay = ({ call }: any): any => {
   );
 };
 
-const BatchDecoder = () => {
+const BatchDecoder: FC = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
   const handleDecode = () => txHash && decodeTxHash();

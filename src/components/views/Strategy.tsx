@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import { IStrategy } from '../../types/chain';
@@ -8,7 +8,7 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import SkeletonWrap from '../wraps/SkeletonWrap';
 import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
-const Strategy = () => {
+const Strategy: FC = () => {
   const { id } = useParams<{ id: string }>();
   const strategies = useAppSelector((st) => st.chain.strategies);
   const strategy: IStrategy = strategies[id];
