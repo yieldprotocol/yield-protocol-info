@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
-import { getEvents } from '../../state/actions/contracts';
+import { getEventArgs, getEvents } from '../../state/actions/contracts';
 import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
@@ -19,7 +19,10 @@ const Contract: FC = () => {
   const contractEvents: IEvents[] = events[name];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && name) dispatch(getEvents(contractMap, name, undefined));
+    if (Object.keys(contractMap).length && name) {
+      dispatch(getEvents(contractMap, name, undefined));
+      dispatch(getEventArgs(contractMap, name));
+    }
   }, [contractMap, dispatch, name]);
 
   return (

@@ -11,7 +11,6 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
       try {
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, undefined, undefined);
-        console.log('getting events', events);
 
         const updatedEvents = events.map((e: Event, i: number) => ({
           id: i,
@@ -54,9 +53,10 @@ const getEventArgProps = (contract: Contract) =>
     return acc;
   }, {});
 
-export function getEventArg(contractMap: IContractMap, name: string) {
+export function getEventArgs(contractMap: IContractMap, name: string) {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
+    console.log('getting event args');
     const newEventArgPropsMap: IEventArgsPropsMap = {};
     [...Object.keys(contractMap)].forEach((_name: string) => {
       newEventArgPropsMap[name] = getEventArgProps(contractMap[_name]);
