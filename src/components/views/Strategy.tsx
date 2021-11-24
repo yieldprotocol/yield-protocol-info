@@ -1,14 +1,16 @@
-import React, { FC } from 'react';
+import React, { useEffect, useState } from 'react';
+import { formatDistanceStrict } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { IStrategy } from '../../types/chain';
+import { usePoolReturns } from '../../state/hooks/usePoolReturns';
+import { ISeries, IStrategy } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import SkeletonWrap from '../wraps/SkeletonWrap';
 import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
-const Strategy: FC = () => {
+const Strategy = () => {
   const { id } = useParams<{ id: string }>();
   const strategies = useAppSelector((st) => st.chain.strategies);
   const strategy: IStrategy = strategies[id];

@@ -72,10 +72,10 @@ export function calcRoles(events: any) {
   return [updatedRoles, roleBytesSeen];
 }
 
-export function getRoles(contractMap: any, contractName: string, filter = '*') {
+export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
-    const contract = contractMap[contractName];
+    const contract = contractMap[contractAddr]?.contract!;
     if (contract) {
       try {
         dispatch(setRolesLoading(true));
@@ -84,7 +84,7 @@ export function getRoles(contractMap: any, contractName: string, filter = '*') {
 
         const [updatedRoles, roleBytesSeen] = calcRoles(events);
 
-        const rolesMap = { [contractName]: updatedRoles };
+        const rolesMap = { [contractAddr]: updatedRoles };
 
         const roleNames: any = {
           [ROOT]: 'admin',

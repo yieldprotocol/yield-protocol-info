@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useAppSelector } from '../../state/hooks/general';
 
-const Liquidations: FC = () => {
+const Liquidations = () => {
   const chainId: number = useAppSelector((st) => st.chain.chainId);
   const activeAuctionsDef =
     chainId === 1

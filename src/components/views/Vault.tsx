@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import CopyWrap from '../wraps/CopyWrap';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 
-const Vault: FC = () => {
+const Vault = () => {
   const { id } = useParams<{ id: string }>();
   const vaults = useAppSelector((st) => st.vaults.vaults);
   const vault = vaults[id];

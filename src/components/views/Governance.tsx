@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import SubNav from '../SubNav';
 import MainViewWrap from '../wraps/MainViewWrap';
 import BatchDecoder from './BatchDecoder';
 import ProposalHashDecoder from './ProposalHashDecoder';
 
-const Governance: FC = () => {
+const Governance = () => {
   const { subnav } = useParams<{ subnav: string }>();
 
   return (

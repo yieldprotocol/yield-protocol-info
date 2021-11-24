@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import { formatValue } from '../../utils/appUtils';
@@ -8,24 +8,21 @@ import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
 import Select from '../../Select';
-import { IVault, IVaultMap } from '../../types/vaults';
-import { IAsset, IAssetMap, ISeriesMap } from '../../types/chain';
 
-const Vaults: FC = () => {
+const Vaults = () => {
   const history = useHistory();
-  const vaults: IVaultMap = useAppSelector((st) => st.vaults.vaults);
-  const vaultsLoading: boolean = useAppSelector((st) => st.vaults.vaultsLoading);
-  const seriesMap: ISeriesMap = useAppSelector((st) => st.chain.series);
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
-
-  const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].seriesId))).filter(
+  const vaults = useAppSelector((st) => st.vaults.vaults);
+  const vaultsLoading = useAppSelector((st) => st.vaults.vaultsLoading);
+  const seriesMap = useAppSelector((st) => st.chain.series);
+  const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'
   );
   const seriesFilterChoices = seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']);
-  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].ilkId)));
-  const ilkFilterChoices = ilkChoices.map((ic: string) => [ic, (assets[ic] as IAsset)?.name!]);
-  const [allVaults, setAllVaults] = useState<IVault[]>([]);
-  const [filteredVaults, setFilteredVaults] = useState<IVault[]>([]);
+  const assets = useAppSelector((st) => st.chain.assets);
+  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: any) => vaults[key].ilkId)));
+  const ilkFilterChoices = ilkChoices.map((ic: any) => [ic, assets[ic].name]);
+  const [allVaults, setAllVaults] = useState<any[]>([]);
+  const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
   const [vaultSearch, setVaultSearch] = useState<string>('');
@@ -42,12 +39,12 @@ const Vaults: FC = () => {
   };
 
   const handleFilter = useCallback(
-    (_vaults: IVault[]) => {
-      const _filteredVaults: IVault[] = _vaults
-        .filter((v: IVault) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: IVault) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
-        .filter((v: IVault) => (ilkFilter ? v.ilkId === ilkFilter : true))
-        .filter((v: IVault) => (seriesFilter ? v.seriesId === seriesFilter : true));
+    (_vaults: any) => {
+      const _filteredVaults: any[] = _vaults
+        .filter((v: any) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
+        .filter((v: any) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
+        .filter((v: any) => (ilkFilter ? v.ilkId === ilkFilter : true))
+        .filter((v: any) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
@@ -55,15 +52,16 @@ const Vaults: FC = () => {
   );
 
   useEffect(() => {
-    const _allVaults: IVault[] = [...Object.values(vaults)]
+    const _allVaults: any = [...Object.values(vaults)]
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
       // .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty
-      .filter((v: IVault) => Number(v.art) !== 0 && Number(v.ink) !== 0)
+      .filter((v: any) => Number(v.art) !== 0 && Number(v.ink) !== 0)
       // sorting by debt balance
-      .sort((vA: IVault, vB: IVault) => (Number(vA.art) < Number(vB.art) ? 1 : -1));
-    // sorting to prioritize active vaults
-    // eslint-disable-next-line no-nested-ternary
+      .sort((vA: any, vB: any) => (Number(vA.art) < Number(vB.art) ? 1 : -1))
+      // sorting to prioritize active vaults
+      // eslint-disable-next-line no-nested-ternary
+      .sort((vA: any, vB: any) => (vA.isActive === vB.isActive ? 0 : vA.isActive ? -1 : 1));
 
     setAllVaults(_allVaults);
   }, [vaults, handleFilter]);
