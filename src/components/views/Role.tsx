@@ -20,7 +20,7 @@ const Role: FC = () => {
 
   useEffect(() => {
     if (Object.keys(contractMap).length && name) dispatch(getRoles(contractMap, name));
-  }, [contractMap, dispatch, name]);
+  }, [contractMap, dispatch, name, contractRoles]);
 
   return (
     <>
