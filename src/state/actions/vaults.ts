@@ -1,4 +1,4 @@
-import { ethers, utils } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import {
@@ -14,7 +14,13 @@ import { IContractMap } from '../../types/contracts';
 import { IPriceMap, IVault, IVaultMap } from '../../types/vaults';
 import { IAssetMap, ISeriesMap } from '../../types/chain';
 
-export function getVaults(contractMap: IContractMap, series: ISeriesMap, assets: IAssetMap, chainId: number) {
+export function getVaults(
+  contractMap: IContractMap,
+  series: ISeriesMap,
+  assets: IAssetMap,
+  chainId: number,
+  priceMap: IPriceMap
+) {
   return async function _getVaults(dispatch: any) {
     try {
       dispatch(setVaultsLoading(true));
@@ -68,15 +74,15 @@ export function getVaults(contractMap: IContractMap, series: ISeriesMap, assets:
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }, price] =
+            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }] =
               await Promise.all([
                 await Cauldron.balances(vault.id),
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
               ]);
 
+            const price = priceMap[vault.ilkId][vault.baseId];
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
 
@@ -140,20 +146,16 @@ export async function getPrice(
         break;
     }
 
-    if (ilk && base && Oracle) {
-      const [price] = await Oracle.peek(
-        bytesToBytes32(ilk, 6),
-        bytesToBytes32(base, 6),
-        decimal18ToDecimalN(WAD_BN, decimals)
-      );
-      updatePrices(ilk, base, price);
-      return price;
-    }
+    const [price] = await Oracle?.peek(
+      bytesToBytes32(ilk, 6),
+      bytesToBytes32(base, 6),
+      decimal18ToDecimalN(WAD_BN, decimals)
+    );
+    return price;
   } catch (e) {
     console.log(e);
     return ethers.constants.Zero;
   }
-  return ethers.constants.Zero;
 }
 
 export const updateVaults = (vaults: IVaultMap) => ({ type: ActionType.UPDATE_VAULTS, payload: vaults });
@@ -162,7 +164,7 @@ export const setVaultsLoading = (vaultsLoading: boolean) => ({
   payload: vaultsLoading,
 });
 export const reset = () => ({ type: ActionType.RESET });
-export const updatePrices = (quote: string, base: string, price: string) => ({
+export const updatePrices = (quote: string, base: string, price: BigNumber) => ({
   type: ActionType.UPDATE_PRICES,
   payload: { quote, base, price },
 });

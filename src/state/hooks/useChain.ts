@@ -335,10 +335,10 @@ const useChain = () => {
     }
   }, [chainId, dispatch]);
 
-  useEffect(() => {
-    // send to home page when chain id changes
-    history.push('/');
-  }, [chainId, history]);
+  // useEffect(() => {
+  //   // send to home page when chain id changes
+  //   history.push('/');
+  // }, [chainId, history]);
 };
 
 export { useChain };

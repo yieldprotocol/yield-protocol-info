@@ -14,8 +14,12 @@ export const useVaults = () => {
   const priceMap: IPriceMap = useAppSelector((st) => st.vaults.prices);
 
   useEffect(() => {
-    if (Object.values(contractMap).length && Object.values(seriesMap).length && Object.values(assetMap).length) {
-      dispatch(getVaults(contractMap, seriesMap, assetMap, chainId));
+    if (
+      Object.values(contractMap).length > 0 &&
+      Object.values(seriesMap).length > 0 &&
+      Object.values(assetMap).length > 0
+    ) {
+      dispatch(getVaults(contractMap, seriesMap, assetMap, chainId, priceMap));
     }
   }, [contractMap, seriesMap, assetMap, dispatch]);
 };

@@ -22,6 +22,9 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
             (await Cauldron.debt(asset.id, x.id)).sum,
           ]);
 
+          const price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId);
+          dispatch(updatePrices(asset.id, x.id, price));
+
           const minDebt: string = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
           const maxDebt: string = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
           const totalDebt_: string = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
@@ -106,7 +109,7 @@ export function getAssetsTvl(
           const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId);
           const price = decimalNToDecimal18(_price, USDC?.decimals);
           const price_ = ethers.utils.formatUnits(price, 18);
-          dispatch(updatePrices(bal.id, USDC.id, price_));
+          dispatch(updatePrices(bal.id, USDC.id, _price));
           const joinBalance_ = bal.balance;
           const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
           const totalBalance = +joinBalance_ + +poolBalance_;
