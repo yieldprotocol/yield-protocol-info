@@ -1,19 +1,25 @@
 import { useEffect } from 'react';
-import { getVaults, updateVaults } from '../actions/vaults';
+import { IAssetMap, ISeriesMap } from '../../types/chain';
+import { IContractMap } from '../../types/contracts';
+import { IPriceMap } from '../../types/vaults';
+import { getVaults } from '../actions/vaults';
 import { useAppDispatch, useAppSelector } from './general';
 
 export const useVaults = () => {
   const dispatch = useAppDispatch();
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
-  const series = useAppSelector((st) => st.chain.series);
-  const assets = useAppSelector((st) => st.chain.assets);
-  const prices = useAppSelector((st) => st.vaults.prices);
+  const chainId: number = useAppSelector((st) => st.chain.chainid);
+  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
+  const seriesMap: ISeriesMap = useAppSelector((st) => st.chain.series);
+  const assetMap: IAssetMap = useAppSelector((st) => st.chain.assets);
+  const priceMap: IPriceMap = useAppSelector((st) => st.vaults.prices);
 
   useEffect(() => {
-    if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length) {
-      dispatch(getVaults(contractMap, series, assets));
-    } else {
-      dispatch(updateVaults({}));
+    if (
+      Object.values(contractMap).length > 0 &&
+      Object.values(seriesMap).length > 0 &&
+      Object.values(assetMap).length > 0
+    ) {
+      dispatch(getVaults(contractMap, seriesMap, assetMap, chainId, priceMap));
     }
-  }, [contractMap, series, assets, prices, dispatch]);
+  }, [contractMap, seriesMap, assetMap, dispatch]);
 };

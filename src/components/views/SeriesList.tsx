@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import SeriesItem from '../SeriesItem';
 import { useAppSelector } from '../../state/hooks/general';
 import MainViewWrap from '../wraps/MainViewWrap';
 
-const SeriesList = () => {
+const SeriesList: FC = () => {
   const series = useAppSelector((st) => st.chain.series);
   const seriesLoading = useAppSelector((st) => st.chain.seriesLoading);
   const [seriesList, setSeriesList] = useState<any[]>([]);

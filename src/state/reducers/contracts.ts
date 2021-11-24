@@ -1,3 +1,4 @@
+import { IContractAction, IContractState } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
 
 const INITIAL_STATE = {
@@ -12,27 +13,27 @@ const INITIAL_STATE = {
   eventArgsPropsMap: {},
 };
 
-export default function rootReducer(state = INITIAL_STATE, action: any) {
+export default function rootReducer(state: IContractState = INITIAL_STATE, action: IContractAction): IContractState {
   switch (action.type) {
     case ActionType.EVENTS_LOADING:
-      return { ...state, eventsLoading: action.eventsLoading };
+      return { ...state, eventsLoading: action.payload };
     case ActionType.UPDATE_EVENTS:
       return {
         ...state,
-        events: action.events,
+        events: action.payload,
       };
     case ActionType.UPDATE_CONTRACT_MAP:
       return {
         ...state,
-        contractMap: action.contractMap,
+        contractMap: action.payload,
       };
     case ActionType.UPDATE_EVENT_ARGS_PROPS_MAP:
       return {
         ...state,
-        eventArgsPropsMap: action.eventArgPropsMap,
+        eventArgsPropsMap: action.payload,
       };
-      case ActionType.ROLES_LOADING:
-        return { ...state, rolesLoading: action.rolesLoading };
+    case ActionType.ROLES_LOADING:
+      return { ...state, rolesLoading: action.payload };
     case ActionType.UPDATE_ROLES:
       return {
         ...state,

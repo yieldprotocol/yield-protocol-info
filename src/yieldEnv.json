@@ -9,6 +9,7 @@
       "PoolView": "0x23cc87FBEBDD67ccE167Fa9Ec6Ad3b7fE3892E30",
       "CompoundMultiOracle": "0x53FBa816BD69a7f2a096f58687f87dd3020d0d5c",
       "ChainlinkMultiOracle": "0xcDCe5C87f691058B61f3A65913f1a3cBCbAd9F52",
+      "CompositeMultiOracle": "0xA81414a544D0bd8a28257F4038D3D24B08Dd9Bb4",
       "JoinFactory": "0x7297644611Af0dBb1bE1C2B4885DE9288eDD81e8",
       "FYTokenFactory": "0xA718fF3fA10fA9F797e98E35fd3A0bEc9e0AA67c",
       "PoolFactory": "0xe4D5A6128308b4D5c5d1A107Be136AB75c9944Be",

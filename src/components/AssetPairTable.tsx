@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
+import { IAssetMap, IAssetPairData } from '../types/chain';
 import { formatValue } from '../utils/appUtils';
 
-const AssetPairTable = ({ data, assets }: any) =>
+const AssetPairTable: FC<{ data: any; assets: IAssetMap }> = ({ data, assets }) =>
   data ? (
     <div className="rounded-lg shadow-sm px-8 py-4 bg-green-100 dark:bg-green-300">
       <table className="table min-w-full divide-y divide-gray-200">
@@ -17,7 +18,7 @@ const AssetPairTable = ({ data, assets }: any) =>
           </tr>
         </thead>
         <tbody className="bg-green divide-y divide-gray-200">
-          {data.map((x: any) => {
+          {data.map((x: IAssetPairData) => {
             const baseAsset = assets[x.baseAssetId];
             const ilkAsset = assets[x.ilkAssetId];
             const baseAssetLogo = markMap?.get(baseAsset?.symbol!);

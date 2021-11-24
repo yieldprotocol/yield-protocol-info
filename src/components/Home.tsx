@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../state/hooks/general';
 import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
@@ -13,7 +13,7 @@ interface ITvl {
   value: number;
 }
 
-const Home = () => {
+const Home: FC = () => {
   const assets = useAppSelector((st) => st.chain.assets);
   const assetPairData = useAppSelector((st) => st.chain.assetPairData);
   const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);

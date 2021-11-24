@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { IChainAction, IChainState } from '../../types/chain';
 import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
@@ -17,41 +18,40 @@ const INITIAL_STATE = {
   series: {},
   strategies: {},
   assets: {},
-  assetsTvl: {},
+  assetsTvl: [],
   assetPairData: {},
-  contractMap: {},
 };
 
-export default function rootReducer(state = INITIAL_STATE, action: any) {
+export default function rootReducer(state: IChainState = INITIAL_STATE, action: IChainAction): IChainState {
   switch (action.type) {
     case ActionType.PROVIDER:
-      return { ...state, provider: action.provider };
+      return { ...state, provider: action.payload };
     case ActionType.CHAIN_ID:
-      return { ...state, chainId: action.chainId };
+      return { ...state, chainId: action.payload };
     case ActionType.CHAIN_LOADING:
-      return { ...state, chainLoading: action.chainLoading };
+      return { ...state, chainLoading: action.payload };
     case ActionType.SERIES_LOADING:
-      return { ...state, seriesLoading: action.seriesLoading };
+      return { ...state, seriesLoading: action.payload };
     case ActionType.STRATEGIES_LOADING:
-      return { ...state, strategiesLoading: action.strategiesLoading };
+      return { ...state, strategiesLoading: action.payload };
     case ActionType.ASSETS_LOADING:
-      return { ...state, assetsLoading: action.assetsLoading };
+      return { ...state, assetsLoading: action.payload };
     case ActionType.ASSET_PAIR_DATA_LOADING:
-      return { ...state, assetPairDataLoading: action.assetPairDataLoading };
+      return { ...state, assetPairDataLoading: action.payload };
     case ActionType.UPDATE_SERIES:
       return {
         ...state,
-        series: action.series,
+        series: action.payload,
       };
     case ActionType.UPDATE_STRATEGIES:
       return {
         ...state,
-        strategies: action.strategies,
+        strategies: action.payload,
       };
     case ActionType.UPDATE_ASSETS:
       return {
         ...state,
-        assets: action.assets,
+        assets: action.payload,
       };
     case ActionType.UPDATE_ASSET_PAIR_DATA:
       return {
@@ -61,12 +61,12 @@ export default function rootReducer(state = INITIAL_STATE, action: any) {
     case ActionType.UPDATE_ASSETS_TVL:
       return {
         ...state,
-        assetsTvl: action.assetsTvl,
+        assetsTvl: action.payload,
       };
     case ActionType.TVL_LOADING:
       return {
         ...state,
-        tvlLoading: action.tvlLoading,
+        tvlLoading: action.payload,
       };
     case ActionType.RESET:
       return INITIAL_STATE;

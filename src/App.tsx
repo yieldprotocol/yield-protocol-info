@@ -2,16 +2,16 @@ import React from 'react';
 import Routes from './components/Routes';
 import Navigation from './components/Navigation';
 import { useChain } from './state/hooks/useChain';
-import { useVaults } from './state/hooks/useVaults';
 import useTvl from './state/hooks/useTvl';
 import Footer from './components/Footer';
 import useResetApp from './state/hooks/useResetApp';
+import { useVaults } from './state/hooks/useVaults';
 
 function App() {
   useResetApp();
   useChain();
-  useVaults();
   useTvl();
+  useVaults();
 
   return (
     <>
