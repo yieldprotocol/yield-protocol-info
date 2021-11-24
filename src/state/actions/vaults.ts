@@ -68,15 +68,14 @@ export function getVaults(contractMap: IContractMap, series: ISeriesMap, assets:
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }] =
+            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }, price] =
               await Promise.all([
                 await Cauldron.balances(vault.id),
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
               ]);
-
-            const price = await getPrice(vault.ilkId, vault.baseId, contractMap, decimals, chainId);
 
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
@@ -110,7 +109,13 @@ export function getVaults(contractMap: IContractMap, series: ISeriesMap, assets:
   };
 }
 
-export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18, chainId: number) {
+export async function getPrice(
+  ilk: string,
+  base: string,
+  contractMap: IContractMap,
+  decimals: number = 18,
+  chainId: number
+) {
   // check if the price map already has the price
   // if (priceMap[ilk][base]) return priceMap[ilk][base];
   let Oracle;
