@@ -6,6 +6,7 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
   return async function _getEvents(dispatch: any) {
     dispatch(setEventsLoading(true));
     const contract: Contract = contractMap[name];
+
     if (contract) {
       try {
         dispatch(setEventsLoading(true));
