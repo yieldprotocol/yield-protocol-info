@@ -12,7 +12,6 @@ import {
   updateStrategies,
   updateAssets,
   updateProvider,
-  getAssetPairData,
 } from '../actions/chain';
 
 import { updateContractMap } from '../actions/contracts';
@@ -24,7 +23,6 @@ import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
-import { calculateAPR } from '../../utils/yieldMath';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
 
 const assetDigitFormatMap = new Map([
