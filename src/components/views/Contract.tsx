@@ -23,7 +23,7 @@ const Contract: FC = () => {
       dispatch(getEvents(contractMap, name, undefined));
       dispatch(getEventArgs(contractMap, name));
     }
-  }, [contractMap, dispatch, name, events]);
+  }, [contractMap, dispatch, name]);
 
   return (
     <>

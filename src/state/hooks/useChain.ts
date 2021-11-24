@@ -12,6 +12,7 @@ import {
   updateStrategies,
   updateAssets,
   updateProvider,
+  getAssetPairData,
 } from '../actions/chain';
 
 import { updateContractMap } from '../actions/contracts';
@@ -24,6 +25,7 @@ import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
+import { IPriceMap } from '../../types/vaults';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -132,13 +134,12 @@ const useChain = () => {
           dispatch(updateAssets(newAssets));
 
           // get asset pair data
-          // Object.values(newAssets as IAssetMap).map((a: IAsset) =>
-          //   dispatch(getAssetPairData(a, newAssets, newContractMap, chainId, ))
-          // );
+          Object.values(newAssets as IAssetMap).map((a: IAsset) =>
+            dispatch(getAssetPairData(a, newAssets, newContractMap, chainId))
+          );
 
           dispatch(setAssetsLoading(false));
         } catch (e) {
-          dispatch(updateAssets({}));
           dispatch(setAssetsLoading(false));
           console.log('Error getting assets', e);
         }
@@ -235,7 +236,6 @@ const useChain = () => {
           dispatch(updateSeries(newSeriesObj));
           dispatch(setSeriesLoading(false));
         } catch (e) {
-          dispatch(updateSeries({}));
           dispatch(setSeriesLoading(false));
           console.log('Error fetching series data: ', e);
         }
@@ -322,8 +322,6 @@ const useChain = () => {
           dispatch(setStrategiesLoading(false));
         } catch (e) {
           dispatch(setStrategiesLoading(false));
-          dispatch(updateStrategies({}));
-
           console.log('Error getting strategies', e);
         }
       };

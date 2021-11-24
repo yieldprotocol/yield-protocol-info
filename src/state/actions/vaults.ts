@@ -72,7 +72,7 @@ export function getVaults(contractMap: IContractMap, series: any, assets: any, c
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId, priceMap),
+                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
               ]);
 
             const base = assets[vault.baseId];
@@ -108,17 +108,9 @@ export function getVaults(contractMap: IContractMap, series: any, assets: any, c
   };
 }
 
-export async function getPrice(
-  ilk: string,
-  base: string,
-  contractMap: any,
-  decimals: number = 18,
-  chainId: number,
-  priceMap: IPriceMap
-) {
+export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18, chainId: number) {
   // check if the price map already has the price
-  console.log('price map', priceMap);
-  if (priceMap[ilk][base]) return priceMap[ilk][base];
+  // if (priceMap[ilk][base]) return priceMap[ilk][base];
   let Oracle;
   try {
     switch (chainId as number) {
@@ -147,10 +139,7 @@ export async function getPrice(
       decimal18ToDecimalN(WAD_BN, decimals)
     );
 
-    // update price map
-    const newPriceMap = priceMap;
-    newPriceMap[ilk][base] = price;
-    updatePrices(newPriceMap);
+    updatePrices(ilk, base, price);
 
     return price;
   } catch (e) {
@@ -165,4 +154,7 @@ export const setVaultsLoading = (vaultsLoading: boolean) => ({
   payload: vaultsLoading,
 });
 export const reset = () => ({ type: ActionType.RESET });
-export const updatePrices = (prices: IPriceMap) => ({ type: ActionType.UPDATE_PRICES, payload: prices });
+export const updatePrices = (quote: string, base: string, price: string) => ({
+  type: ActionType.UPDATE_PRICES,
+  payload: { quote, base, price },
+});

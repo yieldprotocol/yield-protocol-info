@@ -5,11 +5,11 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import MainViewWrap from '../wraps/MainViewWrap';
 import AssetPairTable from '../AssetPairTable';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetPairData, IAssetPairMap } from '../../types/chain';
+import { IAsset, IAssetMap, IAssetPairData, IAssetPairMap } from '../../types/chain';
 
 const Asset: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const assets = useAppSelector((st) => st.chain.assets);
+  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
   const assetPairData: IAssetPairMap = useAppSelector((st) => st.chain.assetPairData);
   const asset: IAsset = assets[id];
   const thisAssetPairData: IAssetPairData = assetPairData[asset.id];

@@ -22,7 +22,13 @@ export default function rootReducer(state: IVaultState = INITIAL_STATE, action: 
     case ActionType.UPDATE_PRICES:
       return {
         ...state,
-        prices: action.payload,
+        prices: {
+          ...state.prices,
+          [action.payload.quote]: {
+            ...state.prices[action.payload.quote],
+            [action.payload.base]: action.payload.price,
+          },
+        },
       };
     case ActionType.RESET:
       return INITIAL_STATE;
