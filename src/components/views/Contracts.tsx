@@ -1,14 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Contract } from 'ethers';
 import { useAppSelector } from '../../state/hooks/general';
-import { IContractMap } from '../../types/contracts';
+import { IContract, IContractMap } from '../../types/contracts';
 import ContractItem from '../ContractItem';
 import MainViewWrap from '../wraps/MainViewWrap';
-
-interface IContract {
-  name: string;
-  contract: Contract;
-}
 
 const Contracts: FC = () => {
   const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
