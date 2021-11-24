@@ -81,3 +81,8 @@ export interface IEvents {
   blockNumber: number;
   args: string;
 }
+
+export interface IContract {
+  name: string;
+  contract: Contract;
+}
