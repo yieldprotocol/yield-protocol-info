@@ -127,7 +127,11 @@ export function getAssetsTvl(
   };
 }
 
-async function getAssetJoinBalances(assets: any, contractMap: any, provider: any) {
+async function getAssetJoinBalances(
+  assets: IAssetMap,
+  contractMap: IContractMap,
+  provider: ethers.providers.JsonRpcProvider
+) {
   try {
     const balances = await Promise.all(
       Object.values(assets).map(async (a: any) => ({

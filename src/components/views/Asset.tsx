@@ -5,14 +5,14 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import MainViewWrap from '../wraps/MainViewWrap';
 import AssetPairTable from '../AssetPairTable';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap, IAssetPairData, IAssetPairMap } from '../../types/chain';
+import { IAsset, IAssetMap, IAssetPairMap } from '../../types/chain';
 
 const Asset: FC = () => {
   const { id } = useParams<{ id: string }>();
   const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
-  const assetPairData: IAssetPairMap = useAppSelector((st) => st.chain.assetPairData);
+  const assetPairDataMap: IAssetPairMap = useAppSelector((st) => st.chain.assetPairData);
   const asset: IAsset = assets[id];
-  const thisAssetPairData: IAssetPairData = assetPairData[asset.id];
+  const thisAssetPairData = assetPairDataMap[asset.id];
   const logo = markMap?.get(asset?.symbol);
 
   return asset ? (
