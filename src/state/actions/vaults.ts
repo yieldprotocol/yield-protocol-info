@@ -12,12 +12,18 @@ import {
 import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
 import { IContractMap } from '../../types/contracts';
 import { IPriceMap, IVault, IVaultMap } from '../../types/vaults';
+import { IAssetMap, ISeriesMap } from '../../types/chain';
 
-export function getVaults(contractMap: IContractMap, series: any, assets: any, chainId: number, priceMap: IPriceMap) {
+export function getVaults(
+  contractMap: IContractMap,
+  series: ISeriesMap,
+  assets: IAssetMap,
+  chainId: number,
+  priceMap: IPriceMap
+) {
   return async function _getVaults(dispatch: any) {
     try {
       dispatch(setVaultsLoading(true));
-
       const fromBlock = 1;
       const Cauldron = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
@@ -44,6 +50,7 @@ export function getVaults(contractMap: IContractMap, series: any, assets: any, c
             };
           })
         );
+        console.log('build events', buildEventList);
 
         const recievedEventsList = await Promise.all(
           vaultsReceived.map(async (x: any) => {
@@ -66,14 +73,16 @@ export function getVaults(contractMap: IContractMap, series: any, assets: any, c
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }, price] =
+            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }] =
               await Promise.all([
                 await Cauldron.balances(vault.id),
                 await Cauldron.vaults(vault.id),
                 await Cauldron.debt(vault.baseId, vault.ilkId),
                 await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-                await getPrice(vault.ilkId, vault.baseId, contractMap, await Cauldron.decimals, chainId),
               ]);
+
+            const priceInMap: string | undefined = priceMap[vault.ilkId][vault.baseId];
+            const price = priceInMap ?? (await getPrice(vault.ilkId, vault.baseId, contractMap, decimals, chainId));
 
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
@@ -101,7 +110,6 @@ export function getVaults(contractMap: IContractMap, series: any, assets: any, c
         dispatch(setVaultsLoading(false));
       }
     } catch (e) {
-      dispatch(updateVaults({}));
       dispatch(setVaultsLoading(false));
       console.log(e);
     }

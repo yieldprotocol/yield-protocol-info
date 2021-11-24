@@ -5,11 +5,13 @@ import { useChain } from './state/hooks/useChain';
 import useTvl from './state/hooks/useTvl';
 import Footer from './components/Footer';
 import useResetApp from './state/hooks/useResetApp';
+import { useVaults } from './state/hooks/useVaults';
 
 function App() {
   useResetApp();
   useChain();
-  // useTvl();
+  useTvl();
+  useVaults();
 
   return (
     <>

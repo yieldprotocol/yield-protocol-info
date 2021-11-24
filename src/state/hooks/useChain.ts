@@ -26,6 +26,7 @@ import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
 import { IPriceMap } from '../../types/vaults';
+import { getVaults } from '../actions/vaults';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],

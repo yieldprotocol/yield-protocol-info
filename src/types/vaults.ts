@@ -43,6 +43,7 @@ export interface IVault {
   ink: string;
   art: string;
   decimals: string;
+  isActive: boolean;
 }
 
 export interface IPriceMap {
