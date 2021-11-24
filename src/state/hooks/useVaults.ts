@@ -15,7 +15,7 @@ export const useVaults = () => {
 
   useEffect(() => {
     if (Object.values(contractMap).length && Object.values(seriesMap).length && Object.values(assetMap).length) {
-      dispatch(getVaults(contractMap, seriesMap, assetMap, chainId, priceMap));
+      dispatch(getVaults(contractMap, seriesMap, assetMap, chainId));
     }
-  }, [dispatch, contractMap, seriesMap, assetMap, chainId]);
+  }, [contractMap, seriesMap, assetMap]);
 };

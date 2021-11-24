@@ -43,10 +43,10 @@ const Routes = () => (
       </Route>
       <Route path="/assets/:id" component={Asset} />
 
-      <Route exact path="/vaults">
+      {/* <Route exact path="/vaults">
         <Vaults />
       </Route>
-      <Route path="/vaults/:id" component={Vault} />
+      <Route path="/vaults/:id" component={Vault} /> */}
 
       <Route exact path="/decode">
         <Governance />

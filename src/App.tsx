@@ -11,7 +11,7 @@ function App() {
   useResetApp();
   useChain();
   useTvl();
-  useVaults();
+  // useVaults();
 
   return (
     <>
