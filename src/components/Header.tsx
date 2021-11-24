@@ -13,7 +13,7 @@ const SubNav: FC = ({ children }) => {
       <div className="rounded-xl dark:bg-green-300 p-6">
         <h1 className="text-center font-bold text-2xl align-middle pb-2">{contractMap[name]}</h1>
         <div className="">
-          <AddressDisplay addr={contractMap[name].address} />
+          <AddressDisplay addr={contractMap[name]?.address} />
         </div>
         {children}
       </div>
