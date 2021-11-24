@@ -6,7 +6,7 @@ import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
-import { IContractMap, IEventArgsProps, IEventArgsPropsMap } from '../../types/contracts';
+import { IContractMap, IEventArgsProps, IEventArgsPropsMap, IEvents, IEventsMap } from '../../types/contracts';
 
 const Contract: FC = () => {
   const { name } = useParams<{ name: string }>();
@@ -14,9 +14,9 @@ const Contract: FC = () => {
   const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
   const eventArgsPropsMap: IEventArgsPropsMap = useAppSelector((st) => st.contracts.eventArgsPropsMap);
   const eventArgsProps: IEventArgsProps = eventArgsPropsMap[name];
-  const events = useAppSelector((st) => st.contracts.events);
+  const events: IEventsMap = useAppSelector((st) => st.contracts.events);
   const eventsLoading: boolean = useAppSelector((st) => st.contracts.eventsLoading);
-  const contractEvents = events[name];
+  const contractEvents: IEvents[] = events[name];
 
   useEffect(() => {
     if (Object.keys(contractMap).length && name) dispatch(getEvents(contractMap, name, undefined));
@@ -37,7 +37,7 @@ const Contract: FC = () => {
           {!eventsLoading && (
             <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
               <div className="text-lg pb-4 flex gap-x-2">
-                {contractEvents && contractEvents.length ? (
+                {contractEvents?.length ? (
                   <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />
                 ) : (
                   <>No event data available</>

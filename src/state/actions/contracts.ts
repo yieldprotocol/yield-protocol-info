@@ -11,6 +11,7 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
       try {
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, undefined, undefined);
+        console.log('getting events', events);
 
         const updatedEvents = events.map((e: Event, i: number) => ({
           id: i,
@@ -68,7 +69,7 @@ export const updateEventArgPropsMap = (eventArgPropsMap: IEventArgsPropsMap) => 
   type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
   payload: eventArgPropsMap,
 });
-export const updateEvents = (events: any) => ({ type: ActionType.UPDATE_EVENTS, events });
+export const updateEvents = (events: IEventsMap) => ({ type: ActionType.UPDATE_EVENTS, payload: events });
 export const setEventsLoading = (eventsLoading: boolean) => ({
   type: ActionType.EVENTS_LOADING,
   payload: eventsLoading,
