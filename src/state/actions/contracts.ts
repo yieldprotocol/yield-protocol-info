@@ -56,7 +56,6 @@ const getEventArgProps = (contract: Contract) =>
 export function getEventArgs(contractMap: IContractMap, name: string) {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
-    console.log('getting event args');
     const newEventArgPropsMap: IEventArgsPropsMap = {};
     [...Object.keys(contractMap)].forEach((_name: string) => {
       newEventArgPropsMap[name] = getEventArgProps(contractMap[_name]);

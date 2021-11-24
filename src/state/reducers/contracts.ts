@@ -37,7 +37,7 @@ export default function rootReducer(state: IContractState = INITIAL_STATE, actio
     case ActionType.UPDATE_ROLES:
       return {
         ...state,
-        roles: action.payload,
+        ...action.payload,
       };
     case ActionType.RESET:
       return INITIAL_STATE;

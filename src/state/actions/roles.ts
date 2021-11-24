@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { Contract, EventFilter } from 'ethers';
-import { IContractMap } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
 
 const ROLE_GRANTED = 'RoleGranted';
@@ -74,19 +72,19 @@ export function calcRoles(events: any) {
   return [updatedRoles, roleBytesSeen];
 }
 
-export function getRoles(contractMap: IContractMap, name: string, filter: any = '*') {
+export function getRoles(contractMap: any, contractName: string, filter = '*') {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
-    const contract: Contract = contractMap[name];
+    const contract = contractMap[contractName];
     if (contract) {
       try {
         dispatch(setRolesLoading(true));
 
-        const events = await contract.queryFilter(filter, undefined, undefined);
+        const events = await contract.queryFilter(filter, null, null);
 
         const [updatedRoles, roleBytesSeen] = calcRoles(events);
 
-        const rolesMap = { [name]: updatedRoles };
+        const rolesMap = { [contractName]: updatedRoles };
 
         const roleNames: any = {
           [ROOT]: 'admin',
@@ -119,5 +117,5 @@ export function getRoles(contractMap: IContractMap, name: string, filter: any = 
     }
   };
 }
-export const setRolesLoading = (rolesLoading: boolean) => ({ type: ActionType.ROLES_LOADING, payload: rolesLoading });
+export const setRolesLoading = (rolesLoading: boolean) => ({ type: ActionType.ROLES_LOADING, rolesLoading });
 export const updateRoles = (payload: any) => ({ type: ActionType.UPDATE_ROLES, payload });
