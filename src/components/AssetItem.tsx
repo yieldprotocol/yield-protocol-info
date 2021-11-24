@@ -1,10 +1,9 @@
-import React, { FC } from 'react';
+import React from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 import { markMap } from '../config/marks';
 import { useAppSelector } from '../state/hooks/general';
-import { IAsset } from '../types/chain';
 
-const AssetItem: FC<{ item: IAsset }> = ({ item }) => {
+const AssetItem = ({ item }: any) => {
   const assets = useAppSelector((st) => st.chain.assets);
   const asset = assets[item.id];
   const logo = markMap?.get(asset?.symbol);

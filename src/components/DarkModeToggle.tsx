@@ -1,9 +1,9 @@
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { toggleDarkMode } from '../state/actions/application';
 
-const DarkModeToggle: FC = () => {
+const DarkModeToggle = () => {
   const { darkMode } = useAppSelector((st) => st.application);
   const dispatch = useAppDispatch();
 

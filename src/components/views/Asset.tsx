@@ -1,18 +1,17 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import MainViewWrap from '../wraps/MainViewWrap';
 import AssetPairTable from '../AssetPairTable';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap, IAssetPairMap } from '../../types/chain';
 
-const Asset: FC = () => {
+const Asset = () => {
   const { id } = useParams<{ id: string }>();
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
-  const assetPairDataMap: IAssetPairMap = useAppSelector((st) => st.chain.assetPairData);
-  const asset: IAsset = assets[id];
-  const thisAssetPairData = assetPairDataMap[asset.id];
+  const assets = useAppSelector((st) => st.chain.assets);
+  const assetPairData = useAppSelector((st) => st.chain.assetPairData);
+  const asset = assets[id];
+  const thisAssetPairData = assetPairData[asset.id];
   const logo = markMap?.get(asset?.symbol);
 
   return asset ? (
@@ -27,7 +26,7 @@ const Asset: FC = () => {
             <SingleItemViewGrid item={asset} />
           </div>
         </div>
-        {thisAssetPairData && (
+        {thisAssetPairData?.length && assets && (
           <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm">
             <AssetPairTable data={thisAssetPairData} assets={assets} />
           </div>

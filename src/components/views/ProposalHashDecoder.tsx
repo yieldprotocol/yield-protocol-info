@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
@@ -7,10 +7,11 @@ import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
 import { useAppSelector } from '../../state/hooks/general';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap } from '../../types/chain';
+import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
 
-const ProposalHashDecoder: FC = () => {
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
+const ProposalHashDecoder = () => {
+  const assets = useAppSelector((st) => st.chain.assets);
+  const series = useAppSelector((st) => st.chain.series);
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);

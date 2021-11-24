@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getRoles } from '../../state/actions/roles';
@@ -6,28 +6,27 @@ import RolesTable from '../RolesTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
-import { IContractMap } from '../../types/contracts';
 
-const Role: FC = () => {
-  const { name } = useParams<{ name: string }>();
+const Role = () => {
+  const { addr } = useParams<{ addr: string }>();
   const dispatch = useAppDispatch();
-  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
+  const contractMap = useAppSelector((st) => st.contracts.contractMap);
 
   const roles = useAppSelector((st) => st.contracts.roles);
   const roleNames = useAppSelector((st) => st.contracts.roleNames);
   const rolesLoading = useAppSelector((st) => st.contracts.rolesLoading);
-  const contractRoles = roles[name];
+  const contractRoles = roles[addr];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && name) dispatch(getRoles(contractMap, name));
-  }, [contractMap, dispatch, name]);
+    if (Object.keys(contractMap).length && addr) dispatch(getRoles(contractMap, addr));
+  }, [contractMap, dispatch, addr]);
 
   return (
     <>
       <SubNav
         paths={[
-          { path: `contracts/${name}/events`, name: 'events' },
-          { path: `contracts/${name}/roles`, name: 'roles' },
+          { path: `contracts/${addr}/events`, name: 'events' },
+          { path: `contracts/${addr}/roles`, name: 'roles' },
         ]}
       />
       <div className="ml-56">

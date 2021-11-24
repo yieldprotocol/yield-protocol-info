@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StrategyItem from '../StrategyItem';
 import { useAppSelector } from '../../state/hooks/general';
 import MainViewWrap from '../wraps/MainViewWrap';
 import Spinner from '../Spinner';
 
-const Strategies: FC = () => {
+const Strategies = () => {
   const strategies = useAppSelector((st) => st.chain.strategies);
   const strategiesLoading = useAppSelector((st) => st.chain.strategiesLoading);
   const [strategiesList, setStrategiesList] = useState<any[]>([]);

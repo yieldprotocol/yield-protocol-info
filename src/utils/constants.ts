@@ -26,7 +26,6 @@ export const WBTC = '0x303300000000';
 export const stETH = '0x303400000000';
 export const wstETH = '0x303500000000';
 export const LINK = '0x303600000000';
-export const ENS = '0x303700000000';
 
 export const BLANK_VAULT = '0x000000000000000000000000';
 export const BLANK_SERIES = '0x000000000000';
@@ -35,13 +34,3 @@ export const ETH_BASED_ASSETS = [WETH, ethers.utils.formatBytes32String('ETH').s
 
 export const DAI_PERMIT_ASSETS = [DAI, '0x444149000000'];
 export const NON_PERMIT_ASSETS = ['WBTC', 'LINK'];
-
-// contract names
-export const POOLVIEW = 'PoolView';
-export const CAULDRON = 'Cauldron';
-export const LADLE = 'Ladle';
-export const WITCH = 'Witch';
-export const COMPOUND_MULTI_ORACLE = 'CompoundMultiOracle';
-export const CHAINLINK_MULTI_ORACLE = 'ChainlinkMultiOracle';
-export const COMPOSITE_MULTI_ORACLE = 'CompositeMultiOracle';
-export const CHAINLINK_USD_ORACLE = 'ChainlinkUSDOracle';
