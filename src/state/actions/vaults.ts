@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { BigNumber, ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
@@ -11,7 +12,16 @@ import {
 } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
 import { IContractMap } from '../../types/contracts';
-import { IPriceMap, IVault, IVaultMap } from '../../types/vaults';
+import {
+  IPriceMap,
+  IUpdatePricesAction,
+  IUpdateVaultsAction,
+  IVault,
+  IVaultAction,
+  IVaultMap,
+  IVaultsLoadingAction,
+  IVaultsResetAction,
+} from '../../types/vaults';
 import { IAssetMap, ISeriesMap } from '../../types/chain';
 
 export function getVaults(
@@ -21,7 +31,7 @@ export function getVaults(
   chainId: number,
   priceMap: IPriceMap
 ) {
-  return async function _getVaults(dispatch: any) {
+  return async (dispatch: Dispatch<IVaultAction>) => {
     try {
       dispatch(setVaultsLoading(true));
       const fromBlock = 1;
@@ -158,13 +168,16 @@ export async function getPrice(
   }
 }
 
-export const updateVaults = (vaults: IVaultMap) => ({ type: ActionType.UPDATE_VAULTS, payload: vaults });
-export const setVaultsLoading = (vaultsLoading: boolean) => ({
+export const updateVaults = (vaults: IVaultMap): IUpdateVaultsAction => ({
+  type: ActionType.UPDATE_VAULTS,
+  payload: vaults,
+});
+export const setVaultsLoading = (vaultsLoading: boolean): IVaultsLoadingAction => ({
   type: ActionType.VAULTS_LOADING,
   payload: vaultsLoading,
 });
-export const reset = () => ({ type: ActionType.RESET });
-export const updatePrices = (quote: string, base: string, price: BigNumber) => ({
+export const reset = (): IVaultsResetAction => ({ type: ActionType.RESET });
+export const updatePrices = (quote: string, base: string, price: BigNumber): IUpdatePricesAction => ({
   type: ActionType.UPDATE_PRICES,
   payload: { quote, base, price },
 });

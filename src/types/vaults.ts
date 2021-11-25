@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { ActionType } from '../state/actionTypes/vaults';
 
 export interface IVaultState {
@@ -20,7 +21,7 @@ export interface IUpdateVaultsAction {
 
 export interface IUpdatePricesAction {
   type: ActionType.UPDATE_PRICES;
-  payload: { quote: string; base: string; price: string };
+  payload: { quote: string; base: string; price: BigNumber };
 }
 
 export interface IVaultsResetAction {
