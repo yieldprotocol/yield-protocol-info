@@ -1,4 +1,4 @@
-import { ethers, utils } from 'ethers';
+import { Contract, ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { WAD_BN } from '../../utils/constants';
@@ -101,8 +101,11 @@ export function getVaults(contractMap: any, series: any, assets: any) {
 
 export async function getPrice(ilk: string, base: string, contractMap: any, decimals: number = 18) {
   try {
-    const Oracle = (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any)
-      .contract;
+    const Oracle =
+      base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
+        ? (Object.values(contractMap).filter((x: any) => x.name === 'CompositeMultiOracle')[0] as any).contract
+        : (Object.values(contractMap).filter((x: any) => x.name === 'ChainlinkMultiOracle')[0] as any).contract;
+
     const [price] = await Oracle.peek(
       bytesToBytes32(ilk, 6),
       bytesToBytes32(base, 6),
