@@ -9,7 +9,7 @@ const INITIAL_STATE = {
   /* Data */
   events: {},
   roles: {},
-  contractMap: {},
+  contractMap: null,
   eventArgsPropsMap: {},
 };
 

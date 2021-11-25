@@ -1,4 +1,4 @@
-import { Contract, Event } from 'ethers';
+import { Contract } from 'ethers';
 import { ActionType } from '../state/actionTypes/contracts';
 
 export interface IContractState {
@@ -6,7 +6,7 @@ export interface IContractState {
   rolesLoading: boolean;
   events: IEventsMap;
   roles: {};
-  contractMap: IContractMap;
+  contractMap: IContractMap | null;
   eventArgsPropsMap: IEventArgsPropsMap;
 }
 

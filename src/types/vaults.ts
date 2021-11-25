@@ -53,3 +53,12 @@ export interface IPriceMap {
 export interface IPrice {
   [id: string]: string;
 }
+
+export interface IVaultRoot {
+  id: string;
+  seriesId: string;
+  baseId: string;
+  ilkId: string;
+  decimals: string;
+  owner: string;
+}

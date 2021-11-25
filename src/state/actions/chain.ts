@@ -137,7 +137,7 @@ async function getAssetJoinBalances(
 ) {
   try {
     const balances = await Promise.all(
-      Object.values(assets).map(async (a: any) => ({
+      Object.values(assets).map(async (a: IAsset) => ({
         id: a.id,
         balance: await getAssetJoinBalance(a, provider),
         asset: a,
@@ -151,7 +151,7 @@ async function getAssetJoinBalances(
   }
 }
 
-async function getAssetJoinBalance(asset: any, provider: any) {
+async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.JsonRpcProvider) {
   try {
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
@@ -178,7 +178,7 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
     );
     return balances;
   } catch (e) {
-    console.log('error getting pool balances');
+    console.log(' balances');
     console.log(e);
     return undefined;
   }
@@ -189,7 +189,8 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
  * @param pool
  * @returns string
  */
-async function getPoolBalance(pool: any) {
+async function getPoolBalance(pool: Contract) {
+  if (!pool) return '0';
   try {
     const decimals = await pool.decimals();
     const base = await pool.getBaseBalance();

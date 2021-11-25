@@ -8,15 +8,15 @@ import thunk from 'redux-thunk';
 import root from '../reducers/root';
 
 // we have nested objects, so we use autoMergeLevel2, and use local storage to persist the redux store
-const persistConfig = {
-  key: 'root',
-  storage,
-  stateReconciler: autoMergeLevel2,
-};
+// const persistConfig = {
+//   key: 'root',
+//   storage,
+//   stateReconciler: autoMergeLevel2,
+// };
 
-const persistedReducer = persistReducer<any, any>(persistConfig, root);
+// const persistedReducer = persistReducer<any, any>(persistConfig, root);
 
-export const store = createStore(persistedReducer, composeWithDevTools(applyMiddleware(thunk)));
+export const store = createStore(root, composeWithDevTools(applyMiddleware(thunk)));
 
 export const persistedStore = persistStore(store);
 

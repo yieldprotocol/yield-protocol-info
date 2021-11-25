@@ -10,11 +10,11 @@ export interface IChainState {
   assetsLoading: boolean;
   tvlLoading: boolean;
   assetPairDataLoading: boolean;
-  series: ISeriesMap;
-  strategies: IStrategyMap;
-  assets: IAssetMap;
+  series: ISeriesMap | null;
+  strategies: IStrategyMap | null;
+  assets: IAssetMap | null;
   assetsTvl: IAssetsTvl[];
-  assetPairData: IAssetPairMap;
+  assetPairData: IAssetPairMap | null;
 }
 
 export type IChainAction =

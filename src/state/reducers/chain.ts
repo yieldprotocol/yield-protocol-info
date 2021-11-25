@@ -15,11 +15,11 @@ const INITIAL_STATE = {
   assetPairDataLoading: false,
 
   /* Data */
-  series: {},
-  strategies: {},
-  assets: {},
+  series: null,
+  strategies: null,
+  assets: null,
   assetsTvl: [],
-  assetPairData: {},
+  assetPairData: null,
 };
 
 export default function rootReducer(state: IChainState = INITIAL_STATE, action: IChainAction): IChainState {

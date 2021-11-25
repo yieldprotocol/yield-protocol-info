@@ -41,7 +41,7 @@ export function getVaults(
 
         const buildEventList = await Promise.all(
           vaultsBuilt.map(async (x: any) => {
-            const { vaultId: id, ilkId, seriesId } = Cauldron.interface.parseLog(x).args;
+            const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
             const _series = series[seriesId];
             return {
               id,
@@ -49,6 +49,7 @@ export function getVaults(
               baseId: _series?.baseId!,
               ilkId,
               decimals: _series?.decimals!,
+              owner,
             };
           })
         );
@@ -56,7 +57,7 @@ export function getVaults(
         const recievedEventsList = await Promise.all(
           vaultsReceived.map(async (x: any) => {
             const { vaultId: id } = Cauldron.interface.parseLog(x).args;
-            const { ilkId, seriesId } = await Cauldron.vaults(id);
+            const { ilkId, seriesId, owner } = await Cauldron.vaults(id);
             const _series = series[seriesId];
             return {
               id,
@@ -64,6 +65,7 @@ export function getVaults(
               baseId: _series?.baseId!,
               ilkId,
               decimals: _series?.decimals!,
+              owner,
             };
           })
         );
@@ -74,14 +76,12 @@ export function getVaults(
         const vaultListMod = await Promise.all(
           vaultList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { owner, seriesId, ilkId }, { dec: decimals }, { ratio: minCollatRatio }] =
-              await Promise.all([
-                await Cauldron.balances(vault.id),
-                await Cauldron.vaults(vault.id),
-                await Cauldron.debt(vault.baseId, vault.ilkId),
-                await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-              ]);
+            const [{ ink, art }, { ratio: minCollatRatio }] = await Promise.all([
+              await Cauldron.balances(vault.id),
+              await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+            ]);
 
+            const { owner, seriesId, ilkId, decimals } = vault;
             const price = priceMap[vault.ilkId][vault.baseId];
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
