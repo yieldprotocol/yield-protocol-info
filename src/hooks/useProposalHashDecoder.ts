@@ -55,6 +55,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
             }));
           });
         }
+        return undefined;
       })
     );
     setLoading(false);

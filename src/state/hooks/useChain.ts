@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
-import { format, formatDistanceStrict } from 'date-fns';
+import { format } from 'date-fns';
 import { useAppDispatch, useAppSelector } from './general';
 import {
   setChainLoading,
@@ -25,8 +25,6 @@ import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
-import { IPriceMap } from '../../types/vaults';
-import { getVaults } from '../actions/vaults';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -254,37 +252,21 @@ const useChain = () => {
               const poolViewAddr: string = newContractMap[POOLVIEW].address;
               const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
               const invariantBlockNumCompare = -1000; // 45000 blocks ago
-              const secondsToDays: string = formatDistanceStrict(
-                new Date(1, 1, 0, 0, 0, 0),
-                new Date(1, 1, 0, 0, 0, Math.abs(invariantBlockNumCompare) || 0),
-                {
-                  unit: 'day',
-                }
-              );
 
-              const [
-                name,
-                symbol,
-                seriesId,
-                poolAddress,
-                baseId,
-                decimals,
-                version,
-                totalSupply,
-                currInvariant,
-                preInvariant,
-              ] = await Promise.all([
-                Strategy.name(),
-                Strategy.symbol(),
-                Strategy.seriesId(),
-                Strategy.pool(),
-                Strategy.baseId(),
-                Strategy.decimals(),
-                Strategy.version(),
-                Strategy.totalSupply(),
-                PoolView.invariant(await Strategy.pool()),
-                PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
-              ]);
+              const [name, symbol, seriesId, poolAddress, baseId, decimals, version, currInvariant] = await Promise.all(
+                [
+                  Strategy.name(),
+                  Strategy.symbol(),
+                  Strategy.seriesId(),
+                  Strategy.pool(),
+                  Strategy.baseId(),
+                  Strategy.decimals(),
+                  Strategy.version(),
+                  Strategy.totalSupply(),
+                  PoolView.invariant(await Strategy.pool()),
+                  PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
+                ]
+              );
 
               const initInvariant = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
               const currentBlock: number = await provider.getBlockNumber();

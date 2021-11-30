@@ -116,6 +116,9 @@ const useBatchDecoder = (txHash: string) => {
 
   async function decodeTxHash() {
     setLoading(true);
+
+    if (!provider) return;
+
     try {
       const tx = await provider.getTransaction(txHash);
       console.log(tx);
