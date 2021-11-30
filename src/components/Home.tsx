@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../state/hooks/general';
-import { IAsset, IAssetPairData, IAssetPairMap, IAssetsTvl } from '../types/chain';
+import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
 import TvlTable from './TvlTable';
@@ -14,7 +14,7 @@ interface ITvl {
 }
 
 const Home: FC = () => {
-  const { assets, assetPairData, assetsTvl, tvlLoading } = useAppSelector((st) => st.chain);
+  const { assets, assetPairData, assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
@@ -34,12 +34,12 @@ const Home: FC = () => {
   useEffect(() => {
     if (!assets) return;
 
-    const assetPairList = Object.values(assetPairData as IAssetPairMap).map((assetData: IAssetPairData) => {
-      const base: IAsset = assets[(assetData as any)[0]?.baseAssetId];
+    const assetPairList = Object.values(assetPairData!).map((assetData) => {
+      const base = assets[assetData[0].baseAssetId];
 
       const newItem = {
-        id: base?.id,
-        symbol: base?.symbol,
+        id: base.id,
+        symbol: base.symbol,
         value: Object.values(assetData).reduce((sum: number, x: IAssetPairData) => sum + +x.totalDebtInUSDC, 0),
       };
       return newItem;
