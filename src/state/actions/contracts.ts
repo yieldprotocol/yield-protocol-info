@@ -4,6 +4,7 @@ import {
   IEventArgsPropsMap,
   IEventArgsPropsMapAction,
   IEventsMap,
+  IResetAction,
   IUpdateContractMapAction,
 } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
@@ -83,4 +84,4 @@ export const updateContractMap = (contractMap: IContractMap): IUpdateContractMap
   type: ActionType.UPDATE_CONTRACT_MAP,
   payload: contractMap,
 });
-export const reset = () => ({ type: ActionType.RESET });
+export const reset = (): IResetAction => ({ type: ActionType.RESET });

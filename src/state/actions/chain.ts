@@ -15,6 +15,7 @@ import {
   IChainChainIdAction,
   IChainChainLoadingAction,
   IChainProviderAction,
+  IChainResetAction,
   IChainSeriesLoadingAction,
   IChainStrategiesLoadingAction,
   IChainTvlLoadingAction,
@@ -76,7 +77,7 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
   };
 }
 
-export const reset = () => ({ type: ActionType.RESET });
+export const reset = (): IChainResetAction => ({ type: ActionType.RESET });
 
 const updateAssetsTvl = (assetsTvl: any): IChainUpdateAssetsTVLAction => ({
   type: ActionType.UPDATE_ASSETS_TVL,
