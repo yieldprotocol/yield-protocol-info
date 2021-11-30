@@ -4,8 +4,8 @@ import { useAppDispatch, useAppSelector } from './general';
 
 const useTvl = () => {
   const dispatch = useAppDispatch();
-  const { provider, chainId, assets, series } = useAppSelector((st) => st.chain);
-  const { contractMap } = useAppSelector((st) => st.contracts);
+  const { provider, chainId, assets, series } = useAppSelector(({ chain }) => chain);
+  const { contractMap } = useAppSelector(({ contracts }) => contracts);
 
   useEffect(() => {
     if (assets && contractMap && series && provider && chainId) {
