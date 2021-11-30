@@ -9,7 +9,6 @@ import {
   IAsset,
   IAssetMap,
   IAssetPairData,
-  IChainAction,
   IChainAssetPairDataLoadingAction,
   IChainAssetsLoadingAction,
   IChainChainIdAction,
@@ -26,7 +25,6 @@ import {
   IChainUpdateStrategiesAction,
   ISeries,
   ISeriesMap,
-  IStrategy,
   IStrategyMap,
 } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
@@ -47,7 +45,7 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
           ]);
 
           const price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId);
-          dispatch(updatePrices(asset.id, x.id, price));
+          dispatch(updatePrices(asset.id, x.id, ethers.utils.formatUnits(price, asset.decimals)));
 
           const minDebt: string = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
           const maxDebt: string = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });

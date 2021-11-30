@@ -155,7 +155,7 @@ export const setVaultsLoading = (vaultsLoading: boolean): IVaultsLoadingAction =
   payload: vaultsLoading,
 });
 export const reset = (): IVaultsResetAction => ({ type: ActionType.RESET });
-export const updatePrices = (quote: string, base: string, price: BigNumber): IUpdatePricesAction => ({
+export const updatePrices = (quote: string, base: string, price: string): IUpdatePricesAction => ({
   type: ActionType.UPDATE_PRICES,
   payload: { quote, base, price },
 });

@@ -21,7 +21,7 @@ export interface IUpdateVaultsAction {
 
 export interface IUpdatePricesAction {
   type: ActionType.UPDATE_PRICES;
-  payload: { quote: string; base: string; price: BigNumber };
+  payload: { quote: string; base: string; price: string };
 }
 
 export interface IVaultsResetAction {
