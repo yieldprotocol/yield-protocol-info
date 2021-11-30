@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, Fragment, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
@@ -10,7 +10,7 @@ import { useAppSelector } from '../../state/hooks/general';
 import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
 
 const CallDisplay = ({ call }: any): any => {
-  const { assets, series } = useAppSelector((st) => st.chain);
+  const { assets, series } = useAppSelector(({ chain }) => chain);
   return (
     <table>
       <tbody>
@@ -25,7 +25,7 @@ const CallDisplay = ({ call }: any): any => {
           const logo = asset ? markMap?.get(assets![asset.id].symbol!) : null;
           const seriesItem = Object.values(series as ISeriesMap).filter((a: ISeries) => a.id === args[0])[0];
           return (
-            <div key={uuid()} className="">
+            <Fragment key={uuid()}>
               <tr className="no-wrap">
                 <td className="italic px-4">{call.argProps[idx].name}</td>
                 <td className="flex gap-1">
@@ -67,7 +67,7 @@ const CallDisplay = ({ call }: any): any => {
                     )}
                   </tr>
                 ))}
-            </div>
+            </Fragment>
           );
         })}
       </tbody>
