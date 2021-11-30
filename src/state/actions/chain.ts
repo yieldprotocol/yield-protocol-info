@@ -1,15 +1,36 @@
+import { Dispatch } from 'redux';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
 import { getPrice, updatePrices } from './vaults';
 import * as contracts from '../../contracts';
-import { IAsset, IAssetMap, IAssetPairData, ISeries, ISeriesMap, IStrategy } from '../../types/chain';
+import {
+  IAsset,
+  IAssetMap,
+  IAssetPairData,
+  IChainAction,
+  IChainAssetPairDataLoadingAction,
+  IChainAssetsLoadingAction,
+  IChainChainIdAction,
+  IChainChainLoadingAction,
+  IChainProviderAction,
+  IChainSeriesLoadingAction,
+  IChainStrategiesLoadingAction,
+  IChainTvlLoadingAction,
+  IChainUpdateAssetPairMapAction,
+  IChainUpdateAssetsAction,
+  IChainUpdateAssetsTVLAction,
+  IChainUpdateSeriesAction,
+  ISeries,
+  ISeriesMap,
+  IStrategy,
+} from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
 
 export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number) {
-  return async function _getAssetPairData(dispatch: any) {
+  return async (dispatch: any) => {
     dispatch(assetPairDataLoading(true));
     try {
       const Cauldron: Contract = contractMap[CAULDRON];
@@ -55,9 +76,12 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
 
 export const reset = () => ({ type: ActionType.RESET });
 
-const updateAssetsTvl = (assetsTvl: any) => ({ type: ActionType.UPDATE_ASSETS_TVL, payload: assetsTvl });
-const tvlLoading = (loading: boolean) => ({ type: ActionType.TVL_LOADING, payload: loading });
-const assetPairDataLoading = (loading: boolean) => ({
+const updateAssetsTvl = (assetsTvl: any): IChainUpdateAssetsTVLAction => ({
+  type: ActionType.UPDATE_ASSETS_TVL,
+  payload: assetsTvl,
+});
+const tvlLoading = (loading: boolean): IChainTvlLoadingAction => ({ type: ActionType.TVL_LOADING, payload: loading });
+const assetPairDataLoading = (loading: boolean): IChainAssetPairDataLoadingAction => ({
   type: ActionType.ASSET_PAIR_DATA_LOADING,
   payload: loading,
 });
@@ -257,31 +281,46 @@ const mapPoolAddrToAsset = (seriesMap: ISeriesMap, assets: IAssetMap) => {
   return {};
 };
 
-export const updateProvider = (provider: ethers.providers.JsonRpcProvider) => ({
+export const updateProvider = (provider: ethers.providers.JsonRpcProvider): IChainProviderAction => ({
   type: ActionType.PROVIDER,
   payload: provider,
 });
-export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, payload: chainId });
-export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, payload: chainLoading });
-export const setSeriesLoading = (seriesLoading: boolean) => ({
+export const updateChainId = (chainId: number): IChainChainIdAction => ({
+  type: ActionType.CHAIN_ID,
+  payload: chainId,
+});
+export const setChainLoading = (chainLoading: boolean): IChainChainLoadingAction => ({
+  type: ActionType.CHAIN_LOADING,
+  payload: chainLoading,
+});
+export const setSeriesLoading = (seriesLoading: boolean): IChainSeriesLoadingAction => ({
   type: ActionType.SERIES_LOADING,
   payload: seriesLoading,
 });
-export const setStrategiesLoading = (strategiesLoading: boolean) => ({
+export const setStrategiesLoading = (strategiesLoading: boolean): IChainStrategiesLoadingAction => ({
   type: ActionType.STRATEGIES_LOADING,
   payload: strategiesLoading,
 });
-export const setAssetsLoading = (assetsLoading: boolean) => ({
+export const setAssetsLoading = (assetsLoading: boolean): IChainAssetsLoadingAction => ({
   type: ActionType.ASSETS_LOADING,
   payload: assetsLoading,
 });
-export const updateSeries = (series: ISeries) => ({ type: ActionType.UPDATE_SERIES, payload: series });
+export const updateSeries = (series: ISeries): IChainUpdateSeriesAction => ({
+  type: ActionType.UPDATE_SERIES,
+  payload: series,
+});
 export const updateStrategies = (strategies: IStrategy) => ({
   type: ActionType.UPDATE_STRATEGIES,
   payload: strategies,
 });
-export const updateAssets = (assets: IAsset) => ({ type: ActionType.UPDATE_ASSETS, payload: assets });
-export const updateAssetPairData = (assetId: string, assetPairData: IAssetPairData[]) => ({
+export const updateAssets = (assets: IAsset): IChainUpdateAssetsAction => ({
+  type: ActionType.UPDATE_ASSETS,
+  payload: assets,
+});
+export const updateAssetPairData = (
+  assetId: string,
+  assetPairData: IAssetPairData[]
+): IChainUpdateAssetPairMapAction => ({
   type: ActionType.UPDATE_ASSET_PAIR_DATA,
   payload: { assetId, assetPairData },
 });
