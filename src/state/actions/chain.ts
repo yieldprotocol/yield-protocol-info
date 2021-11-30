@@ -106,7 +106,7 @@ export function getAssetsTvl(
   seriesMap: ISeriesMap,
   provider: ethers.providers.JsonRpcProvider,
   chainId: number
-) {
+): any {
   return async function _getAssetsTvl(dispatch: any) {
     dispatch(tvlLoading(true));
     if (provider && contractMap) {

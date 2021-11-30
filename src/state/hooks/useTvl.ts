@@ -1,20 +1,16 @@
-import { ethers } from 'ethers';
 import { useEffect } from 'react';
-import { IAssetMap, ISeriesMap } from '../../types/chain';
-import { IContractMap } from '../../types/contracts';
 import { getAssetsTvl } from '../actions/chain';
 import { useAppDispatch, useAppSelector } from './general';
 
 const useTvl = () => {
   const dispatch = useAppDispatch();
-  const provider: ethers.providers.JsonRpcProvider = useAppSelector((st) => st.chain.provider);
-  const chainId: number = useAppSelector((st) => st.chain.chainId);
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
-  const series: ISeriesMap = useAppSelector((st) => st.chain.series);
-  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
+  const { provider, chainId, assets, series } = useAppSelector((st) => st.chain);
+  const { contractMap } = useAppSelector((st) => st.contracts);
 
   useEffect(() => {
-    dispatch(getAssetsTvl(assets, contractMap, series, provider, chainId));
+    if (assets && contractMap && series && provider && chainId) {
+      dispatch(getAssetsTvl(assets, contractMap, series, provider, chainId));
+    }
   }, [assets, contractMap, dispatch, provider, series, chainId]);
 };
 
