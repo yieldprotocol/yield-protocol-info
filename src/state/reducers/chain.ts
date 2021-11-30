@@ -4,7 +4,7 @@ import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
   provider: null as ethers.providers.JsonRpcProvider | null,
-  chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) as number,
+  chainId: Number(process.env.REACT_APP_DEFAULT_CHAINID) || 1,
 
   /* flags */
   chainLoading: true,

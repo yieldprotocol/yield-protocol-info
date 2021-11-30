@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { format } from 'date-fns';
-import { useAppDispatch, useAppSelector } from './general';
+import { useAppDispatch } from './general';
 import {
   setChainLoading,
   setSeriesLoading,
@@ -35,19 +35,18 @@ const assetDigitFormatMap = new Map([
   ['STETH', 6],
 ]);
 
-const useChain = () => {
+const useChain = (chainId: number) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
 
-  const chainId: number = useAppSelector((st) => st.chain.chainId);
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );
 
   useEffect(() => {
-    if (provider && chainId) {
+    if (provider) {
       dispatch(updateProvider(provider));
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];
@@ -320,7 +319,7 @@ const useChain = () => {
   useEffect(() => {
     // send to home page when chain id changes
     history.push('/');
-  }, [chainId, history]);
+  }, [chainId]);
 };
 
 export { useChain };
