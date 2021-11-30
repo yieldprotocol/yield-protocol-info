@@ -9,7 +9,7 @@ export const useVaults = () => {
   const { prices } = useAppSelector(({ vaults }) => vaults);
 
   useEffect(() => {
-    if (contractMap && series && assets) {
+    if (contractMap && series && assets && chainId) {
       dispatch(getVaults(contractMap, series, assets, chainId, prices));
     }
   }, [contractMap, series, assets, dispatch]);

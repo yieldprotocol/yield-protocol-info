@@ -30,7 +30,7 @@ export function getVaults(
   assets: IAssetMap,
   chainId: number,
   priceMap: IPriceMap
-) {
+): any {
   return async (dispatch: Dispatch<IVaultAction>) => {
     try {
       dispatch(setVaultsLoading(true));
