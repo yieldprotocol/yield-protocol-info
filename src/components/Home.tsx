@@ -32,9 +32,9 @@ const Home: FC = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    if (!assets) return;
+    if (!assets || !assetPairData) return;
 
-    const assetPairList = Object.values(assetPairData!).map((assetData) => {
+    const assetPairList = Object.values(assetPairData).map((assetData) => {
       const base = assets[assetData[0].baseAssetId];
 
       const newItem = {

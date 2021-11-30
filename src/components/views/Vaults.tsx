@@ -13,7 +13,7 @@ import { IVault } from '../../types/vaults';
 const Vaults: FC = () => {
   const history = useHistory();
   const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
-  const { series, assets } = useAppSelector((st) => st.chain);
+  const { series, assets } = useAppSelector(({ chain }) => chain);
 
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'
@@ -32,12 +32,6 @@ const Vaults: FC = () => {
     history.push(`/vaults/${id}`);
   };
 
-  const handleClearFilters = () => {
-    setFilteredVaults(allVaults);
-    setIlkFilter('');
-    setSeriesFilter('');
-  };
-
   const handleFilter = useCallback(
     (_vaults: IVault[]) => {
       const _filteredVaults = _vaults
@@ -52,7 +46,7 @@ const Vaults: FC = () => {
   );
 
   useEffect(() => {
-    const _allVaults = [...Object.values(vaults)]
+    const _allVaults = Object.values(vaults)
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
       // .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty

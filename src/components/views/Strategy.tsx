@@ -9,7 +9,7 @@ import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
 const Strategy: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { strategies } = useAppSelector((st) => st.chain);
+  const { strategies } = useAppSelector(({ chain }) => chain);
   const strategy = strategies![id];
   const { strategyReturns, secondsToDays } = useStrategyReturns(strategy, 50000);
 

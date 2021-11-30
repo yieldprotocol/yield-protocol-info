@@ -2,14 +2,11 @@ import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
-import * as yieldEnv from '../yieldEnv.json';
 import { useAppSelector } from '../state/hooks/general';
 
 const useBatchDecoder = (txHash: string) => {
-  const provider = useAppSelector((st: any) => st.chain.provider);
-  const chainId = useAppSelector((st: any) => st.chain.chainId);
+  const { provider, chainId } = useAppSelector(({ chain }) => chain);
 
-  const ADDRESS_LADLE = (yieldEnv.addresses as any)[chainId].Ladle;
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>(null);
   const [decoded, setDecoded] = useState<any>({
