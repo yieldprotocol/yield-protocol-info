@@ -4,9 +4,8 @@ import { HashRouter as Router } from 'react-router-dom';
 
 import './index.css';
 
-import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
-import { store, persistedStore } from './state/stores/store';
+import { store } from './state/stores/store';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -14,11 +13,9 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistedStore}>
-        <Router>
-          <App />
-        </Router>
-      </PersistGate>
+      <Router>
+        <App />
+      </Router>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

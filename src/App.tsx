@@ -9,9 +9,9 @@ import { useVaults } from './state/hooks/useVaults';
 
 function App() {
   useResetApp();
-  useChain();
+  // useChain();
   useTvl();
-  useVaults();
+  // useVaults();
 
   return (
     <>
