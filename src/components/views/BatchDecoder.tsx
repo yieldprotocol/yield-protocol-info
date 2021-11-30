@@ -10,8 +10,7 @@ import { useAppSelector } from '../../state/hooks/general';
 import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
 
 const CallDisplay = ({ call }: any): any => {
-  const assets = useAppSelector((st) => st.chain.assets);
-  const series = useAppSelector((st) => st.chain.series);
+  const { assets, series } = useAppSelector((st) => st.chain);
   return (
     <table>
       <tbody>
@@ -20,10 +19,10 @@ const CallDisplay = ({ call }: any): any => {
         </tr>
         {call.arguments?.map((ogArgs: any, idx: number) => {
           const args: any = Array.isArray(ogArgs) ? ogArgs : [ogArgs];
-          const asset = assets[args[0]]
-            ? assets[args[0]]
+          const asset = assets![args[0]]
+            ? assets![args[0]]
             : Object.values(assets as IAssetMap).filter((a: IAsset) => a.address === args[0])[0];
-          const logo = asset ? markMap?.get(assets[asset.id].symbol!) : null;
+          const logo = asset ? markMap?.get(assets![asset.id].symbol!) : null;
           const seriesItem = Object.values(series as ISeriesMap).filter((a: ISeries) => a.id === args[0])[0];
           return (
             <div key={uuid()} className="">

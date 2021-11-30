@@ -8,22 +8,19 @@ import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
 import Select from '../../Select';
-import { IVault, IVaultMap } from '../../types/vaults';
-import { IAsset, IAssetMap, ISeriesMap } from '../../types/chain';
+import { IVault } from '../../types/vaults';
 
 const Vaults: FC = () => {
   const history = useHistory();
-  const vaults: IVaultMap = useAppSelector((st) => st.vaults.vaults);
-  const vaultsLoading: boolean = useAppSelector((st) => st.vaults.vaultsLoading);
-  const seriesMap: ISeriesMap = useAppSelector((st) => st.chain.series);
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
+  const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
+  const { series, assets } = useAppSelector((st) => st.chain);
 
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'
   );
-  const seriesFilterChoices = seriesChoices.map((sc: any) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']);
-  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].ilkId)));
-  const ilkFilterChoices = ilkChoices.map((ic: string) => [ic, (assets[ic] as IAsset)?.name!]);
+  const seriesFilterChoices = seriesChoices.map((sc: any) => [sc, series![sc] ? series![sc].name : '']);
+  const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key) => vaults[key].ilkId)));
+  const ilkFilterChoices = ilkChoices.map((ic: string) => [ic, assets![ic].name]);
   const [allVaults, setAllVaults] = useState<IVault[]>([]);
   const [filteredVaults, setFilteredVaults] = useState<IVault[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
@@ -43,11 +40,11 @@ const Vaults: FC = () => {
 
   const handleFilter = useCallback(
     (_vaults: IVault[]) => {
-      const _filteredVaults: IVault[] = _vaults
-        .filter((v: IVault) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
-        .filter((v: IVault) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
-        .filter((v: IVault) => (ilkFilter ? v.ilkId === ilkFilter : true))
-        .filter((v: IVault) => (seriesFilter ? v.seriesId === seriesFilter : true));
+      const _filteredVaults = _vaults
+        .filter((v) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
+        .filter((v) => (unhealthyFilter ? Number(v.collatRatioPct) <= 180 && v.baseId !== v.ilkId : true))
+        .filter((v) => (ilkFilter ? v.ilkId === ilkFilter : true))
+        .filter((v) => (seriesFilter ? v.seriesId === seriesFilter : true));
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
@@ -55,13 +52,13 @@ const Vaults: FC = () => {
   );
 
   useEffect(() => {
-    const _allVaults: IVault[] = [...Object.values(vaults)]
+    const _allVaults = [...Object.values(vaults)]
       // filter out vaults that have same base and ilk (borrow and pool liquidity positions)
       // .filter((v: any) => v.baseId !== v.ilkId)
       // filter empty
-      .filter((v: IVault) => Number(v.art) !== 0 && Number(v.ink) !== 0)
+      .filter((v) => Number(v.art) !== 0 && Number(v.ink) !== 0)
       // sorting by debt balance
-      .sort((vA: IVault, vB: IVault) => (Number(vA.art) < Number(vB.art) ? 1 : -1));
+      .sort((vA, vB) => (Number(vA.art) < Number(vB.art) ? 1 : -1));
     // sorting to prioritize active vaults
     // eslint-disable-next-line no-nested-ternary
 
@@ -74,7 +71,7 @@ const Vaults: FC = () => {
     }
   }, [unhealthyFilter, ilkFilter, allVaults, handleFilter, seriesFilter, vaultSearch]);
 
-  if (!vaultsLoading && !Object.values(vaults).length) return <MainViewWrap>No Vaults</MainViewWrap>;
+  if (!vaultsLoading && ![...Object.values(vaults)].length) return <MainViewWrap>No Vaults</MainViewWrap>;
 
   return (
     <MainViewWrap>
@@ -139,52 +136,50 @@ const Vaults: FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
-                {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map(
-                  (v: any) => {
-                    const debtAsset = assets[v.baseId];
-                    const collatAsset = assets[v.ilkId];
-                    const debtAssetLogo = markMap?.get(debtAsset?.symbol!);
-                    const collatAssetLogo = markMap?.get(collatAsset?.symbol!);
-                    return (
-                      <tr
-                        key={v.id}
-                        onClick={() => handleClick(v.id)}
-                        className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
-                      >
-                        <td className="px-6 py-2 text-center">
-                          <div className="flex items-center">
-                            <span className="text-sm uppercase font-small text-gray-900 truncate">{v.id}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-3 text-center items-center">
-                          <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{formatValue(v.collatRatioPct, 1)}%</span>
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center items-center">
-                          <span className="text-sm font-medium text-gray-900 truncate">
-                            {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center items-center">
-                          <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{formatValue(v.art, debtAsset.digitFormat)}</span>
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center items-center">
-                          <span className="text-sm font-medium text-gray-900 truncate">
-                            {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center items-center">
-                          <span className="text-sm font-medium text-gray-900 truncate">
-                            <span>{formatValue(v.ink, 2)}</span>
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
+                {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map((v) => {
+                  const debtAsset = assets![v.baseId];
+                  const collatAsset = assets![v.ilkId];
+                  const debtAssetLogo = markMap.get(debtAsset.symbol);
+                  const collatAssetLogo = markMap.get(collatAsset.symbol);
+                  return (
+                    <tr
+                      key={v.id}
+                      onClick={() => handleClick(v.id)}
+                      className="hover:bg-green-200 items-center  dark:border-green-700 cursor-pointer group dark:hover:bg-green-100 dark:hover:shadow-lg"
+                    >
+                      <td className="px-6 py-2 text-center">
+                        <div className="flex items-center">
+                          <span className="text-sm uppercase font-small text-gray-900 truncate">{v.id}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 text-center items-center">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          <span>{formatValue(v.collatRatioPct, 1)}%</span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-center items-center">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {debtAssetLogo && <div className="h-6 w-6 mx-auto">{debtAssetLogo}</div>}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-center items-center">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          <span>{formatValue(v.art, debtAsset.digitFormat)}</span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-center items-center">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {collatAssetLogo && <div className="h-6 w-6 mx-auto">{collatAssetLogo}</div>}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-center items-center">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          <span>{formatValue(v.ink, 2)}</span>
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

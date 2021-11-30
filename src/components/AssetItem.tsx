@@ -1,13 +1,10 @@
 import React, { FC } from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 import { markMap } from '../config/marks';
-import { useAppSelector } from '../state/hooks/general';
 import { IAsset } from '../types/chain';
 
 const AssetItem: FC<{ item: IAsset }> = ({ item }) => {
-  const assets = useAppSelector((st) => st.chain.assets);
-  const asset = assets[item.id];
-  const logo = markMap?.get(asset?.symbol);
+  const logo = markMap.get(item.symbol);
   return (
     <ListItemWrap type="assets" item={item}>
       <div className="flex text-sm text-center gap-2">

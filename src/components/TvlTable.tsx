@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
 import { useAppSelector } from '../state/hooks/general';
 import { formatValue } from '../utils/appUtils';
 import SkeletonWrap from './wraps/SkeletonWrap';
 
-const TvlTable = ({ data, assets }: { data: any[]; assets: any[] }) => {
-  const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
-  return data ? (
+const TvlTable: FC<{ data: any[] }> = ({ data }) => {
+  const { assets, tvlLoading } = useAppSelector((st) => st.chain);
+
+  return data && assets ? (
     <div className="rounded-lg shadow-sm p-2 dark:bg-green-200 bg-green-200 w-full">
       <table className="table min-w-full divide-y">
         <tbody className="divide-y">
           {data.map((x: any) => {
             const asset = assets[x.id];
-            const assetLogo = markMap?.get(asset?.symbol!);
+            const assetLogo = markMap.get(asset.symbol);
             return (
               <tr key={uuid()} className="items-center group">
                 <td className="p-3 text-start items-center flex gap-4">

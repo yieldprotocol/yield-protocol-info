@@ -6,6 +6,7 @@ export interface IContractState {
   rolesLoading: boolean;
   events: IEventsMap;
   roles: {};
+  roleNames: any;
   contractMap: IContractMap | null;
   eventArgsPropsMap: IEventArgsPropsMap;
 }

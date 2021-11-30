@@ -22,14 +22,16 @@ import {
   IChainUpdateAssetsAction,
   IChainUpdateAssetsTVLAction,
   IChainUpdateSeriesAction,
+  IChainUpdateStrategiesAction,
   ISeries,
   ISeriesMap,
   IStrategy,
+  IStrategyMap,
 } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
 
-export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number) {
+export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
   return async (dispatch: any) => {
     dispatch(assetPairDataLoading(true));
     try {
@@ -309,7 +311,7 @@ export const updateSeries = (series: ISeries): IChainUpdateSeriesAction => ({
   type: ActionType.UPDATE_SERIES,
   payload: series,
 });
-export const updateStrategies = (strategies: IStrategy) => ({
+export const updateStrategies = (strategies: IStrategyMap): IChainUpdateStrategiesAction => ({
   type: ActionType.UPDATE_STRATEGIES,
   payload: strategies,
 });

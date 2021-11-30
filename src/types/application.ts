@@ -7,16 +7,16 @@ export interface IAppState {
 
 export type IAppAction = IAppToggleDarkModeAction | IAppVersionAction | IAppResetAction;
 
-interface IAppToggleDarkModeAction {
+export interface IAppToggleDarkModeAction {
   type: ActionType.TOGGLE_DARK_MODE;
   payload: boolean;
 }
 
-interface IAppVersionAction {
+export interface IAppVersionAction {
   type: ActionType.VERSION;
   payload: string;
 }
 
-interface IAppResetAction {
+export interface IAppResetAction {
   type: ActionType.RESET;
 }

@@ -12,7 +12,7 @@ import * as contracts from '../../contracts';
  * @param previousBlocks number of blocks to use for comparison (lookback window)
  */
 export const usePoolReturns = (series: ISeries, previousBlocks: number) => {
-  const provider = useAppSelector((st) => st.chain.provider);
+  const { provider } = useAppSelector((st) => st.chain);
   const currentBlock = useBlockNum();
   const [previousBlock, setPreviousBlock] = useState<number>();
 
@@ -25,7 +25,7 @@ export const usePoolReturns = (series: ISeries, previousBlocks: number) => {
   useEffect(() => {
     const _getPoolBaseValuePerShare = async (blockNum: number) => {
       try {
-        const poolContract = contracts.Pool__factory.connect(series.poolAddress, provider);
+        const poolContract = contracts.Pool__factory.connect(series.poolAddress, provider!);
 
         const [[base, fyTokenVirtual], totalSupply, decimals, fyTokenToBaseCostEstimate] = await Promise.all([
           await poolContract.getCache({ blockTag: blockNum }),

@@ -129,7 +129,7 @@ const useChain = () => {
                 version,
                 joinAddress,
               };
-              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
+              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset);
             })
           );
           dispatch(updateAssets(newAssets));

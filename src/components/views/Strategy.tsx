@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { IStrategy } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
@@ -10,8 +9,8 @@ import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
 const Strategy: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const strategies = useAppSelector((st) => st.chain.strategies);
-  const strategy: IStrategy = strategies[id];
+  const { strategies } = useAppSelector((st) => st.chain);
+  const strategy = strategies![id];
   const { strategyReturns, secondsToDays } = useStrategyReturns(strategy, 50000);
 
   return strategy ? (

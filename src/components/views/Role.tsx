@@ -11,15 +11,11 @@ import { IContractMap } from '../../types/contracts';
 const Role: FC = () => {
   const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
-  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
-
-  const roles = useAppSelector((st) => st.contracts.roles);
-  const roleNames = useAppSelector((st) => st.contracts.roleNames);
-  const rolesLoading = useAppSelector((st) => st.contracts.rolesLoading);
-  const contractRoles = roles[name];
+  const { contractMap, roles, roleNames, rolesLoading } = useAppSelector((st) => st.contracts);
+  const contractRoles = (roles as any)[name];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && name) dispatch(getRoles(contractMap, name));
+    if (contractMap && name) dispatch(getRoles(contractMap, name));
   }, [contractMap, dispatch, name]);
 
   return (

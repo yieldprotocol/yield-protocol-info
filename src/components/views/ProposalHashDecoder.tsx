@@ -7,10 +7,9 @@ import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
 import { useAppSelector } from '../../state/hooks/general';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap } from '../../types/chain';
 
 const ProposalHashDecoder: FC = () => {
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
+  const { assets } = useAppSelector((st) => st.chain);
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
@@ -19,10 +18,8 @@ const ProposalHashDecoder: FC = () => {
 
   // check if we can use an asset logo or series name
   const getLogo = (arg: string) => {
-    const asset = assets[arg]
-      ? assets[arg]
-      : Object.values(assets as IAssetMap).filter((a: IAsset) => a.address === arg)[0];
-    const logo = asset ? markMap?.get(assets[asset.id].symbol!) : null;
+    const asset = assets![arg] ? assets![arg] : Object.values(assets!).filter((a) => a.address === arg)[0];
+    const logo = asset ? markMap.get(assets![asset.id].symbol) : null;
 
     if (logo) return logo;
     return null;

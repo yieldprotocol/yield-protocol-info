@@ -6,8 +6,7 @@ import { markMap } from './config/marks';
 import { useAppSelector } from './state/hooks/general';
 
 const Selecty = ({ options, label, onChange }: any) => {
-  const assets = useAppSelector((st) => st.chain.assets);
-  const seriesMap = useAppSelector((st) => st.chain.series);
+  const { assets, series } = useAppSelector((st) => st.chain);
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [selectedLogo, setSelectedLogo] = useState(null);
 
@@ -26,10 +25,10 @@ const Selecty = ({ options, label, onChange }: any) => {
   );
 
   useEffect(() => {
-    const asset = label === 'Series' ? assets[seriesMap[selectedOption!]?.baseId!] : assets[selectedOption!];
+    const asset = label === 'Series' ? assets![series![selectedOption!].baseId] : assets![selectedOption];
     const logo = markMap?.get(asset?.symbol!);
     selectedOption && logo && setSelectedLogo(logo);
-  }, [selectedOption, seriesMap, assets, label]);
+  }, [selectedOption, series, assets, label]);
 
   if (!options) return null;
   return (
@@ -58,8 +57,8 @@ const Selecty = ({ options, label, onChange }: any) => {
                     value={_x}
                   >
                     {({ selected, active }) => {
-                      const asset = label === 'Series' ? assets[seriesMap[_x]?.baseId!] : assets[_x];
-                      const logo = markMap?.get(asset?.symbol!);
+                      const asset = label === 'Series' ? assets![series![_x].baseId] : assets![_x];
+                      const logo = markMap.get(asset.symbol);
                       return (
                         <div className="flex justify-between">
                           <div className="flex">

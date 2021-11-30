@@ -3,22 +3,23 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import SeriesItem from '../SeriesItem';
 import { useAppSelector } from '../../state/hooks/general';
 import MainViewWrap from '../wraps/MainViewWrap';
+import { ISeries } from '../../types/chain';
 
 const SeriesList: FC = () => {
-  const series = useAppSelector((st) => st.chain.series);
-  const seriesLoading = useAppSelector((st) => st.chain.seriesLoading);
-  const [seriesList, setSeriesList] = useState<any[]>([]);
+  const { series, seriesLoading } = useAppSelector((st) => st.chain);
+  const [seriesList, setSeriesList] = useState<ISeries[]>([]);
 
   useEffect(() => {
-    Object.values(series).length > 0 &&
+    if (series) {
       setSeriesList(
         [...Object.values(series)]
-          .sort((s1: any, s2: any) => (s1?.name! < s2?.name! ? -1 : 1))
-          .sort((s1: any, s2: any) => s1?.maturity! - s2?.maturity!)
+          .sort((s1, s2) => (s1.name < s2.name ? -1 : 1))
+          .sort((s1, s2) => s1.maturity - s2.maturity)
       );
+    }
   }, [series]);
 
-  if (!Object.values(series).length) return <MainViewWrap>No Series</MainViewWrap>;
+  if (!Object.values(series!).length) return <MainViewWrap>No Series</MainViewWrap>;
 
   return (
     <MainViewWrap>

@@ -42,16 +42,12 @@ export function getVaults(
 
       if (Object.keys(Cauldron.filters).length) {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
-        const vaultsReceivedfilter = Cauldron.filters.VaultGiven(null, null);
 
-        const [vaultsBuilt, vaultsReceived] = await Promise.all([
-          Cauldron.queryFilter(vaultsBuiltFilter, fromBlock),
-          Cauldron.queryFilter(vaultsReceivedfilter, fromBlock),
-        ]);
-
-        const buildEventList = await Promise.all(
-          vaultsBuilt.map(async (x: any) => {
+        const vaults = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
+        const vaultEventList = await Promise.all(
+          vaults.map(async (x: any) => {
             const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
+            console.log(Cauldron.interface.parseLog(x));
             const _series = series[seriesId];
             return {
               id,
@@ -63,28 +59,10 @@ export function getVaults(
             };
           })
         );
-
-        const recievedEventsList = await Promise.all(
-          vaultsReceived.map(async (x: any) => {
-            const { vaultId: id } = Cauldron.interface.parseLog(x).args;
-            const { ilkId, seriesId, owner } = await Cauldron.vaults(id);
-            const _series = series[seriesId];
-            return {
-              id,
-              seriesId,
-              baseId: _series?.baseId!,
-              ilkId,
-              decimals: _series?.decimals!,
-              owner,
-            };
-          })
-        );
-
-        const vaultList = [...buildEventList, ...recievedEventsList];
 
         /* Add in the dynamic vault data by mapping the vaults list */
         const vaultListMod = await Promise.all(
-          vaultList.map(async (vault: any) => {
+          vaultEventList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
             const [{ ink, art }, { ratio: minCollatRatio }] = await Promise.all([
               await Cauldron.balances(vault.id),

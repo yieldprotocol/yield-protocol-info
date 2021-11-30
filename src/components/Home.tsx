@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../state/hooks/general';
-import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
+import { IAsset, IAssetPairData, IAssetPairMap, IAssetsTvl } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
 import TvlTable from './TvlTable';
@@ -14,10 +14,7 @@ interface ITvl {
 }
 
 const Home: FC = () => {
-  const assets = useAppSelector((st) => st.chain.assets);
-  const assetPairData = useAppSelector((st) => st.chain.assetPairData);
-  const assetsTvl = useAppSelector((st) => st.chain.assetsTvl);
-  const tvlLoading = useAppSelector((st) => st.chain.tvlLoading);
+  const { assets, assetPairData, assetsTvl, tvlLoading } = useAppSelector((st) => st.chain);
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
@@ -31,10 +28,12 @@ const Home: FC = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(Object.values(assetsTvl as ITvl[]).sort((a: ITvl, b: ITvl) => b.value - a.value)); // sort by largest tvl
+    setTvlList(Object.values(assetsTvl).sort((a: any, b: any) => b.value - a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
+    if (!assets) return;
+
     const assetPairList = Object.values(assetPairData as IAssetPairMap).map((assetData: IAssetPairData) => {
       const base: IAsset = assets[(assetData as any)[0]?.baseAssetId];
 
@@ -68,7 +67,7 @@ const Home: FC = () => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{tvlList.length > 0 && <TvlTable data={tvlList} assets={assets} />}</div>
+          <div className="w-52">{tvlList.length > 0 && <TvlTable data={tvlList} />}</div>
         </div>
         <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
           <Summary>
@@ -83,7 +82,7 @@ const Home: FC = () => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{totalDebt! > 0 && <TvlTable data={totalDebtList} assets={assets} />}</div>
+          <div className="w-52">{totalDebt! > 0 && <TvlTable data={totalDebtList} />}</div>
         </div>
       </div>
     </MainViewWrap>

@@ -6,20 +6,16 @@ import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
-import { IContractMap, IEventArgsProps, IEventArgsPropsMap, IEvents, IEventsMap } from '../../types/contracts';
 
 const Contract: FC = () => {
   const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
-  const contractMap: IContractMap = useAppSelector((st) => st.contracts.contractMap);
-  const eventArgsPropsMap: IEventArgsPropsMap = useAppSelector((st) => st.contracts.eventArgsPropsMap);
-  const eventArgsProps: IEventArgsProps = eventArgsPropsMap[name];
-  const events: IEventsMap = useAppSelector((st) => st.contracts.events);
-  const eventsLoading: boolean = useAppSelector((st) => st.contracts.eventsLoading);
-  const contractEvents: IEvents[] = events[name];
+  const { contractMap, events, eventsLoading, eventArgsPropsMap } = useAppSelector((st) => st.contracts);
+  const eventArgsProps = eventArgsPropsMap[name];
+  const contractEvents = events[name];
 
   useEffect(() => {
-    if (Object.keys(contractMap).length && name) {
+    if (contractMap && name) {
       dispatch(getEvents(contractMap, name, undefined));
       dispatch(getEventArgs(contractMap, name));
     }

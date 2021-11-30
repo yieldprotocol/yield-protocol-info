@@ -5,15 +5,13 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import MainViewWrap from '../wraps/MainViewWrap';
 import AssetPairTable from '../AssetPairTable';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap, IAssetPairMap } from '../../types/chain';
 
 const Asset: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const assets: IAssetMap = useAppSelector((st) => st.chain.assets);
-  const assetPairDataMap: IAssetPairMap = useAppSelector((st) => st.chain.assetPairData);
-  const asset: IAsset = assets[id];
-  const thisAssetPairData = assetPairDataMap[asset.id];
-  const logo = markMap?.get(asset?.symbol);
+  const { assets, assetPairData } = useAppSelector((st) => st.chain);
+  const asset = assets![id];
+  const thisAssetPairData = assetPairData![asset.id];
+  const logo = markMap.get(asset.symbol);
 
   return asset ? (
     <MainViewWrap>
@@ -29,7 +27,7 @@ const Asset: FC = () => {
         </div>
         {thisAssetPairData && (
           <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm">
-            <AssetPairTable data={thisAssetPairData} assets={assets} />
+            <AssetPairTable data={thisAssetPairData} />
           </div>
         )}
       </div>

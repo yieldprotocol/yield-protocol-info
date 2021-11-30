@@ -1,8 +1,14 @@
 import { Contract, Event } from 'ethers';
-import { IContractMap, IEventArgsPropsMap, IEventsMap } from '../../types/contracts';
+import {
+  IContractMap,
+  IEventArgsPropsMap,
+  IEventArgsPropsMapAction,
+  IEventsMap,
+  IUpdateContractMapAction,
+} from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
 
-export function getEvents(contractMap: IContractMap, name: string, filter: any = '*') {
+export function getEvents(contractMap: IContractMap, name: string, filter: any = '*'): any {
   return async function _getEvents(dispatch: any) {
     dispatch(setEventsLoading(true));
     const contract: Contract = contractMap[name];
@@ -53,7 +59,7 @@ const getEventArgProps = (contract: Contract) =>
     return acc;
   }, {});
 
-export function getEventArgs(contractMap: IContractMap, name: string) {
+export function getEventArgs(contractMap: IContractMap, name: string): any {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
     const newEventArgPropsMap: IEventArgsPropsMap = {};
@@ -64,16 +70,16 @@ export function getEventArgs(contractMap: IContractMap, name: string) {
   };
 }
 
-export const updateEventArgPropsMap = (eventArgPropsMap: IEventArgsPropsMap) => ({
+export const updateEventArgPropsMap = (eventArgPropsMap: IEventArgsPropsMap): IEventArgsPropsMapAction => ({
   type: ActionType.UPDATE_EVENT_ARGS_PROPS_MAP,
   payload: eventArgPropsMap,
 });
-export const updateEvents = (events: IEventsMap) => ({ type: ActionType.UPDATE_EVENTS, payload: events });
+export const updateEvents = (events: IEventsMap): any => ({ type: ActionType.UPDATE_EVENTS, payload: events });
 export const setEventsLoading = (eventsLoading: boolean) => ({
   type: ActionType.EVENTS_LOADING,
   payload: eventsLoading,
 });
-export const updateContractMap = (contractMap: IContractMap) => ({
+export const updateContractMap = (contractMap: IContractMap): IUpdateContractMapAction => ({
   type: ActionType.UPDATE_CONTRACT_MAP,
   payload: contractMap,
 });
