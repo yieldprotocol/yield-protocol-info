@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { ActionType } from '../state/actionTypes/vaults';
 
 export interface IVaultState {

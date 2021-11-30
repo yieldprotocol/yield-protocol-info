@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { BigNumber, ethers, utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import {

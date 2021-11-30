@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../state/hooks/general';
-import { IAsset, IAssetPairData, IAssetPairMap } from '../types/chain';
+import { IAssetPairData } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
 import TvlTable from './TvlTable';
