@@ -70,7 +70,7 @@ export interface IChainAssetPairDataLoadingAction {
 
 export interface IChainUpdateSeriesAction {
   type: ActionType.UPDATE_SERIES;
-  payload: ISeries;
+  payload: ISeriesMap;
 }
 
 export interface IChainUpdateStrategiesAction {
@@ -80,7 +80,7 @@ export interface IChainUpdateStrategiesAction {
 
 export interface IChainUpdateAssetsAction {
   type: ActionType.UPDATE_ASSETS;
-  payload: IAsset;
+  payload: IAssetMap;
 }
 
 export interface IChainUpdateAssetPairMapAction {
@@ -115,7 +115,7 @@ export interface IStrategyMap {
 }
 
 export interface IAssetPairMap {
-  [id: string]: IAssetPairData;
+  [id: string]: IAssetPairData[];
 }
 
 export interface IAssetsTvl {

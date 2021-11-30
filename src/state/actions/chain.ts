@@ -308,7 +308,7 @@ export const setAssetsLoading = (assetsLoading: boolean): IChainAssetsLoadingAct
   type: ActionType.ASSETS_LOADING,
   payload: assetsLoading,
 });
-export const updateSeries = (series: ISeries): IChainUpdateSeriesAction => ({
+export const updateSeries = (series: ISeriesMap): IChainUpdateSeriesAction => ({
   type: ActionType.UPDATE_SERIES,
   payload: series,
 });
@@ -316,7 +316,7 @@ export const updateStrategies = (strategies: IStrategyMap): IChainUpdateStrategi
   type: ActionType.UPDATE_STRATEGIES,
   payload: strategies,
 });
-export const updateAssets = (assets: IAsset): IChainUpdateAssetsAction => ({
+export const updateAssets = (assets: IAssetMap): IChainUpdateAssetsAction => ({
   type: ActionType.UPDATE_ASSETS,
   payload: assets,
 });
