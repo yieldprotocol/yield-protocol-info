@@ -9,11 +9,14 @@ import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
 import Select from '../../Select';
 import { IVault } from '../../types/vaults';
+import { useVaults } from '../../state/hooks/useVaults';
 
 const Vaults: FC = () => {
   const history = useHistory();
   const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
   const { series, assets } = useAppSelector(({ chain }) => chain);
+
+  useVaults();
 
   const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key: string) => vaults[key].seriesId))).filter(
     (x) => x !== '0x000000000000'

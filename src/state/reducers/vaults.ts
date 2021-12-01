@@ -8,12 +8,15 @@ const INITIAL_STATE = {
   /* Data */
   vaults: {},
   prices: {},
+  vaultsGot: false,
 };
 
 export default function rootReducer(state: IVaultState = INITIAL_STATE, action: IVaultAction): IVaultState {
   switch (action.type) {
     case ActionType.VAULTS_LOADING:
       return { ...state, vaultsLoading: action.payload };
+    case ActionType.VAULTS_GOT:
+      return { ...state, vaultsGot: action.payload };
     case ActionType.UPDATE_VAULTS:
       return {
         ...state,

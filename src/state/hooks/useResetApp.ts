@@ -6,7 +6,8 @@ import { useAppDispatch, useAppSelector } from './general';
 
 const useResetApp = () => {
   const dispatch = useAppDispatch();
-  const { version } = useAppSelector((st) => st.application);
+  const { version } = useAppSelector(({ application }) => application);
+  const { chainId } = useAppSelector(({ chain }) => chain);
 
   useEffect(() => {
     if (process.env.REACT_APP_VERSION !== version) {
@@ -15,6 +16,11 @@ const useResetApp = () => {
       dispatch(resetVaults());
     }
   }, [version, dispatch]);
+
+  useEffect(() => {
+    dispatch(resetContracts());
+    dispatch(resetVaults());
+  }, [chainId, dispatch]);
 };
 
 export default useResetApp;

@@ -4,9 +4,15 @@ export interface IVaultState {
   vaultsLoading: boolean;
   vaults: IVaultMap;
   prices: IPriceMap;
+  vaultsGot: boolean;
 }
 
-export type IVaultAction = IVaultsLoadingAction | IUpdateVaultsAction | IUpdatePricesAction | IVaultsResetAction;
+export type IVaultAction =
+  | IVaultsLoadingAction
+  | IUpdateVaultsAction
+  | IUpdatePricesAction
+  | IVaultsResetAction
+  | IVaultsGotAction;
 
 export interface IVaultsLoadingAction {
   type: ActionType.VAULTS_LOADING;
@@ -25,6 +31,11 @@ export interface IUpdatePricesAction {
 
 export interface IVaultsResetAction {
   type: ActionType.RESET;
+}
+
+export interface IVaultsGotAction {
+  type: ActionType.VAULTS_GOT;
+  payload: boolean;
 }
 
 export interface IVaultMap {

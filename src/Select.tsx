@@ -6,7 +6,7 @@ import { markMap } from './config/marks';
 import { useAppSelector } from './state/hooks/general';
 
 const Selecty = ({ options, label, onChange }: any) => {
-  const { assets, series } = useAppSelector((st) => st.chain);
+  const { assets, series } = useAppSelector(({ chain }) => chain);
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [selectedLogo, setSelectedLogo] = useState(null);
 
@@ -25,9 +25,11 @@ const Selecty = ({ options, label, onChange }: any) => {
   );
 
   useEffect(() => {
-    const asset = label === 'Series' ? assets![series![selectedOption!].baseId] : assets![selectedOption];
-    const logo = markMap?.get(asset?.symbol!);
-    selectedOption && logo && setSelectedLogo(logo);
+    if (assets && series && selectedOption) {
+      const asset = label === 'Series' ? assets[series[selectedOption].baseId] : assets[selectedOption];
+      const logo = markMap?.get(asset?.symbol!);
+      selectedOption && logo && setSelectedLogo(logo);
+    }
   }, [selectedOption, series, assets, label]);
 
   if (!options) return null;

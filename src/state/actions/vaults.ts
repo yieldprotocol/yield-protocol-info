@@ -22,19 +22,19 @@ import {
   IVaultsLoadingAction,
   IVaultsResetAction,
 } from '../../types/vaults';
-import { IAssetMap, ISeriesMap } from '../../types/chain';
 
-export function getVaults(
-  contractMap: IContractMap,
-  series: ISeriesMap,
-  assets: IAssetMap,
-  chainId: number,
-  priceMap: IPriceMap
-): any {
-  return async (dispatch: Dispatch<IVaultAction>) => {
+export function getVaults(): any {
+  return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
+    const {
+      chain: { series, assets, chainId },
+      contracts: { contractMap },
+      vaults: { vaultsGot },
+    } = getState();
+
+    if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-      const fromBlock = 1;
+      const fromBlock = -20000;
       const Cauldron = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 
@@ -43,11 +43,10 @@ export function getVaults(
       if (Object.keys(Cauldron.filters).length) {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
 
-        const vaults = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
+        const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
         const vaultEventList = await Promise.all(
-          vaults.map(async (x: any) => {
+          vaultsBuilt.map(async (x: any) => {
             const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
-            console.log(Cauldron.interface.parseLog(x));
             const _series = series[seriesId];
             return {
               id,
@@ -70,9 +69,10 @@ export function getVaults(
             ]);
 
             const { owner, seriesId, ilkId, decimals } = vault;
-            const price = priceMap[vault.ilkId][vault.baseId];
+            // const price = priceMap[vault.ilkId][vault.baseId];
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
+            const price = await getPrice(vault.ilkId, vault.baseId, contractMap, decimals, chainId);
 
             return {
               ...vault,
@@ -96,6 +96,7 @@ export function getVaults(
         dispatch(updateVaults(newVaultMap));
         dispatch(setVaultsLoading(false));
       }
+      dispatch(setVaultsGot(true));
     } catch (e) {
       dispatch(setVaultsLoading(false));
       console.log(e);
@@ -158,4 +159,9 @@ export const reset = (): IVaultsResetAction => ({ type: ActionType.RESET });
 export const updatePrices = (quote: string, base: string, price: string): IUpdatePricesAction => ({
   type: ActionType.UPDATE_PRICES,
   payload: { quote, base, price },
+});
+
+export const setVaultsGot = (vaultsGot: boolean): any => ({
+  type: ActionType.VAULTS_GOT,
+  payload: vaultsGot,
 });
