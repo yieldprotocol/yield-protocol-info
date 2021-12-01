@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { Contract, Event } from 'ethers';
 import {
   IContractMap,
   IEventArgsPropsMap,
@@ -12,51 +12,22 @@ import { ActionType } from '../actionTypes/contracts';
 export function getEvents(contractMap: IContractMap, name: string, filter: any = '*'): any {
   return async function _getEvents(dispatch: any) {
     dispatch(setEventsLoading(true));
-    const contract = contractMap[contractAddr]?.contract!;
+    const contract: Contract = contractMap[name];
+
     if (contract) {
       try {
         dispatch(setEventsLoading(true));
-        const events = await contract.queryFilter(filter, null, null);
+        const events = await contract.queryFilter(filter, undefined, undefined);
 
-        const updatedEvents = events.map((e: any, i: number) => ({
+        const updatedEvents = events.map((e: Event, i: number) => ({
           id: i,
           event: e.event,
           blockNumber: e.blockNumber,
           args: e.args ? e.args.join(', ') : '',
         }));
 
-        const eventsMap = { [contractAddr]: updatedEvents };
+        const eventsMap: IEventsMap = { [name]: updatedEvents };
 
-        /* build a map from the event data */
-        // const eventMap: Map<string, string> = new Map(
-        //   events.map((log: any) => events.interface.parseLog(log).args) as [[string, string]]
-        // );
-
-        // const newObj: any = {};
-        // await Promise.all([
-        //   ...events.map(async (x: any): Promise<void> => {
-        //     const { seriesId: id, baseId, fyToken } = contract.interface.parseLog(x).args;
-        //     const { maturity } = await Cauldron.series(id);
-
-        //       const events = {
-        //         id,
-        //         baseId,
-        //         maturity,
-        //         name,
-        //         symbol,
-        //         version,
-        //         address: fyToken,
-        //         fyTokenAddress: fyToken,
-        //         decimals,
-        //         poolAddress,
-        //         poolVersion,
-        //         poolName,
-        //         poolSymbol,
-        //       };
-        //       newSeriesObj[id] = _chargeSeries(newSeries);
-        //     }
-        //   }),
-        // ]);
         dispatch(updateEvents(eventsMap));
         dispatch(setEventsLoading(false));
       } catch (e) {

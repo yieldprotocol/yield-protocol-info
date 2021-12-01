@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { BigNumber, ethers, utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import {
@@ -9,7 +9,6 @@ import {
   COMPOSITE_MULTI_ORACLE,
   ENS,
   stETH,
-  USDC,
   WAD_BN,
   WITCH,
 } from '../../utils/constants';
@@ -37,10 +36,11 @@ export function getVaults(): any {
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-
       const fromBlock = 1;
-      const Cauldron = (Object.values(contractMap).filter((x: any) => x.name === 'Cauldron')[0] as any).contract;
-      const Witch = (Object.values(contractMap).filter((x: any) => x.name === 'Witch')[0] as any).contract;
+      const Cauldron = contractMap[CAULDRON];
+      const Witch = contractMap[WITCH];
+
+      if (!Cauldron || !Witch) return;
 
       if (Object.keys(Cauldron.filters).length) {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
@@ -89,7 +89,7 @@ export function getVaults(): any {
           })
         );
 
-        const newVaultMap = vaultListMod.reduce((acc: any, item: any) => {
+        const newVaultMap = vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
           acc[item.id] = item;
           return acc;
         }, {});
@@ -99,7 +99,6 @@ export function getVaults(): any {
       }
       dispatch(setVaultsGot(true));
     } catch (e) {
-      dispatch(updateVaults({}));
       dispatch(setVaultsLoading(false));
       console.log(e);
     }
@@ -133,7 +132,7 @@ export async function getPrice(
         break;
     }
 
-    const [price] = await Oracle.peek(
+    const [price] = await Oracle?.peek(
       bytesToBytes32(ilk, 6),
       bytesToBytes32(base, 6),
       decimal18ToDecimalN(WAD_BN, decimals)

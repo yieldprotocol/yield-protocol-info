@@ -3,7 +3,7 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
-import { getPrice } from './vaults';
+import { getPrice, updatePrices } from './vaults';
 import * as contracts from '../../contracts';
 import {
   IAsset,
@@ -40,7 +40,7 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
     try {
       const Cauldron = contractMap[CAULDRON];
 
-      const assetPairData = await Promise.all(
+      const assetPairData: IAssetPairData[] = await Promise.all(
         Object.values(assets as IAssetMap).map(async (x: IAsset) => {
           const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
             await Cauldron.debt(asset.id, x.id),
@@ -89,7 +89,7 @@ const updateAssetsTvl = (assetsTvl: any): IChainUpdateAssetsTVLAction => ({
 const tvlLoading = (loading: boolean): IChainTvlLoadingAction => ({ type: ActionType.TVL_LOADING, payload: loading });
 const assetPairDataLoading = (loading: boolean): IChainAssetPairDataLoadingAction => ({
   type: ActionType.ASSET_PAIR_DATA_LOADING,
-  assetPairDataLoading: loading,
+  payload: loading,
 });
 
 /**
@@ -124,7 +124,7 @@ export function getAssetsTvl(
       const _poolBalances: any = await getPoolBalances(poolAddrToAssetMap, provider);
 
       // denominate balance in usdc
-      const USDC: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+      const USDC: IAsset = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
 
       // consolidate pool address asset balances
       const totalPoolBalances = _poolBalances.reduce((balMap: any, bal: any) => {
@@ -163,7 +163,11 @@ export function getAssetsTvl(
   };
 }
 
-async function getAssetJoinBalances(assets: any, contractMap: any, provider: any) {
+async function getAssetJoinBalances(
+  assets: IAssetMap,
+  contractMap: IContractMap,
+  provider: ethers.providers.JsonRpcProvider
+) {
   try {
     const balances = await Promise.all(
       Object.values(assets).map(async (a: IAsset) => ({

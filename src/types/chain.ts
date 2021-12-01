@@ -118,6 +118,12 @@ export interface IAssetPairMap {
   [id: string]: IAssetPairData[];
 }
 
+export interface IAssetsTvl {
+  id: string;
+  symbol: string;
+  value: string;
+}
+
 export interface ISeries {
   id: string;
   baseId: string;
