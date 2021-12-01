@@ -2,8 +2,8 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { FiChevronDown as SelectorIcon, FiCheck as CheckIcon } from 'react-icons/fi';
 import { v4 as uuid } from 'uuid';
-import { markMap } from './config/marks';
-import { useAppSelector } from './state/hooks/general';
+import { markMap } from '../config/marks';
+import { useAppSelector } from '../state/hooks/general';
 
 const Selecty = ({ options, label, onChange }: any) => {
   const { assets, series } = useAppSelector(({ chain }) => chain);
