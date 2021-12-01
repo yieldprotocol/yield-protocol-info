@@ -29,7 +29,7 @@ export async function fetchEtherscan(
 
     resp = await fetch(url);
     respJson = await resp.json();
-    console.log(respJson.message.startsWith('OK'));
+
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
       return respJson;
     }
