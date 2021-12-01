@@ -82,7 +82,7 @@ const Home: FC = () => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{totalDebt! > 0 && <TvlTable data={totalDebtList} />}</div>
+          <div className="w-52">{totalDebt! > 0 && !tvlLoading && <TvlTable data={totalDebtList} />}</div>
         </div>
       </div>
     </MainViewWrap>
