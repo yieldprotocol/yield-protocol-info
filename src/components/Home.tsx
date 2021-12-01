@@ -57,7 +57,7 @@ const Home: FC = () => {
         <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
-            <div className="text-3xl flex">
+            <div className="text-3xl flex w-52">
               {tvl && !tvlLoading ? (
                 <>
                   $<AnimatedNum num={tvl} />
