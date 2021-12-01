@@ -1,5 +1,3 @@
-import { FunctionFragment } from '@ethersproject/abi';
-import { Interface } from 'readline';
 import { CHAIN_INFO } from '../config/chainData';
 
 export function addHexPrefix(addrLike: string) {
@@ -28,10 +26,10 @@ export async function fetchEtherscan(
   for await (const attempt of asyncGenerator(maxAttempts)) {
     logger('Querying Etherscan');
     const url = `${CHAIN_INFO.get(chainId)?.etherscanApi}?${params}`;
-    console.log('url', url);
+
     resp = await fetch(url);
     respJson = await resp.json();
-
+    console.log(respJson.message.startsWith('OK'));
     if (!('message' in respJson) || (respJson.message as string).startsWith('OK')) {
       return respJson;
     }
