@@ -29,12 +29,16 @@ import {
 } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
+import { IPriceMap } from '../../types/vaults';
 
 export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
-  return async (dispatch: any) => {
+  return async (dispatch: any, getState: any) => {
+    const {
+      vaults: { prices },
+    } = getState();
     dispatch(assetPairDataLoading(true));
     try {
-      const Cauldron: Contract = contractMap[CAULDRON];
+      const Cauldron = contractMap[CAULDRON];
 
       const assetPairData: IAssetPairData[] = await Promise.all(
         Object.values(assets as IAssetMap).map(async (x: IAsset) => {
@@ -44,7 +48,7 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
             (await Cauldron.debt(asset.id, x.id)).sum,
           ]);
 
-          const _price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId);
+          const _price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId, prices);
           const price_ = decimalNToDecimal18(_price, x.decimals);
           dispatch(updatePrices(asset.id, x.id, ethers.utils.formatUnits(price_, 18)));
 
@@ -62,7 +66,7 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
             minDebt_: ethers.utils.formatUnits(minDebt, decimals),
             maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
             totalDebt_,
-            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap, chainId), 2),
+            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap, chainId, prices), 2),
           };
         })
       );
@@ -106,7 +110,10 @@ export function getAssetsTvl(
   provider: ethers.providers.JsonRpcProvider,
   chainId: number
 ): any {
-  return async function _getAssetsTvl(dispatch: any) {
+  return async function _getAssetsTvl(dispatch: any, getState: any) {
+    const {
+      vaults: { prices },
+    } = getState();
     dispatch(tvlLoading(true));
     if (provider && contractMap) {
       // get the balance of the asset in the respective join
@@ -132,7 +139,7 @@ export function getAssetsTvl(
       const totalTvl = await Promise.all(
         Object.values(_joinBalances)?.map(async (bal: any) => {
           // get the usdc price of the asset
-          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId);
+          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
           const price = decimalNToDecimal18(_price, USDC?.decimals);
           const price_ = ethers.utils.formatUnits(price, 18);
           dispatch(updatePrices(bal.id, USDC.id, price_));
@@ -204,7 +211,6 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
     );
     return balances;
   } catch (e) {
-    console.log(' balances');
     console.log(e);
     return undefined;
   }
@@ -216,7 +222,7 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
  * @returns string
  */
 async function getPoolBalance(pool: Contract) {
-  if (!pool) return '0';
+  if (!pool || pool === undefined) return '0';
   try {
     const decimals = await pool.decimals();
     const base = await pool.getBaseBalance();
@@ -260,10 +266,11 @@ const convertValue = async (
   fromAsset: IAsset,
   toAsset: IAsset,
   contractMap: IContractMap,
-  chainId: number
+  chainId: number,
+  priceMap: IPriceMap
 ) => {
   if (fromAsset === toAsset) return fromValue;
-  const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals, chainId);
+  const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals, chainId, priceMap);
   const price = decimalNToDecimal18(_price, toAsset.decimals);
   const price_ = ethers.utils.formatUnits(price, 18);
   return (+price_ * +fromValue).toString();

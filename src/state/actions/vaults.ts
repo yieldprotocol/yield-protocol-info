@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { ethers, utils } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import {
@@ -7,6 +7,9 @@ import {
   CHAINLINK_MULTI_ORACLE,
   CHAINLINK_USD_ORACLE,
   COMPOSITE_MULTI_ORACLE,
+  ENS,
+  stETH,
+  USDC,
   WAD_BN,
   WITCH,
 } from '../../utils/constants';
@@ -28,13 +31,13 @@ export function getVaults(): any {
     const {
       chain: { series, assets, chainId },
       contracts: { contractMap },
-      vaults: { vaultsGot },
+      vaults: { vaultsGot, prices },
     } = getState();
 
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-      const fromBlock = -20000;
+      const fromBlock = 1;
       const Cauldron = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 
@@ -63,22 +66,21 @@ export function getVaults(): any {
         const vaultListMod = await Promise.all(
           vaultEventList.map(async (vault: any) => {
             /* update balance and series  ( series - because a vault can have been rolled to another series) */
-            const [{ ink, art }, { ratio: minCollatRatio }] = await Promise.all([
+            const [{ ink, art }, { ratio: minCollatRatio }, price] = await Promise.all([
               await Cauldron.balances(vault.id),
               await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+              await getPrice(vault.ilkId, vault.baseId, contractMap, 18, chainId, prices!),
             ]);
 
             const { owner, seriesId, ilkId, decimals } = vault;
-            // const price = priceMap[vault.ilkId][vault.baseId];
             const base = assets[vault.baseId];
             const ilk = assets[ilkId];
-            const price = await getPrice(vault.ilkId, vault.baseId, contractMap, decimals, chainId);
 
             return {
               ...vault,
               owner,
               isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
-              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}`,
+              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price!, art, true), 2)}`,
               minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}`, // collat ratios always have 6 decimals
               ink: ilk ? cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat) : '',
               art: base ? cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat) : '',
@@ -109,22 +111,18 @@ export async function getPrice(
   base: string,
   contractMap: IContractMap,
   decimals: number = 18,
-  chainId: number
+  chainId: number,
+  priceMap: IPriceMap
 ) {
-  // check if the price map already has the price
-  // if (priceMap[ilk][base]) return priceMap[ilk][base];
+  const compositeOracleAssets = [stETH, ENS];
   let Oracle;
+
   try {
     switch (chainId as number) {
       case 1:
-        Oracle =
-          base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
-            ? contractMap[COMPOSITE_MULTI_ORACLE]
-            : contractMap[CHAINLINK_MULTI_ORACLE];
-        break;
       case 42:
         Oracle =
-          base === '0x303400000000' || ilk === '0x303400000000' || base === '0x303700000000' || ilk === '0x303700000000'
+          compositeOracleAssets.includes(ilk) || compositeOracleAssets.includes(base)
             ? contractMap[COMPOSITE_MULTI_ORACLE]
             : contractMap[CHAINLINK_MULTI_ORACLE];
         break;
@@ -142,7 +140,6 @@ export async function getPrice(
     );
     return price;
   } catch (e) {
-    console.log(e);
     return ethers.constants.Zero;
   }
 }
