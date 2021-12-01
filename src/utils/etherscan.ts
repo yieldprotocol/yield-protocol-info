@@ -24,7 +24,6 @@ export async function fetchEtherscan(
   let respJson;
   const maxAttempts = 5;
   for await (const attempt of asyncGenerator(maxAttempts)) {
-    logger('Querying Etherscan');
     const url = `${CHAIN_INFO.get(chainId)?.etherscanApi}?${params}`;
 
     resp = await fetch(url);
