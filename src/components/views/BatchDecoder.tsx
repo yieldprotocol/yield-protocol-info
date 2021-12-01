@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState } from 'react';
+import React, { FC, Fragment, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
@@ -39,7 +39,7 @@ const CallDisplay = ({ call }: any): any => {
                         <code>{args[0]}</code>
                       </span>
                     ))}
-                  {logo && <div className="h-4 w-4 m-auto">{logo}</div>}
+                  {logo && <div className="h-4 w-4 justify-start">{logo}</div>}
                   {seriesItem && (
                     <div>
                       <i>({seriesItem.displayName})</i>
@@ -78,7 +78,10 @@ const CallDisplay = ({ call }: any): any => {
 const BatchDecoder: FC = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
-  const handleDecode = () => txHash && decodeTxHash();
+  const handleDecode = useCallback(() => {
+    if (txHash) decodeTxHash();
+  }, [txHash, decodeTxHash]);
+
   return (
     <div className="w-1/2">
       <div className="h-14">
