@@ -7,9 +7,9 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
-import Select from '../Select';
 import { IVault } from '../../types/vaults';
 import { useVaults } from '../../state/hooks/useVaults';
+import Select from '../Select';
 
 const Vaults: FC = () => {
   const history = useHistory();

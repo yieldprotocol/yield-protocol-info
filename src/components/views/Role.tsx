@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getRoles } from '../../state/actions/roles';
@@ -7,10 +7,10 @@ import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
 
-const Role = () => {
+const Role: FC = () => {
   const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
-  const { contractMap, roles, roleNames, rolesLoading } = useAppSelector((st) => st.contracts);
+  const { contractMap, roles, roleNames, rolesLoading } = useAppSelector(({ contracts }) => contracts);
   const contractRoles = (roles as any)[name];
 
   useEffect(() => {

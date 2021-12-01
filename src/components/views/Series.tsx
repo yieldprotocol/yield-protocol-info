@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatDistanceStrict } from 'date-fns';
 import { useAppSelector } from '../../state/hooks/general';
@@ -6,9 +6,9 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import { secondsToFrom } from '../../utils/yieldMath';
 import MainViewWrap from '../wraps/MainViewWrap';
 
-const Series = () => {
+const Series: FC = () => {
   const { id: seriesId } = useParams<{ id: string }>();
-  const { series } = useAppSelector((st) => st.chain);
+  const { series } = useAppSelector(({ chain }) => chain);
   const seriesItem = series![seriesId];
   const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } =
     seriesItem;
