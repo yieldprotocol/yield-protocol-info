@@ -14,6 +14,7 @@ import {
   updateProvider,
   getAssetPairData,
 } from '../actions/chain';
+import { reset as resetVaults } from '../actions/vaults';
 
 import { updateContractMap } from '../actions/contracts';
 
@@ -324,6 +325,7 @@ const useChain = (chainId: number) => {
   useEffect(() => {
     // send to home page when chain id changes
     history.push('/');
+    dispatch(resetVaults());
   }, [chainId]);
 };
 
