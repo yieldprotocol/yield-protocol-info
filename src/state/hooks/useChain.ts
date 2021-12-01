@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
+import { Contract, ethers, EventFilter } from 'ethers';
 import { format } from 'date-fns';
 import { useAppDispatch } from './general';
 import {
@@ -16,7 +16,7 @@ import {
 } from '../actions/chain';
 import { reset as resetVaults } from '../actions/vaults';
 
-import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
+import { updateContractMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
@@ -53,29 +53,24 @@ const useChain = (chainId: number) => {
       const addrs = (yieldEnv.addresses as any)[chainId];
 
       /* Update the baseContracts state */
-      const newContractMap: any = {};
-
-      /* Update the Event argument properties */
-      const newEventArgPropsMap: any = {};
+      const newContractMap: IContractMap = {};
 
       [...Object.keys(addrs)].forEach((name: string) => {
-        const addr = addrs[name];
-        let contract: any;
+        let contract: Contract;
 
         try {
           contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
-          newContractMap[addr] = { contract, name };
-          newEventArgPropsMap[addr] = getEventArgProps(contract);
+          newContractMap[name] = contract;
         } catch (e) {
           console.log(`could not connect to contract ${name}`);
         }
       });
 
-      const Cauldron = newContractMap[addrs.Cauldron]?.contract!;
-      const Ladle = newContractMap[addrs.Ladle]?.contract!;
+      const Cauldron: Contract = newContractMap[CAULDRON];
+      const Ladle: Contract = newContractMap[LADLE];
 
       dispatch(updateContractMap(newContractMap));
-      dispatch(updateEventArgPropsMap(newEventArgPropsMap));
+
       /* Get the hardcoded strategy addresses */
       const strategyAddresses = (yieldEnv.strategies as any)[chainId];
 
@@ -90,8 +85,8 @@ const useChain = (chainId: number) => {
           dispatch(setAssetsLoading(true));
           /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
           const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-            Cauldron?.queryFilter('AssetAdded' as any, 0),
-            Ladle?.queryFilter('JoinAdded' as any, 0),
+            Cauldron.queryFilter('AssetAdded' as EventFilter, 0),
+            Ladle.queryFilter('JoinAdded' as EventFilter, 0),
           ]);
           /* Create a map from the joinAdded event data */
           const joinMap: Map<string, string> = new Map(
@@ -139,12 +134,11 @@ const useChain = (chainId: number) => {
 
           // get asset pair data
           Object.values(newAssets as IAssetMap).map((a: IAsset) =>
-            dispatch(getAssetPairData(a, newAssets, newContractMap))
+            dispatch(getAssetPairData(a, newAssets, newContractMap, chainId))
           );
 
           dispatch(setAssetsLoading(false));
         } catch (e) {
-          dispatch(updateAssets({}));
           dispatch(setAssetsLoading(false));
           console.log('Error getting assets', e);
         }
@@ -241,7 +235,6 @@ const useChain = (chainId: number) => {
           dispatch(updateSeries(newSeriesObj));
           dispatch(setSeriesLoading(false));
         } catch (e) {
-          dispatch(updateSeries({}));
           dispatch(setSeriesLoading(false));
           console.log('Error fetching series data: ', e);
         }
@@ -256,9 +249,7 @@ const useChain = (chainId: number) => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              const poolViewAddr: string = Object.values(newContractMap as IContractMap).filter(
-                (c: IContract) => c.name === 'PoolView'
-              )[0].contract.address;
+              const poolViewAddr: string = newContractMap[POOLVIEW].address;
               const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
               const invariantBlockNumCompare = -1000; // 45000 blocks ago
 
@@ -319,8 +310,6 @@ const useChain = (chainId: number) => {
           dispatch(setStrategiesLoading(false));
         } catch (e) {
           dispatch(setStrategiesLoading(false));
-          dispatch(updateStrategies({}));
-
           console.log('Error getting strategies', e);
         }
       };
