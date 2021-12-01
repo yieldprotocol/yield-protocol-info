@@ -1,4 +1,4 @@
-import React, {FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { toggleDarkMode } from '../state/actions/application';

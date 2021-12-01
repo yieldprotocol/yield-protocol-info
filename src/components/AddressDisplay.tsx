@@ -1,12 +1,10 @@
 import React from 'react';
 import { ethers } from 'ethers';
 import { useAppSelector } from '../state/hooks/general';
-import { useEnsName } from '../state/hooks/useEnsName';
 import { CHAIN_INFO } from '../config/chainData';
 
 const AddressDisplay = ({ addr, tx }: any) => {
-  const chainId = useAppSelector((st: any) => st.chain.chainId);
-  const ensName = useEnsName(addr);
+  const chainId: number = useAppSelector((st: any) => st.chain.chainId);
 
   if (!addr) return null;
 
@@ -19,7 +17,7 @@ const AddressDisplay = ({ addr, tx }: any) => {
       <code className="dark:text-gray-900 text-smt hover:underline">{addr}</code>
     </a>
   ) : (
-    <code className="dark:text-gray-900 text-smt">{ensName || addr}</code>
+    <code className="dark:text-gray-900 text-smt">{addr}</code>
   );
 };
 
