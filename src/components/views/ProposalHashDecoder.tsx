@@ -29,6 +29,7 @@ const ProposalHashDecoder: FC = () => {
     <div className="w-1/2">
       <div className="h-14">
         <TextInput
+          autoFocus
           onChange={setProposalHash}
           action={handleDecode}
           name="Proposal"

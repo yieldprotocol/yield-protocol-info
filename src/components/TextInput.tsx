@@ -1,20 +1,17 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-const TextInput = ({
-  name,
-  value,
-  action,
-  onChange,
-  placeHolder,
-}: {
+interface ITextInputProps {
   name: string;
   value: string;
   action: any;
   onChange: any;
   placeHolder: string;
-}) => (
+}
+
+const TextInput: FC<ITextInputProps> = ({ name, value, action, onChange, placeHolder, ...props }) => (
   <div className="relative rounded-lg shadow-sm bg-green-300 h-full w-full">
     <input
+      {...props}
       type="text"
       placeholder={placeHolder}
       onChange={(e) => onChange(e.target.value)}
