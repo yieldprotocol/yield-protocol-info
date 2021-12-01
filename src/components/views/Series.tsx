@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { formatDistanceStrict } from 'date-fns';
 import { useAppSelector } from '../../state/hooks/general';
@@ -6,11 +6,12 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import { secondsToFrom } from '../../utils/yieldMath';
 import MainViewWrap from '../wraps/MainViewWrap';
 
-const Series = () => {
+const Series: FC = () => {
   const { id: seriesId } = useParams<{ id: string }>();
-  const seriesMap = useAppSelector((st) => st.chain.series);
-  const series = seriesMap[seriesId];
-  const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } = series;
+  const { series } = useAppSelector(({ chain }) => chain);
+  const seriesItem = series![seriesId];
+  const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } =
+    seriesItem;
   const series_ = {
     id,
     baseId,
@@ -27,9 +28,11 @@ const Series = () => {
   const [secondsTillMaturity, setSecondsTillMaturity] = useState<number>(0);
 
   useEffect(() => {
-    const _secondsTillMaturity = series?.maturity ? Number(secondsToFrom(series?.maturity)) : 0;
-    _secondsTillMaturity > 0 ? setSecondsTillMaturity(_secondsTillMaturity) : setSecondsTillMaturity(0);
-  }, [series?.maturity]);
+    if (series) {
+      const _secondsTillMaturity = Number(secondsToFrom(maturity.toString()));
+      _secondsTillMaturity > 0 ? setSecondsTillMaturity(_secondsTillMaturity) : setSecondsTillMaturity(0);
+    }
+  }, [series, maturity]);
 
   useEffect(() => {
     let timer: any;

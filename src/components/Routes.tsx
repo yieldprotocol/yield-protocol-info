@@ -25,8 +25,8 @@ const Routes = () => (
       <Route exact path="/contracts">
         <Contracts />
       </Route>
-      <Route path="/contracts/:addr/events" component={Contract} />
-      <Route path="/contracts/:addr/roles" component={Role} />
+      <Route path="/contracts/:name/events" component={Contract} />
+      <Route path="/contracts/:name/roles" component={Role} />
 
       <Route exact path="/series">
         <SeriesList />

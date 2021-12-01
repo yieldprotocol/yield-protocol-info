@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, Fragment, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
@@ -7,11 +7,9 @@ import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
 import { useAppSelector } from '../../state/hooks/general';
 import { markMap } from '../../config/marks';
-import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
 
-const ProposalHashDecoder = () => {
-  const assets = useAppSelector((st) => st.chain.assets);
-  const series = useAppSelector((st) => st.chain.series);
+const ProposalHashDecoder: FC = () => {
+  const { assets } = useAppSelector(({ chain }) => chain);
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
@@ -20,10 +18,8 @@ const ProposalHashDecoder = () => {
 
   // check if we can use an asset logo or series name
   const getLogo = (arg: string) => {
-    const asset = assets[arg]
-      ? assets[arg]
-      : Object.values(assets as IAssetMap).filter((a: IAsset) => a.address === arg)[0];
-    const logo = asset ? markMap?.get(assets[asset.id].symbol!) : null;
+    const asset = assets![arg] ? assets![arg] : Object.values(assets!).filter((a) => a.address === arg)[0];
+    const logo = asset ? markMap.get(assets![asset.id].symbol) : null;
 
     if (logo) return logo;
     return null;
@@ -71,29 +67,31 @@ const ProposalHashDecoder = () => {
                 <div className="ml-6">
                   function <span className="font-bold">{getFunctionName(call.target, call.data)}</span>
                   <table className="ml-4">
-                    {getFunctionArguments(call.target, call.data).map((x: any) => {
-                      const [typeName, value] = x;
-                      const [type, name] = typeName.split(' ');
-                      return (
-                        <tr key={uuid()} className="pl-6">
-                          <td className="font-bold">{name}</td>
-                          <td className="italic px-2" style={{ minWidth: '5rem' }}>
-                            ({type})
-                          </td>
-                          <td>
-                            {value
-                              .toString()
-                              .split()
-                              .map((v: any, i: number) => (
-                                <div key={uuid()} className="flex px-2 gap-1">
-                                  {type === 'address' ? <AddressDisplay addr={v} /> : <code>{v}</code>}
-                                  {getLogo(v) && <div className="h-4 w-4 m-auto">{getLogo(v)}</div>}
-                                </div>
-                              ))}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    <tbody>
+                      {getFunctionArguments(call.target, call.data).map((x: any) => {
+                        const [typeName, value] = x;
+                        const [type, name] = typeName.split(' ');
+                        return (
+                          <tr key={uuid()} className="pl-6">
+                            <td className="font-bold">{name}</td>
+                            <td className="italic px-2" style={{ minWidth: '5rem' }}>
+                              ({type})
+                            </td>
+                            <td className="flex px-2 gap-1">
+                              {value
+                                .toString()
+                                .split()
+                                .map((v: any, i: number) => (
+                                  <Fragment key={uuid()}>
+                                    {type === 'address' ? <AddressDisplay addr={v} /> : <code>{v}</code>}
+                                    {getLogo(v) && <div className="h-4 w-4 justify-start">{getLogo(v)}</div>}
+                                  </Fragment>
+                                ))}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
                   </table>
                 </div>
               </div>

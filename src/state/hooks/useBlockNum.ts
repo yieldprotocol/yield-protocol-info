@@ -1,11 +1,9 @@
-import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from './general';
 
 /* Simple Hook for caching & retrieved data */
 export const useBlockNum = () => {
-  const provider: ethers.providers.JsonRpcProvider = useAppSelector((st) => st.chain.provider);
-
+  const { provider } = useAppSelector((st) => st.chain);
   const [blockNum, setBlockNum] = useState<number | null>(null);
 
   useEffect(() => {

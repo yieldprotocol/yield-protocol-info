@@ -72,10 +72,10 @@ export function calcRoles(events: any) {
   return [updatedRoles, roleBytesSeen];
 }
 
-export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
+export function getRoles(contractMap: any, contractName: string, filter = '*'): any {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
-    const contract = contractMap[contractAddr]?.contract!;
+    const contract = contractMap[contractName];
     if (contract) {
       try {
         dispatch(setRolesLoading(true));
@@ -84,7 +84,7 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
 
         const [updatedRoles, roleBytesSeen] = calcRoles(events);
 
-        const rolesMap = { [contractAddr]: updatedRoles };
+        const rolesMap = { [contractName]: updatedRoles };
 
         const roleNames: any = {
           [ROOT]: 'admin',
@@ -117,5 +117,5 @@ export function getRoles(contractMap: any, contractAddr: any, filter = '*') {
     }
   };
 }
-export const setRolesLoading = (rolesLoading: boolean) => ({ type: ActionType.ROLES_LOADING, rolesLoading });
-export const updateRoles = (payload: any) => ({ type: ActionType.UPDATE_ROLES, payload });
+export const setRolesLoading = (rolesLoading: boolean): any => ({ type: ActionType.ROLES_LOADING, rolesLoading });
+export const updateRoles = (payload: any): any => ({ type: ActionType.UPDATE_ROLES, payload });

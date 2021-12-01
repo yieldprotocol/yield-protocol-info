@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
+import { useAppSelector } from '../state/hooks/general';
+import { IAssetPairData } from '../types/chain';
 import { formatValue } from '../utils/appUtils';
 
-const AssetPairTable = ({ data, assets }: any) =>
-  data ? (
+const AssetPairTable: FC<{ data: any }> = ({ data }) => {
+  const { assets } = useAppSelector((st) => st.chain);
+  return data ? (
     <div className="rounded-lg shadow-sm px-8 py-4 bg-green-100 dark:bg-green-300">
       <table className="table min-w-full divide-y divide-gray-200">
         <thead>
@@ -17,9 +20,9 @@ const AssetPairTable = ({ data, assets }: any) =>
           </tr>
         </thead>
         <tbody className="bg-green divide-y divide-gray-200">
-          {data.map((x: any) => {
-            const baseAsset = assets[x.baseAssetId];
-            const ilkAsset = assets[x.ilkAssetId];
+          {data.map((x: IAssetPairData) => {
+            const baseAsset = assets![x.baseAssetId];
+            const ilkAsset = assets![x.ilkAssetId];
             const baseAssetLogo = markMap?.get(baseAsset?.symbol!);
             const ilkAssetLogo = markMap?.get(ilkAsset?.symbol!);
             return (
@@ -61,5 +64,5 @@ const AssetPairTable = ({ data, assets }: any) =>
       </table>
     </div>
   ) : null;
-
+};
 export default AssetPairTable;

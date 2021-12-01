@@ -4,14 +4,14 @@ import { useAppDispatch, useAppSelector } from './general';
 
 const useTvl = () => {
   const dispatch = useAppDispatch();
-  const provider = useAppSelector((st) => st.chain.provider);
-  const assets = useAppSelector((st) => st.chain.assets);
-  const series = useAppSelector((st) => st.chain.series);
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
+  const { provider, chainId, assets, series } = useAppSelector(({ chain }) => chain);
+  const { contractMap } = useAppSelector(({ contracts }) => contracts);
 
   useEffect(() => {
-    dispatch(getAssetsTvl(assets, contractMap, series, provider));
-  }, [assets, contractMap, dispatch, provider, series]);
+    if (assets && contractMap && series && provider && chainId) {
+      dispatch(getAssetsTvl(assets, contractMap, series, provider, chainId));
+    }
+  }, [assets, contractMap, dispatch, provider, series, chainId]);
 };
 
 export default useTvl;

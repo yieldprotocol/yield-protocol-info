@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { formatDistanceStrict } from 'date-fns';
+import React, { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
-import { usePoolReturns } from '../../state/hooks/usePoolReturns';
-import { ISeries, IStrategy } from '../../types/chain';
 import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import SkeletonWrap from '../wraps/SkeletonWrap';
 import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
 
-const Strategy = () => {
+const Strategy: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const strategies = useAppSelector((st) => st.chain.strategies);
-  const strategy: IStrategy = strategies[id];
+  const { strategies } = useAppSelector(({ chain }) => chain);
+  const strategy = strategies![id];
   const { strategyReturns, secondsToDays } = useStrategyReturns(strategy, 50000);
 
   return strategy ? (

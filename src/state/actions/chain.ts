@@ -1,43 +1,56 @@
+import { Dispatch } from 'redux';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
-import { getPrice } from './vaults';
+import { getPrice, updatePrices } from './vaults';
 import * as contracts from '../../contracts';
-import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
-import { IContract, IContractMap } from '../../types/contracts';
+import {
+  IAsset,
+  IAssetMap,
+  IAssetPairData,
+  IChainAssetPairDataLoadingAction,
+  IChainAssetsLoadingAction,
+  IChainChainIdAction,
+  IChainChainLoadingAction,
+  IChainProviderAction,
+  IChainResetAction,
+  IChainSeriesLoadingAction,
+  IChainStrategiesLoadingAction,
+  IChainTvlLoadingAction,
+  IChainUpdateAssetPairMapAction,
+  IChainUpdateAssetsAction,
+  IChainUpdateAssetsTVLAction,
+  IChainUpdateSeriesAction,
+  IChainUpdateStrategiesAction,
+  ISeries,
+  ISeriesMap,
+  IStrategyMap,
+} from '../../types/chain';
+import { IContractMap } from '../../types/contracts';
+import { CAULDRON } from '../../utils/constants';
+import { IPriceMap } from '../../types/vaults';
 
-export const updateProvider = (provider: any) => ({ type: ActionType.PROVIDER, provider });
-export const updateChainId = (chainId: number) => ({ type: ActionType.CHAIN_ID, chainId });
-export const setChainLoading = (chainLoading: boolean) => ({ type: ActionType.CHAIN_LOADING, chainLoading });
-export const setSeriesLoading = (seriesLoading: boolean) => ({ type: ActionType.SERIES_LOADING, seriesLoading });
-export const setStrategiesLoading = (strategiesLoading: boolean) => ({
-  type: ActionType.STRATEGIES_LOADING,
-  strategiesLoading,
-});
-export const setAssetsLoading = (assetsLoading: boolean) => ({ type: ActionType.ASSETS_LOADING, assetsLoading });
-export const updateSeries = (series: any) => ({ type: ActionType.UPDATE_SERIES, series });
-export const updateStrategies = (strategies: any) => ({ type: ActionType.UPDATE_STRATEGIES, strategies });
-export const updateAssets = (assets: any) => ({ type: ActionType.UPDATE_ASSETS, assets });
-export const updateAssetPairData = (assetId: string, assetPairData: any) => ({
-  type: ActionType.UPDATE_ASSET_PAIR_DATA,
-  payload: { assetId, assetPairData },
-});
-
-export function getAssetPairData(asset: any, assets: any, contractMap: any) {
-  return async function _getAssetPairData(dispatch: any) {
+export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
+  return async (dispatch: any, getState: any) => {
+    const {
+      vaults: { prices },
+    } = getState();
     dispatch(assetPairDataLoading(true));
     try {
-      const Cauldron = Object.values(contractMap as IContractMap).filter((x: IContract) => x.name === 'Cauldron')[0]
-        .contract;
+      const Cauldron = contractMap[CAULDRON];
 
-      const assetPairData = await Promise.all(
+      const assetPairData: IAssetPairData[] = await Promise.all(
         Object.values(assets as IAssetMap).map(async (x: IAsset) => {
           const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
             await Cauldron.debt(asset.id, x.id),
             await Cauldron.spotOracles(asset.id, x.id),
             (await Cauldron.debt(asset.id, x.id)).sum,
           ]);
+
+          const _price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId, prices);
+          const price_ = decimalNToDecimal18(_price, x.decimals);
+          dispatch(updatePrices(asset.id, x.id, ethers.utils.formatUnits(price_, 18)));
 
           const minDebt: string = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
           const maxDebt: string = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
@@ -53,7 +66,7 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
             minDebt_: ethers.utils.formatUnits(minDebt, decimals),
             maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
             totalDebt_,
-            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap), 2),
+            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap, chainId, prices), 2),
           };
         })
       );
@@ -67,13 +80,16 @@ export function getAssetPairData(asset: any, assets: any, contractMap: any) {
   };
 }
 
-export const reset = () => ({ type: ActionType.RESET });
+export const reset = (): IChainResetAction => ({ type: ActionType.RESET });
 
-const updateAssetsTvl = (assetsTvl: any) => ({ type: ActionType.UPDATE_ASSETS_TVL, assetsTvl });
-const tvlLoading = (loading: boolean) => ({ type: ActionType.TVL_LOADING, tvlLoading: loading });
-const assetPairDataLoading = (loading: boolean) => ({
+const updateAssetsTvl = (assetsTvl: any): IChainUpdateAssetsTVLAction => ({
+  type: ActionType.UPDATE_ASSETS_TVL,
+  payload: assetsTvl,
+});
+const tvlLoading = (loading: boolean): IChainTvlLoadingAction => ({ type: ActionType.TVL_LOADING, payload: loading });
+const assetPairDataLoading = (loading: boolean): IChainAssetPairDataLoadingAction => ({
   type: ActionType.ASSET_PAIR_DATA_LOADING,
-  assetPairDataLoading: loading,
+  payload: loading,
 });
 
 /**
@@ -87,8 +103,17 @@ const assetPairDataLoading = (loading: boolean) => ({
  * @param seriesMap
  * @param provider
  */
-export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISeriesMap, provider: any) {
-  return async function _getAssetsTvl(dispatch: any) {
+export function getAssetsTvl(
+  assets: IAssetMap,
+  contractMap: IContractMap,
+  seriesMap: ISeriesMap,
+  provider: ethers.providers.JsonRpcProvider,
+  chainId: number
+): any {
+  return async function _getAssetsTvl(dispatch: any, getState: any) {
+    const {
+      vaults: { prices },
+    } = getState();
     dispatch(tvlLoading(true));
     if (provider && contractMap) {
       // get the balance of the asset in the respective join
@@ -99,7 +124,7 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
       const _poolBalances: any = await getPoolBalances(poolAddrToAssetMap, provider);
 
       // denominate balance in usdc
-      const USDC: any = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+      const USDC: IAsset = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
 
       // consolidate pool address asset balances
       const totalPoolBalances = _poolBalances.reduce((balMap: any, bal: any) => {
@@ -114,9 +139,10 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
       const totalTvl = await Promise.all(
         Object.values(_joinBalances)?.map(async (bal: any) => {
           // get the usdc price of the asset
-          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals);
+          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
           const price = decimalNToDecimal18(_price, USDC?.decimals);
           const price_ = ethers.utils.formatUnits(price, 18);
+          dispatch(updatePrices(bal.id, USDC.id, price_));
           const joinBalance_ = bal.balance;
           const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
           const totalBalance = +joinBalance_ + +poolBalance_;
@@ -137,10 +163,14 @@ export function getAssetsTvl(assets: IAssetMap, contractMap: any, seriesMap: ISe
   };
 }
 
-async function getAssetJoinBalances(assets: any, contractMap: any, provider: any) {
+async function getAssetJoinBalances(
+  assets: IAssetMap,
+  contractMap: IContractMap,
+  provider: ethers.providers.JsonRpcProvider
+) {
   try {
     const balances = await Promise.all(
-      Object.values(assets).map(async (a: any) => ({
+      Object.values(assets).map(async (a: IAsset) => ({
         id: a.id,
         balance: await getAssetJoinBalance(a, provider),
         asset: a,
@@ -154,7 +184,7 @@ async function getAssetJoinBalances(assets: any, contractMap: any, provider: any
   }
 }
 
-async function getAssetJoinBalance(asset: any, provider: any) {
+async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.JsonRpcProvider) {
   try {
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
@@ -181,7 +211,6 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
     );
     return balances;
   } catch (e) {
-    console.log('error getting pool balances');
     console.log(e);
     return undefined;
   }
@@ -192,7 +221,8 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
  * @param pool
  * @returns string
  */
-async function getPoolBalance(pool: any) {
+async function getPoolBalance(pool: Contract) {
+  if (!pool || pool === undefined) return '0';
   try {
     const decimals = await pool.decimals();
     const base = await pool.getBaseBalance();
@@ -231,9 +261,16 @@ async function getPoolBalance(pool: any) {
  * @param contractMap
  * @returns string
  */
-const convertValue = async (fromValue: string, fromAsset: IAsset, toAsset: IAsset, contractMap: IContractMap) => {
+const convertValue = async (
+  fromValue: string,
+  fromAsset: IAsset,
+  toAsset: IAsset,
+  contractMap: IContractMap,
+  chainId: number,
+  priceMap: IPriceMap
+) => {
   if (fromAsset === toAsset) return fromValue;
-  const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals);
+  const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals, chainId, priceMap);
   const price = decimalNToDecimal18(_price, toAsset.decimals);
   const price_ = ethers.utils.formatUnits(price, 18);
   return (+price_ * +fromValue).toString();
@@ -252,3 +289,47 @@ const mapPoolAddrToAsset = (seriesMap: ISeriesMap, assets: IAssetMap) => {
   }
   return {};
 };
+
+export const updateProvider = (provider: ethers.providers.JsonRpcProvider): IChainProviderAction => ({
+  type: ActionType.PROVIDER,
+  payload: provider,
+});
+export const updateChainId = (chainId: number): IChainChainIdAction => ({
+  type: ActionType.CHAIN_ID,
+  payload: chainId,
+});
+export const setChainLoading = (chainLoading: boolean): IChainChainLoadingAction => ({
+  type: ActionType.CHAIN_LOADING,
+  payload: chainLoading,
+});
+export const setSeriesLoading = (seriesLoading: boolean): IChainSeriesLoadingAction => ({
+  type: ActionType.SERIES_LOADING,
+  payload: seriesLoading,
+});
+export const setStrategiesLoading = (strategiesLoading: boolean): IChainStrategiesLoadingAction => ({
+  type: ActionType.STRATEGIES_LOADING,
+  payload: strategiesLoading,
+});
+export const setAssetsLoading = (assetsLoading: boolean): IChainAssetsLoadingAction => ({
+  type: ActionType.ASSETS_LOADING,
+  payload: assetsLoading,
+});
+export const updateSeries = (series: ISeriesMap): IChainUpdateSeriesAction => ({
+  type: ActionType.UPDATE_SERIES,
+  payload: series,
+});
+export const updateStrategies = (strategies: IStrategyMap): IChainUpdateStrategiesAction => ({
+  type: ActionType.UPDATE_STRATEGIES,
+  payload: strategies,
+});
+export const updateAssets = (assets: IAssetMap): IChainUpdateAssetsAction => ({
+  type: ActionType.UPDATE_ASSETS,
+  payload: assets,
+});
+export const updateAssetPairData = (
+  assetId: string,
+  assetPairData: IAssetPairData[]
+): IChainUpdateAssetPairMapAction => ({
+  type: ActionType.UPDATE_ASSET_PAIR_DATA,
+  payload: { assetId, assetPairData },
+});

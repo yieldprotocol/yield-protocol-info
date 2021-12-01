@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import StrategyItem from '../StrategyItem';
 import { useAppSelector } from '../../state/hooks/general';
 import MainViewWrap from '../wraps/MainViewWrap';
 import Spinner from '../Spinner';
+import { IStrategy } from '../../types/chain';
 
-const Strategies = () => {
-  const strategies = useAppSelector((st) => st.chain.strategies);
-  const strategiesLoading = useAppSelector((st) => st.chain.strategiesLoading);
-  const [strategiesList, setStrategiesList] = useState<any[]>([]);
+const Strategies: FC = () => {
+  const { strategies, strategiesLoading } = useAppSelector(({ chain }) => chain);
+  const [strategiesList, setStrategiesList] = useState<IStrategy[]>([]);
 
   useEffect(() => {
-    Object.values(strategies).length > 0 &&
+    if (strategies) {
       setStrategiesList([...Object.values(strategies)].sort((s1: any, s2: any) => (s1?.name! < s2?.name! ? -1 : 1)));
+    }
   }, [strategies]);
 
-  if (!Object.values(strategies).length) return <MainViewWrap>No Strategies</MainViewWrap>;
+  if (!strategies || !Object.values(strategies!).length) return <MainViewWrap>No Strategies</MainViewWrap>;
 
   return (
     <MainViewWrap>

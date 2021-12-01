@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { BigNumber, ethers } from 'ethers';
-import { format, formatDistanceStrict } from 'date-fns';
-import { useAppDispatch, useAppSelector } from './general';
+import { Contract, ethers, EventFilter } from 'ethers';
+import { format } from 'date-fns';
+import { useAppDispatch } from './general';
 import {
   setChainLoading,
   setSeriesLoading,
@@ -14,8 +14,9 @@ import {
   updateProvider,
   getAssetPairData,
 } from '../actions/chain';
+import { reset as resetVaults } from '../actions/vaults';
 
-import { updateContractMap, updateEventArgPropsMap } from '../actions/contracts';
+import { updateContractMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
@@ -23,9 +24,8 @@ import * as contracts from '../../contracts';
 import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
-import { IContract, IContractMap } from '../../types/contracts';
-import { calculateAPR } from '../../utils/yieldMath';
-import { SECONDS_PER_YEAR } from '../../utils/constants';
+import { IContractMap } from '../../types/contracts';
+import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -36,70 +36,41 @@ const assetDigitFormatMap = new Map([
   ['STETH', 6],
 ]);
 
-const getEventArgProps = (contract: any) =>
-  Object.entries(contract.interface.events).reduce((acc: any, curr: any): any => {
-    // example interface:
-    // key: "RoleAdminChanged(bytes4,bytes4)"
-    // value: {
-    //    anonymous: false,
-    //    inputs: [{ name: "assetId", type: "bytes6" }, {name: "address", type: "address"}],
-    //    name: "AssetAdded",
-    //    type: "event",
-    //    _isFragment: true
-    //  }
-    //
-    // final shape of the accumulator:
-    //  {"RoleAdminChanged": [{name: "assetId", type: "bytes6"}, {name: "asset", type: "address"]}
-    const [key, value] = curr;
-    const eventName = key.split('(')[0];
-    if (!(eventName in acc)) {
-      acc[eventName] = value.inputs.map(({ name, type }: any): any => ({ name, type }));
-    }
-    return acc;
-  }, {});
-
-const useChain = () => {
+const useChain = (chainId: number) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
 
-  const chainId: number = useAppSelector((st) => st.chain.chainId);
   const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(
     process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]
   );
 
   useEffect(() => {
-    dispatch(updateProvider(provider));
-
-    if (provider && chainId) {
+    if (provider) {
+      dispatch(updateProvider(provider));
       /* Get the instances of the Base contracts */
       const addrs = (yieldEnv.addresses as any)[chainId];
 
       /* Update the baseContracts state */
-      const newContractMap: any = {};
-
-      /* Update the Event argument properties */
-      const newEventArgPropsMap: any = {};
+      const newContractMap: IContractMap = {};
 
       [...Object.keys(addrs)].forEach((name: string) => {
-        const addr = addrs[name];
-        let contract: any;
+        let contract: Contract;
 
         try {
           contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
-          newContractMap[addr] = { contract, name };
-          newEventArgPropsMap[addr] = getEventArgProps(contract);
+          newContractMap[name] = contract;
         } catch (e) {
           console.log(`could not connect to contract ${name}`);
         }
       });
 
-      const Cauldron = newContractMap[addrs.Cauldron]?.contract!;
-      const Ladle = newContractMap[addrs.Ladle]?.contract!;
+      const Cauldron: Contract = newContractMap[CAULDRON];
+      const Ladle: Contract = newContractMap[LADLE];
 
       dispatch(updateContractMap(newContractMap));
-      dispatch(updateEventArgPropsMap(newEventArgPropsMap));
+
       /* Get the hardcoded strategy addresses */
       const strategyAddresses = (yieldEnv.strategies as any)[chainId];
 
@@ -114,8 +85,8 @@ const useChain = () => {
           dispatch(setAssetsLoading(true));
           /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
           const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-            Cauldron?.queryFilter('AssetAdded' as any, 0),
-            Ladle?.queryFilter('JoinAdded' as any, 0),
+            Cauldron.queryFilter('AssetAdded' as EventFilter, 0),
+            Ladle.queryFilter('JoinAdded' as EventFilter, 0),
           ]);
           /* Create a map from the joinAdded event data */
           const joinMap: Map<string, string> = new Map(
@@ -156,19 +127,18 @@ const useChain = () => {
                 version,
                 joinAddress,
               };
-              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset as IAsset);
+              if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset);
             })
           );
           dispatch(updateAssets(newAssets));
 
           // get asset pair data
           Object.values(newAssets as IAssetMap).map((a: IAsset) =>
-            dispatch(getAssetPairData(a, newAssets, newContractMap))
+            dispatch(getAssetPairData(a, newAssets, newContractMap, chainId))
           );
 
           dispatch(setAssetsLoading(false));
         } catch (e) {
-          dispatch(updateAssets({}));
           dispatch(setAssetsLoading(false));
           console.log('Error getting assets', e);
         }
@@ -265,7 +235,6 @@ const useChain = () => {
           dispatch(updateSeries(newSeriesObj));
           dispatch(setSeriesLoading(false));
         } catch (e) {
-          dispatch(updateSeries({}));
           dispatch(setSeriesLoading(false));
           console.log('Error fetching series data: ', e);
         }
@@ -280,55 +249,42 @@ const useChain = () => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              const poolViewAddr: string = Object.values(newContractMap as IContractMap).filter(
-                (c: IContract) => c.name === 'PoolView'
-              )[0].contract.address;
+              const poolViewAddr: string = newContractMap[POOLVIEW].address;
               const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
               const invariantBlockNumCompare = -1000; // 45000 blocks ago
-              const secondsToDays: string = formatDistanceStrict(
-                new Date(1, 1, 0, 0, 0, 0),
-                new Date(1, 1, 0, 0, 0, Math.abs(invariantBlockNumCompare) || 0),
-                {
-                  unit: 'day',
-                }
+
+              const [name, symbol, seriesId, poolAddress, baseId, decimals, version, currInvariant] = await Promise.all(
+                [
+                  Strategy.name(),
+                  Strategy.symbol(),
+                  Strategy.seriesId(),
+                  Strategy.pool(),
+                  Strategy.baseId(),
+                  Strategy.decimals(),
+                  Strategy.version(),
+                  Strategy.totalSupply(),
+                  PoolView.invariant(await Strategy.pool()),
+                  PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
+                ]
               );
 
-              const [
-                name,
-                symbol,
-                seriesId,
-                poolAddress,
-                baseId,
-                decimals,
-                version,
-                totalSupply,
-                currInvariant,
-                preInvariant,
-              ] = await Promise.all([
-                Strategy.name(),
-                Strategy.symbol(),
-                Strategy.seriesId(),
-                Strategy.pool(),
-                Strategy.baseId(),
-                Strategy.decimals(),
-                Strategy.version(),
-                Strategy.totalSupply(),
-                PoolView.invariant(await Strategy.pool()),
-                PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
-              ]);
+              let apy_: string | undefined;
+              const initInvariant = ethers.utils.parseUnits('1', decimals);
+              try {
+                const currentBlock: number = await provider.getBlockNumber();
+                const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
+                const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
 
-              const initInvariant = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
-              const currentBlock: number = await provider.getBlockNumber();
-              const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
-              const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
+                // calculate apy based on invariants
+                const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
+                const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
+                const periods: number = SECONDS_PER_YEAR / secondsBetween;
 
-              // calculate apy based on invariants
-              const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
-              const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
-              const periods: number = SECONDS_PER_YEAR / secondsBetween;
-
-              const apy: number = (1 + returns / periods) ** periods - 1;
-              const apy_: string = `${cleanValue((apy * 100).toString(), 2)}%`;
+                const apy: number = (1 + returns / periods) ** periods - 1;
+                apy_ = `${cleanValue((apy * 100).toString(), 2)}%`;
+              } catch (e) {
+                console.log(e);
+              }
 
               const newStrategy = {
                 id: strategyAddr,
@@ -343,7 +299,7 @@ const useChain = () => {
                 currInvariant: currInvariant.toString(),
                 // preInvariant: preInvariant.toString(),
                 initInvariant: initInvariant.toString(),
-                invariantCalcAPY: apy_,
+                invariantCalcAPY: apy_ ?? 'could not calculate apy',
                 // daysCompared: secondsToDays,
               };
               // update state and cache
@@ -354,8 +310,6 @@ const useChain = () => {
           dispatch(setStrategiesLoading(false));
         } catch (e) {
           dispatch(setStrategiesLoading(false));
-          dispatch(updateStrategies({}));
-
           console.log('Error getting strategies', e);
         }
       };
@@ -371,7 +325,8 @@ const useChain = () => {
   useEffect(() => {
     // send to home page when chain id changes
     history.push('/');
-  }, [chainId, history]);
+    dispatch(resetVaults());
+  }, [chainId]);
 };
 
 export { useChain };

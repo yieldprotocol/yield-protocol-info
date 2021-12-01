@@ -1,23 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../../state/hooks/general';
+import { IContract } from '../../types/contracts';
 import ContractItem from '../ContractItem';
 import MainViewWrap from '../wraps/MainViewWrap';
 
-const Contracts = () => {
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
-  const [contractsList, setContractsList] = useState<any[]>([]);
+const Contracts: FC = () => {
+  const { contractMap } = useAppSelector(({ contracts }) => contracts);
+  const [contractsList, setContractsList] = useState<IContract[]>([]);
 
   useEffect(() => {
-    Object.values(contractMap).length > 0 &&
-      setContractsList([...Object.values(contractMap)].sort((s1: any, s2: any) => (s1?.name! < s2?.name! ? -1 : 1)));
+    if (!contractMap) return;
+
+    setContractsList(
+      [...Object.keys(contractMap).map((name) => ({ contract: contractMap[name], name }))].sort((s1, s2) =>
+        s1.name < s2.name ? -1 : 1
+      )
+    );
   }, [contractMap]);
 
-  if (!Object.values(contractMap).length) return <MainViewWrap>No Contracts</MainViewWrap>;
+  if (!Object.values(contractMap!).length) return <MainViewWrap>No Contracts</MainViewWrap>;
 
   return (
     <MainViewWrap>
       <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {contractsList.map((item: any) => (
+        {contractsList.map((item) => (
           <ContractItem item={item} key={item.contract.address} />
         ))}
       </div>

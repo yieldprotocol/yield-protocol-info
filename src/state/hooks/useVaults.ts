@@ -1,19 +1,15 @@
 import { useEffect } from 'react';
-import { getVaults, updateVaults } from '../actions/vaults';
+import { getVaults } from '../actions/vaults';
 import { useAppDispatch, useAppSelector } from './general';
 
 export const useVaults = () => {
   const dispatch = useAppDispatch();
-  const contractMap = useAppSelector((st) => st.contracts.contractMap);
-  const series = useAppSelector((st) => st.chain.series);
-  const assets = useAppSelector((st) => st.chain.assets);
-  const prices = useAppSelector((st) => st.vaults.prices);
+  const { assets, series } = useAppSelector(({ chain }) => chain);
+  const { contractMap } = useAppSelector(({ contracts }) => contracts);
 
   useEffect(() => {
-    if (Object.values(contractMap).length && Object.values(series).length && Object.values(assets).length) {
-      dispatch(getVaults(contractMap, series, assets));
-    } else {
-      dispatch(updateVaults({}));
+    if (contractMap && series && assets) {
+      dispatch(getVaults());
     }
-  }, [contractMap, series, assets, prices, dispatch]);
+  }, [contractMap, series, assets, dispatch]);
 };

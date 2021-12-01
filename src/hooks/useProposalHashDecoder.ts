@@ -9,8 +9,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';
 
-  const provider = useAppSelector((st) => st.chain.provider);
-  const chainId = useAppSelector((st) => st.chain.chainId);
+  const { provider, chainId } = useAppSelector((st) => st.chain);
   const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
   const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
@@ -56,14 +55,16 @@ const useProposalHashDecoder = (proposalHash: string) => {
             }));
           });
         }
+        return undefined;
       })
     );
     setLoading(false);
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
+    if (!provider) return;
     const tx = await provider.getTransaction(hash);
-    const input = tx.data;
+    const input = tx?.data;
     const callsArr = ethers.utils.defaultAbiCoder.decode([PROPOSE_ARGUMENTS], addHexPrefix(input.slice(2 + 4 * 2)))[0];
     const newCalls = [
       epoch,
