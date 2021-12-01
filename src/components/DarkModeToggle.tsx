@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { toggleDarkMode } from '../state/actions/application';
 
 const DarkModeToggle: FC = () => {
-  const { darkMode } = useAppSelector((st) => st.application);
+  const { darkMode } = useAppSelector(({ application }) => application);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
