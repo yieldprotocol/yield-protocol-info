@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks/general';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
@@ -6,9 +6,9 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import AssetPairTable from '../AssetPairTable';
 import { markMap } from '../../config/marks';
 
-const Asset: FC = () => {
+const Asset = () => {
   const { id } = useParams<{ id: string }>();
-  const { assets, assetPairData } = useAppSelector((st) => st.chain);
+  const { assets, assetPairData } = useAppSelector(({ chain }) => chain);
   const asset = assets![id];
   const thisAssetPairData = assetPairData![asset.id];
   const logo = markMap.get(asset.symbol);
@@ -25,7 +25,7 @@ const Asset: FC = () => {
             <SingleItemViewGrid item={asset} />
           </div>
         </div>
-        {thisAssetPairData && (
+        {thisAssetPairData?.length && assets && (
           <div className="rounded-lg p-8 align-middle justify-items-start shadow-sm">
             <AssetPairTable data={thisAssetPairData} />
           </div>

@@ -75,7 +75,7 @@ export function calcRoles(events: any) {
 export function getRoles(contractMap: any, contractName: string, filter = '*'): any {
   return async function _getRoles(dispatch: any) {
     dispatch(setRolesLoading(true));
-    const contract = contractMap[contractName];
+    const contract = contractMap[contractName]?.contract!;
     if (contract) {
       try {
         dispatch(setRolesLoading(true));

@@ -1,6 +1,10 @@
 {
   "name": "yield-protocol-info",
+<<<<<<< HEAD
   "version": "0.0.6",
+=======
+  "version": "0.0.4",
+>>>>>>> main
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.2.0",

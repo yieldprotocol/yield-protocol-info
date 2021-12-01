@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC} from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
 import { useAppSelector } from '../state/hooks/general';

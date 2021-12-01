@@ -1,13 +1,13 @@
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
-import { getEventArgs, getEvents } from '../../state/actions/contracts';
+import { getEvents, getEventArgs } from '../../state/actions/contracts';
 import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
 
-const Contract: FC = () => {
+const Contract = () => {
   const { name } = useParams<{ name: string }>();
   const dispatch = useAppDispatch();
   const { contractMap, events, eventsLoading, eventArgsPropsMap } = useAppSelector((st) => st.contracts);
@@ -36,7 +36,7 @@ const Contract: FC = () => {
           {!eventsLoading && (
             <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
               <div className="text-lg pb-4 flex gap-x-2">
-                {contractEvents?.length ? (
+                {contractEvents && contractEvents.length ? (
                   <EventTable events={contractEvents} eventArgsProps={eventArgsProps} />
                 ) : (
                   <>No event data available</>

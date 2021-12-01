@@ -6,7 +6,7 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import { ISeries } from '../../types/chain';
 
 const SeriesList: FC = () => {
-  const { series, seriesLoading } = useAppSelector((st) => st.chain);
+  const { series, seriesLoading } = useAppSelector(({ chain }) => chain);
   const [seriesList, setSeriesList] = useState<ISeries[]>([]);
 
   useEffect(() => {

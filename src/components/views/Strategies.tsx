@@ -6,7 +6,7 @@ import Spinner from '../Spinner';
 import { IStrategy } from '../../types/chain';
 
 const Strategies: FC = () => {
-  const { strategies, strategiesLoading } = useAppSelector((st) => st.chain);
+  const { strategies, strategiesLoading } = useAppSelector(({ chain }) => chain);
   const [strategiesList, setStrategiesList] = useState<IStrategy[]>([]);
 
   useEffect(() => {

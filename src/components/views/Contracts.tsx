@@ -5,7 +5,7 @@ import ContractItem from '../ContractItem';
 import MainViewWrap from '../wraps/MainViewWrap';
 
 const Contracts: FC = () => {
-  const { contractMap } = useAppSelector((st) => st.contracts);
+  const { contractMap } = useAppSelector(({ contracts }) => contracts);
   const [contractsList, setContractsList] = useState<IContract[]>([]);
 
   useEffect(() => {

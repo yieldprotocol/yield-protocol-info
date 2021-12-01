@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC} from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 import { markMap } from '../config/marks';
 import { IAsset } from '../types/chain';

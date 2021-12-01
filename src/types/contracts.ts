@@ -56,34 +56,10 @@ export interface IResetAction {
 }
 
 export interface IContractMap {
-  [name: string]: Contract;
-}
-
-export interface IEventArgsPropsMap {
-  [name: string]: IEventArgsProps;
-}
-
-export interface IEventArgsProps {
-  [name: string]: IEventArgs[];
-}
-
-export interface IEventArgs {
-  name: string;
-  type: string;
-}
-
-export interface IEventsMap {
-  [name: string]: IEvents[];
-}
-
-export interface IEvents {
-  id: number;
-  event: string | undefined;
-  blockNumber: number;
-  args: string;
+  [id: string]: IContract;
 }
 
 export interface IContract {
-  name: string;
   contract: Contract;
+  name: string;
 }

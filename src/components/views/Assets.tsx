@@ -6,7 +6,7 @@ import Spinner from '../Spinner';
 import { IAsset } from '../../types/chain';
 
 const Assets: FC = () => {
-  const { assets, assetsLoading } = useAppSelector((st) => st.chain);
+  const { assets, assetsLoading } = useAppSelector(({ chain }) => chain);
   const [sortedAssets, setSortedAssets] = useState<IAsset[]>([]);
 
   useEffect(() => {
