@@ -267,18 +267,23 @@ const useChain = (chainId: number) => {
                 ]
               );
 
-              const initInvariant = BigNumber.from(1).mul(BigNumber.from(10).pow(18));
-              const currentBlock: number = await provider.getBlockNumber();
-              const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
-              const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
+              let apy_: string | undefined;
+              const initInvariant = ethers.utils.parseUnits('1', decimals);
+              try {
+                const currentBlock: number = await provider.getBlockNumber();
+                const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
+                const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
 
-              // calculate apy based on invariants
-              const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
-              const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
-              const periods: number = SECONDS_PER_YEAR / secondsBetween;
+                // calculate apy based on invariants
+                const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
+                const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
+                const periods: number = SECONDS_PER_YEAR / secondsBetween;
 
-              const apy: number = (1 + returns / periods) ** periods - 1;
-              const apy_: string = `${cleanValue((apy * 100).toString(), 2)}%`;
+                const apy: number = (1 + returns / periods) ** periods - 1;
+                apy_ = `${cleanValue((apy * 100).toString(), 2)}%`;
+              } catch (e) {
+                console.log(e);
+              }
 
               const newStrategy = {
                 id: strategyAddr,
@@ -293,7 +298,7 @@ const useChain = (chainId: number) => {
                 currInvariant: currInvariant.toString(),
                 // preInvariant: preInvariant.toString(),
                 initInvariant: initInvariant.toString(),
-                invariantCalcAPY: apy_,
+                invariantCalcAPY: apy_ ?? 'could not calculate apy',
                 // daysCompared: secondsToDays,
               };
               // update state and cache
