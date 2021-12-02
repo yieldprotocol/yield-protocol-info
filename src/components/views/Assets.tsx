@@ -13,7 +13,7 @@ const Assets: FC = () => {
     setSortedAssets([...Object.values(assets!)].sort((a, b) => (a.symbol > b.symbol ? 1 : -1)));
   }, [assets]);
 
-  if (!Object.values(assets!).length) return <MainViewWrap>No Assets</MainViewWrap>;
+  if (!assets || !Object.values(assets!).length) return <MainViewWrap>No Assets</MainViewWrap>;
 
   return (
     <MainViewWrap>
