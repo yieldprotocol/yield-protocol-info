@@ -222,7 +222,7 @@ async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
  * @returns string
  */
 async function getPoolBalance(pool: Contract) {
-  if (!pool || pool === undefined) return '0';
+  if (!pool || !pool.id) return '0';
   try {
     const decimals = await pool.decimals();
     const base = await pool.getBaseBalance();
