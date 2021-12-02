@@ -7,8 +7,6 @@ import {
   CHAINLINK_MULTI_ORACLE,
   CHAINLINK_USD_ORACLE,
   COMPOSITE_MULTI_ORACLE,
-  ENS,
-  stETH,
   WAD_BN,
   WITCH,
 } from '../../utils/constants';
@@ -24,6 +22,7 @@ import {
   IVaultsLoadingAction,
   IVaultsResetAction,
 } from '../../types/vaults';
+import { ENS, stETH } from '../../config/assets';
 
 export function getVaults(): any {
   return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
