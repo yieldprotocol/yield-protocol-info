@@ -23,6 +23,7 @@ import {
   IVaultsResetAction,
 } from '../../types/vaults';
 import { ENS, stETH } from '../../config/assets';
+import { ORACLE_INFO } from '../../config/oracles';
 
 export function getVaults(): any {
   return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
@@ -112,26 +113,11 @@ export async function getPrice(
   chainId: number,
   priceMap: IPriceMap
 ) {
-  const compositeOracleAssets = [stETH, ENS];
-  let Oracle;
+  const oracleName = ORACLE_INFO.get(chainId)?.get(ilk)?.get(base);
+  const Oracle = contractMap[oracleName!];
 
   try {
-    switch (chainId as number) {
-      case 1:
-      case 42:
-        Oracle =
-          compositeOracleAssets.includes(ilk) || compositeOracleAssets.includes(base)
-            ? contractMap[COMPOSITE_MULTI_ORACLE]
-            : contractMap[CHAINLINK_MULTI_ORACLE];
-        break;
-      case 421611:
-        Oracle = contractMap[CHAINLINK_USD_ORACLE];
-        break;
-      default:
-        break;
-    }
-
-    const [price] = await Oracle?.peek(
+    const [price] = await Oracle.peek(
       bytesToBytes32(ilk, 6),
       bytesToBytes32(base, 6),
       decimal18ToDecimalN(WAD_BN, decimals)
