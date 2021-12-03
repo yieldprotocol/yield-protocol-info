@@ -2,7 +2,7 @@ import { ActionType } from '../state/actionTypes/vaults';
 
 export interface IVaultState {
   vaultsLoading: boolean;
-  vaults: IVaultMap;
+  vaults: IVaultMap | null;
   prices: IPriceMap;
   vaultsGot: boolean;
 }
