@@ -6,7 +6,7 @@ const INITIAL_STATE = {
   vaultsLoading: false,
 
   /* Data */
-  vaults: {},
+  vaults: null,
   prices: {},
   vaultsGot: false,
 };

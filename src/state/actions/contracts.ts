@@ -85,3 +85,7 @@ export const updateContractMap = (contractMap: IContractMap): IUpdateContractMap
   payload: contractMap,
 });
 export const reset = (): IResetAction => ({ type: ActionType.RESET });
+export const setContractsLoading = (contractsLoading: boolean) => ({
+  type: ActionType.CONTRACTS_LOADING,
+  payload: contractsLoading,
+});

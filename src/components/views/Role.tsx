@@ -17,6 +17,8 @@ const Role: FC = () => {
     if (contractMap && name) dispatch(getRoles(contractMap, name));
   }, [contractMap, dispatch, name]);
 
+  if (!contractMap) return null;
+
   return (
     <>
       <SubNav

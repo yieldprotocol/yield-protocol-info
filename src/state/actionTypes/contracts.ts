@@ -5,5 +5,6 @@ export enum ActionType {
   EVENTS_LOADING = 'contracts/EVENTS_LOADING',
   UPDATE_ROLES = 'contracts/UPDATE_ROLES',
   ROLES_LOADING = 'contracts/ROLES_LOADING',
+  CONTRACTS_LOADING = 'contracts/CONTRACTS_LOADING',
   RESET = 'contracts/RESET',
 }

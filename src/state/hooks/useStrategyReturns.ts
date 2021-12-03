@@ -75,6 +75,7 @@ export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) 
         try {
           const baseValuePerShareCurr = await _getStrategyBaseValuePerShare(currentBlock);
           const baseValuePerSharePre = await _getStrategyBaseValuePerShare(previousBlock);
+          if ((baseValuePerShareCurr || baseValuePerSharePre) === 0) return 'Could not get returns';
 
           const returns = baseValuePerShareCurr / baseValuePerSharePre - 1;
 

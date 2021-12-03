@@ -8,7 +8,7 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 const Vault: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { vaults } = useAppSelector((st) => st.vaults);
-  const vault = vaults[id];
+  const vault = vaults![id];
 
   return vault ? (
     <MainViewWrap>

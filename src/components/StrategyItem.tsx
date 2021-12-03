@@ -5,9 +5,9 @@ import { useAppSelector } from '../state/hooks/general';
 import { IStrategy } from '../types/chain';
 
 const StrategyItem: FC<{ item: IStrategy }> = ({ item }) => {
-  const { assets } = useAppSelector((st) => st.chain);
-  const asset = assets![item.baseId];
-  const logo = markMap.get(asset.symbol);
+  const { assets } = useAppSelector(({ chain }) => chain);
+  const asset = assets ? assets![item.baseId] : null;
+  const logo = markMap.get(asset?.symbol!);
 
   return (
     <ListItemWrap type="strategies" item={item}>

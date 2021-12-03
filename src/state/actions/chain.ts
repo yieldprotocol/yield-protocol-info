@@ -3,7 +3,8 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { ActionType } from '../actionTypes/chain';
-import { getPrice, updatePrices } from './vaults';
+import { getPrice, updatePrices, reset as resetVaults } from './vaults';
+import { reset as resetContracts } from './contracts';
 import * as contracts from '../../contracts';
 import {
   IAsset,
@@ -294,6 +295,16 @@ export const updateProvider = (provider: ethers.providers.JsonRpcProvider): ICha
   type: ActionType.PROVIDER,
   payload: provider,
 });
+
+export const updateChain =
+  (chainId: number): any =>
+  async (dispatch: any) => {
+    dispatch(reset());
+    dispatch(resetVaults());
+    dispatch(resetContracts());
+    dispatch(updateChainId(chainId));
+  };
+
 export const updateChainId = (chainId: number): IChainChainIdAction => ({
   type: ActionType.CHAIN_ID,
   payload: chainId,
