@@ -13,10 +13,10 @@ import {
   updateAssets,
   updateProvider,
   getAssetPairData,
+  reset as resetChain,
 } from '../actions/chain';
 import { reset as resetVaults } from '../actions/vaults';
-
-import { updateContractMap } from '../actions/contracts';
+import { updateContractMap, reset as resetContracts } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
@@ -322,11 +322,10 @@ const useChain = (chainId: number) => {
     }
   }, [chainId, dispatch]);
 
-  useEffect(() => {
-    // send to home page when chain id changes
-    history.push('/');
-    dispatch(resetVaults());
-  }, [chainId]);
+  // useEffect(() => {
+  //   // send to home page when chain id changes
+  //   history.push('/');
+  // }, [chainId]);
 };
 
 export { useChain };
