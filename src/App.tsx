@@ -5,9 +5,10 @@ import { useChain } from './state/hooks/useChain';
 import useTvl from './state/hooks/useTvl';
 import Footer from './components/Footer';
 import { useAppSelector } from './state/hooks/general';
+import Spinner from './components/Spinner';
 
 function App() {
-  const { chainId } = useAppSelector(({ chain }) => chain);
+  const { chainId, chainLoading } = useAppSelector(({ chain }) => chain);
   useChain(chainId);
   useTvl();
 
@@ -15,9 +16,15 @@ function App() {
     <>
       <Navigation />
       <div className="h-full">
-        <Routes />
+        {chainLoading ? (
+          <div className="mt-20">
+            <Spinner loading={chainLoading} />
+          </div>
+        ) : (
+          <Routes />
+        )}
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 }
