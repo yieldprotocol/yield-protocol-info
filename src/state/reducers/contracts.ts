@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   /* flags */
   eventsLoading: false,
   rolesLoading: false,
+  contractsLoading: false,
 
   /* Data */
   events: {},
@@ -40,6 +41,8 @@ export default function rootReducer(state: IContractState = INITIAL_STATE, actio
         ...state,
         ...action.payload,
       };
+    case ActionType.CONTRACTS_LOADING:
+      return { ...state, contractsLoading: action.payload };
     case ActionType.RESET:
       return INITIAL_STATE;
     default:

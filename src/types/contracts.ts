@@ -2,6 +2,7 @@ import { Contract } from 'ethers';
 import { ActionType } from '../state/actionTypes/contracts';
 
 export interface IContractState {
+  contractsLoading: boolean;
   eventsLoading: boolean;
   rolesLoading: boolean;
   events: IEventsMap;
@@ -19,7 +20,13 @@ export type IContractAction =
   | IRolesLoadingAction
   | IUpdateRolesAction
   | IUpdateEventsAction
-  | IResetAction;
+  | IResetAction
+  | IContractsLoadingAction;
+
+export interface IContractsLoadingAction {
+  type: ActionType.CONTRACTS_LOADING;
+  payload: boolean;
+}
 
 export interface IEventsLoadingAction {
   type: ActionType.EVENTS_LOADING;

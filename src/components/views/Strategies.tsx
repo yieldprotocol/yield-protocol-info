@@ -20,12 +20,15 @@ const Strategies: FC = () => {
 
   return (
     <MainViewWrap>
-      <Spinner loading={strategiesLoading} />
-      <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {strategiesList.map((s: any) => (
-          <StrategyItem item={s} key={s.id} />
-        ))}
-      </div>
+      {strategiesLoading ? (
+        <Spinner loading={strategiesLoading} />
+      ) : (
+        <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {strategiesList.map((s: any) => (
+            <StrategyItem item={s} key={s.id} />
+          ))}
+        </div>
+      )}
     </MainViewWrap>
   );
 };

@@ -2,10 +2,11 @@ import React, { FC, useEffect, useState } from 'react';
 import { useAppSelector } from '../../state/hooks/general';
 import { IContract } from '../../types/contracts';
 import ContractItem from '../ContractItem';
+import Spinner from '../Spinner';
 import MainViewWrap from '../wraps/MainViewWrap';
 
 const Contracts: FC = () => {
-  const { contractMap } = useAppSelector(({ contracts }) => contracts);
+  const { contractMap, contractsLoading } = useAppSelector(({ contracts }) => contracts);
   const [contractsList, setContractsList] = useState<IContract[]>([]);
 
   useEffect(() => {
@@ -18,7 +19,8 @@ const Contracts: FC = () => {
     );
   }, [contractMap]);
 
-  if (!Object.values(contractMap!).length) return <MainViewWrap>No Contracts</MainViewWrap>;
+  if (!contractsLoading && (!contractMap || !Object.values(contractMap!).length))
+    return <MainViewWrap>No Contracts</MainViewWrap>;
 
   return (
     <MainViewWrap>

@@ -21,6 +21,8 @@ const Contract: FC = () => {
     }
   }, [contractMap, dispatch, name]);
 
+  if (!contractMap) return null;
+
   return (
     <>
       <SubNav
