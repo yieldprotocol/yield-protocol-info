@@ -19,7 +19,7 @@ const SeriesList: FC = () => {
     }
   }, [series]);
 
-  if (!Object.values(series!).length) return <MainViewWrap>No Series</MainViewWrap>;
+  if (!seriesLoading && (!series || !Object.values(series!).length)) return <MainViewWrap>No Series</MainViewWrap>;
 
   return (
     <MainViewWrap>
