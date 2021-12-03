@@ -37,7 +37,6 @@ const assetDigitFormatMap = new Map([
 ]);
 
 const useChain = (chainId: number) => {
-  const history = useHistory();
   const dispatch = useAppDispatch();
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
@@ -249,10 +248,6 @@ const useChain = (chainId: number) => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              // const poolViewAddr: string = newContractMap[POOLVIEW].address;
-              // const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
-              // const invariantBlockNumCompare = -1000; // 45000 blocks ago
-              console.log('strategy', strategyAddr, Strategy);
 
               const [name, symbol, seriesId, poolAddress, baseId, decimals, version] = await Promise.all([
                 Strategy.name(),
