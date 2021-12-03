@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Contract, ethers, EventFilter } from 'ethers';
+import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
 import { format } from 'date-fns';
 import { useAppDispatch } from './general';
 import {
@@ -249,42 +249,21 @@ const useChain = (chainId: number) => {
           await Promise.all(
             strategyAddresses.map(async (strategyAddr: string) => {
               const Strategy = contracts.Strategy__factory.connect(strategyAddr, provider);
-              const poolViewAddr: string = newContractMap[POOLVIEW].address;
-              const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
-              const invariantBlockNumCompare = -1000; // 45000 blocks ago
+              // const poolViewAddr: string = newContractMap[POOLVIEW].address;
+              // const PoolView = contracts.PoolView__factory.connect(poolViewAddr, provider);
+              // const invariantBlockNumCompare = -1000; // 45000 blocks ago
+              console.log('strategy', strategyAddr, Strategy);
 
-              const [name, symbol, seriesId, poolAddress, baseId, decimals, version, currInvariant] = await Promise.all(
-                [
-                  Strategy.name(),
-                  Strategy.symbol(),
-                  Strategy.seriesId(),
-                  Strategy.pool(),
-                  Strategy.baseId(),
-                  Strategy.decimals(),
-                  Strategy.version(),
-                  Strategy.totalSupply(),
-                  PoolView.invariant(await Strategy.pool()),
-                  PoolView.invariant(await Strategy.pool(), { blockTag: invariantBlockNumCompare }),
-                ]
-              );
-
-              let apy_: string | undefined;
-              const initInvariant = ethers.utils.parseUnits('1', decimals);
-              try {
-                const currentBlock: number = await provider.getBlockNumber();
-                const preBlockTimestamp = (await provider.getBlock(currentBlock + invariantBlockNumCompare)).timestamp;
-                const currBlockTimestamp = (await provider.getBlock(currentBlock)).timestamp;
-
-                // calculate apy based on invariants
-                const returns: number = Number(currInvariant) / Number(initInvariant) - 1;
-                const secondsBetween: number = currBlockTimestamp - preBlockTimestamp;
-                const periods: number = SECONDS_PER_YEAR / secondsBetween;
-
-                const apy: number = (1 + returns / periods) ** periods - 1;
-                apy_ = `${cleanValue((apy * 100).toString(), 2)}%`;
-              } catch (e) {
-                console.log(e);
-              }
+              const [name, symbol, seriesId, poolAddress, baseId, decimals, version] = await Promise.all([
+                Strategy.name(),
+                Strategy.symbol(),
+                Strategy.seriesId(),
+                Strategy.pool(),
+                Strategy.baseId(),
+                Strategy.decimals(),
+                Strategy.version(),
+                Strategy.totalSupply(),
+              ]);
 
               const newStrategy = {
                 id: strategyAddr,
@@ -296,11 +275,6 @@ const useChain = (chainId: number) => {
                 poolAddress,
                 baseId,
                 decimals,
-                currInvariant: currInvariant.toString(),
-                // preInvariant: preInvariant.toString(),
-                initInvariant: initInvariant.toString(),
-                invariantCalcAPY: apy_ ?? 'could not calculate apy',
-                // daysCompared: secondsToDays,
               };
               // update state and cache
               newStrategies[strategyAddr] = newStrategy;
