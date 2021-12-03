@@ -15,7 +15,8 @@ const Strategies: FC = () => {
     }
   }, [strategies]);
 
-  if (!strategies || !Object.values(strategies!).length) return <MainViewWrap>No Strategies</MainViewWrap>;
+  if (!strategiesLoading && (!strategies || !Object.values(strategies!).length))
+    return <MainViewWrap>No Strategies</MainViewWrap>;
 
   return (
     <MainViewWrap>

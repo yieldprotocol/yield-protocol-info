@@ -10,7 +10,7 @@ const Assets: FC = () => {
   const [sortedAssets, setSortedAssets] = useState<IAsset[]>([]);
 
   useEffect(() => {
-    setSortedAssets([...Object.values(assets!)].sort((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+    if (assets) setSortedAssets([...Object.values(assets!)].sort((a, b) => (a.symbol > b.symbol ? 1 : -1)));
   }, [assets]);
 
   if (!assets || !Object.values(assets!).length) return <MainViewWrap>No Assets</MainViewWrap>;
