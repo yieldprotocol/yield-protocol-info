@@ -2,14 +2,7 @@ import { Dispatch } from 'redux';
 import { ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import {
-  CAULDRON,
-  CHAINLINK_MULTI_ORACLE,
-  CHAINLINK_USD_ORACLE,
-  COMPOSITE_MULTI_ORACLE,
-  WAD_BN,
-  WITCH,
-} from '../../utils/constants';
+import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN } from '../../utils/yieldMath';
 import { IContractMap } from '../../types/contracts';
 import {
@@ -22,7 +15,6 @@ import {
   IVaultsLoadingAction,
   IVaultsResetAction,
 } from '../../types/vaults';
-import { ENS, stETH } from '../../config/assets';
 import { ORACLE_INFO } from '../../config/oracles';
 
 export function getVaults(): any {
@@ -113,7 +105,7 @@ export async function getPrice(
   chainId: number,
   priceMap: IPriceMap
 ) {
-  const oracleName = ORACLE_INFO.get(chainId)?.get(ilk)?.get(base);
+  const oracleName = ORACLE_INFO.get(chainId)?.get(base)?.get(ilk);
   const Oracle = contractMap[oracleName!];
 
   try {
