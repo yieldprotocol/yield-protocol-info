@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
+import { Contract, ethers, EventFilter } from 'ethers';
 import { format } from 'date-fns';
 import { useAppDispatch } from './general';
 import {
@@ -13,19 +12,18 @@ import {
   updateAssets,
   updateProvider,
   getAssetPairData,
-  reset as resetChain,
 } from '../actions/chain';
-import { reset as resetVaults } from '../actions/vaults';
-import { updateContractMap, reset as resetContracts } from '../actions/contracts';
+import { updateContractMap } from '../actions/contracts';
 
 import * as yieldEnv from '../../yieldEnv.json';
 import * as contracts from '../../contracts';
 
-import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
+import { getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
+import { getABI } from '../../utils/etherscan';
 
 const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -54,15 +52,27 @@ const useChain = (chainId: number) => {
       /* Update the baseContracts state */
       const newContractMap: IContractMap = {};
 
-      [...Object.keys(addrs)].forEach((name: string) => {
-        let contract: Contract;
+      [...Object.keys(addrs)].forEach(async (name: string) => {
+        let contract: Contract | undefined;
 
+        // try to connect directly to contract
         try {
           contract = (contracts as any)[`${name}__factory`].connect(addrs[name], provider);
-          newContractMap[name] = contract;
         } catch (e) {
-          console.log(`could not connect to contract ${name}`);
+          console.log(`could not connect directly to contract ${name}`);
         }
+
+        // try to connect to contract via etherscan
+        if (!contract) {
+          try {
+            const abi = await getABI(chainId, addrs[name]);
+            contract = new ethers.Contract(addrs[name], abi, provider);
+          } catch (e) {
+            console.log(`could not connect to contract ${name} via etherscan`);
+          }
+        }
+
+        if (contract) newContractMap[name] = contract;
       });
 
       const Cauldron: Contract = newContractMap[CAULDRON];
@@ -290,11 +300,6 @@ const useChain = (chainId: number) => {
       })();
     }
   }, [chainId, dispatch]);
-
-  // useEffect(() => {
-  //   // send to home page when chain id changes
-  //   history.push('/');
-  // }, [chainId]);
 };
 
 export { useChain };

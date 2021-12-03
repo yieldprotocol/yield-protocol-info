@@ -32,7 +32,12 @@ CHAIN_INFO.set(1, {
   etherscanApi: 'https://api.etherscan.io/api',
 });
 CHAIN_INFO.set(3, { name: 'Ropsten', color: '#ff4a8d', explorer: 'https://ropsten.etherscan.io' });
-CHAIN_INFO.set(4, { name: 'Rinkeby', color: '#f6c343', explorer: 'https://rinkeby.etherscan.io' });
+CHAIN_INFO.set(4, {
+  name: 'Rinkeby',
+  color: '#f6c343',
+  explorer: 'https://rinkeby.etherscan.io',
+  etherscanApi: 'https://api-rinkeby.etherscan.io/api',
+});
 CHAIN_INFO.set(5, { name: 'Goerli', color: '#3099f2', explorer: 'https://goerli.etherscan.io' });
 CHAIN_INFO.set(42, {
   name: 'Kovan',
