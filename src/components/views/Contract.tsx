@@ -15,11 +15,11 @@ const Contract: FC = () => {
   const contractEvents = events[name];
 
   useEffect(() => {
-    if (contractMap && name) {
+    if (contractMap && name && !events[name]) {
       dispatch(getEvents(contractMap, name, undefined));
       dispatch(getEventArgs(contractMap, name));
     }
-  }, [contractMap, dispatch, name]);
+  }, [contractMap, dispatch, name, events]);
 
   if (!contractMap) return null;
 
