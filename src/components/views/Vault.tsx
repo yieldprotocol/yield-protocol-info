@@ -22,11 +22,10 @@ const Vault: FC = () => {
     if (!vaults || !vaults[id]) dispatch(getVaults());
   }, [vaults, dispatch, id]);
 
-  return vault ? (
+  return (
     <MainViewWrap>
-      {vaultsLoading ? (
-        <Spinner loading={vaultsLoading} />
-      ) : (
+      {vaultsLoading && <Spinner loading={vaultsLoading} />}
+      {vault && (
         <div className="rounded-lg p-8 align-middle justify-items-start shadow-md dark:bg-green-400 bg-green-100">
           <div className="text-lg pb-4 flex gap-x-2">
             <CopyWrap value={vault.id}>
@@ -37,7 +36,7 @@ const Vault: FC = () => {
         </div>
       )}
     </MainViewWrap>
-  ) : null;
+  );
 };
 
 export default Vault;
