@@ -8,7 +8,7 @@ const AddressDisplay = ({ addr, tx }: any) => {
 
   if (!addr) return null;
 
-  return ethers.utils.isAddress(addr) || tx ? (
+  return ethers.utils.isAddress(addr.trim()) || tx ? (
     <a
       href={`${CHAIN_INFO.get(chainId)?.explorer}/${tx ? 'tx' : 'address'}/${addr.trim()}`}
       target="_blank"
