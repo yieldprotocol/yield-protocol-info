@@ -1,3 +1,4 @@
+import { EventFragment } from '@ethersproject/abi';
 import { Contract, Event } from 'ethers';
 import {
   IContractMap,
@@ -53,9 +54,9 @@ const getEventArgProps = (contract: Contract) =>
     // final shape of the accumulator:
     //  {"RoleAdminChanged": [{name: "assetId", type: "bytes6"}, {name: "asset", type: "address"]}
     const [key, value] = curr;
-    const eventName = key.split('(')[0];
+    const eventName: string = key.split('(')[0];
     if (!(eventName in acc)) {
-      acc[eventName] = value.inputs.map(({ name, type }: any): any => ({ name, type }));
+      acc[eventName] = (value as EventFragment).inputs.map(({ name, type }) => ({ name, type }));
     }
     return acc;
   }, {});
@@ -64,9 +65,7 @@ export function getEventArgs(contractMap: IContractMap, name: string): any {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
     const newEventArgPropsMap: IEventArgsPropsMap = {};
-    [...Object.keys(contractMap)].forEach((_name: string) => {
-      newEventArgPropsMap[name] = getEventArgProps(contractMap[_name]);
-    });
+    newEventArgPropsMap[name] = getEventArgProps(contractMap[name]);
     dispatch(updateEventArgPropsMap(newEventArgPropsMap));
   };
 }
