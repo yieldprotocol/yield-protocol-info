@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { IEventArgsProps, IEvents } from '../types/contracts';
 import AddressDisplay from './AddressDisplay';
@@ -12,9 +13,15 @@ const ArgsCell = ({ values, eventArgs }: any) => (
             <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
             <td>
               <p>
-                {(eventArgs && eventArgs[idx].type) === 'address' ? (
+                {(eventArgs && eventArgs[idx].type) === 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <AddressDisplay addr={value} />
-                ) : (
+                )}
+                {eventArgs && eventArgs[idx].name === 'vaultId' && (
+                  <Link to={`/vaults/${value}`} className="hover:underline">
+                    <code>{value}</code>
+                  </Link>
+                )}
+                {eventArgs && eventArgs[idx].type !== 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <code>{value}</code>
                 )}
               </p>
