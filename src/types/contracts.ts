@@ -88,6 +88,7 @@ export interface IEvents {
   event: string | undefined;
   blockNumber: number;
   args: string;
+  localTime: string;
 }
 
 export interface IContract {

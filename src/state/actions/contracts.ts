@@ -1,4 +1,5 @@
 import { EventFragment } from '@ethersproject/abi';
+import { fromUnixTime } from 'date-fns';
 import { Contract, Event } from 'ethers';
 import {
   IContractMap,
@@ -20,12 +21,15 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, undefined, undefined);
 
-        const updatedEvents = events.map((e: Event, i: number) => ({
-          id: i,
-          event: e.event,
-          blockNumber: e.blockNumber,
-          args: e.args ? e.args.join(', ') : '',
-        }));
+        const updatedEvents = await Promise.all(
+          events.map(async (e: Event, i: number) => ({
+            id: i,
+            event: e.event,
+            blockNumber: e.blockNumber,
+            args: e.args ? e.args.join(', ') : '',
+            localTime: fromUnixTime((await e.getBlock()).timestamp).toLocaleString(),
+          }))
+        );
 
         const eventsMap: IEventsMap = { [name]: updatedEvents };
 
