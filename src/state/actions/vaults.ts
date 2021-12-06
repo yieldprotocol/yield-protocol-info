@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { ethers, utils } from 'ethers';
+import { Contract, ethers, utils } from 'ethers';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
@@ -24,12 +24,11 @@ export function getVaults(): any {
       contracts: { contractMap },
       vaults: { vaultsGot, prices },
     } = getState();
-
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
       const fromBlock = 1;
-      const Cauldron = contractMap[CAULDRON];
+      const Cauldron: Contract = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 
       if (!Cauldron || !Witch) return;
@@ -38,6 +37,7 @@ export function getVaults(): any {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
 
         const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
+
         const vaultEventList = await Promise.all(
           vaultsBuilt.map(async (x: any) => {
             const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
@@ -89,7 +89,7 @@ export function getVaults(): any {
         dispatch(updateVaults(newVaultMap));
         dispatch(setVaultsLoading(false));
       }
-      dispatch(setVaultsGot(true));
+      dispatch(setVaultsGot(true)); // make sure there is no filter
     } catch (e) {
       dispatch(setVaultsLoading(false));
       console.log(e);
