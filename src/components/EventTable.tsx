@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
+import { IEventArgsProps, IEvents } from '../types/contracts';
 import AddressDisplay from './AddressDisplay';
 
 const ArgsCell = ({ values, eventArgs }: any) => (
@@ -11,9 +13,15 @@ const ArgsCell = ({ values, eventArgs }: any) => (
             <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
             <td>
               <p>
-                {(eventArgs && eventArgs[idx].type) === 'address' ? (
+                {(eventArgs && eventArgs[idx].type) === 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <AddressDisplay addr={value} />
-                ) : (
+                )}
+                {eventArgs && eventArgs[idx].name === 'vaultId' && (
+                  <Link to={`/vaults/${value}`} className="hover:underline">
+                    <code>{value}</code>
+                  </Link>
+                )}
+                {eventArgs && eventArgs[idx].type !== 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <code>{value}</code>
                 )}
               </p>
@@ -24,12 +32,12 @@ const ArgsCell = ({ values, eventArgs }: any) => (
   </table>
 );
 
-const EventTable = ({ events, eventArgsProps }: any) => (
+const EventTable: FC<{ events: IEvents[]; eventArgsProps: IEventArgsProps }> = ({ events, eventArgsProps }) => (
   <div>
     <table className="table min-w-full divide-y divide-gray-200">
       <thead className="">
         <tr>
-          {[...Object.keys(events[0])].map((key: any) => (
+          {[...Object.keys(events[0])].map((key) => (
             <th
               key={key}
               scope="col"
@@ -41,15 +49,15 @@ const EventTable = ({ events, eventArgsProps }: any) => (
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
-        {[...events]
+        {events
           .filter((e) => !!e.event)
-          .map((e: any) => (
+          .map((e) => (
             <tr key={e.id}>
-              {[...Object.values(e)].map((value: any, idx: number) => (
+              {[...Object.values(e)].map((value, idx) => (
                 <td className="px-6 py-4" key={uuid()}>
                   <div className="justify-items-start">
                     <div className="text-sm font-medium text-gray-900 justify-items-start">
-                      {idx === 3 ? <ArgsCell values={value} eventArgs={eventArgsProps[e.event]} /> : value}
+                      {idx === 3 ? <ArgsCell values={value} eventArgs={eventArgsProps[e.event!]} /> : value}
                     </div>
                   </div>
                 </td>

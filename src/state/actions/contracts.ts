@@ -1,3 +1,5 @@
+import { EventFragment } from '@ethersproject/abi';
+import { fromUnixTime } from 'date-fns';
 import { Contract, Event } from 'ethers';
 import {
   IContractMap,
@@ -19,12 +21,15 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, undefined, undefined);
 
-        const updatedEvents = events.map((e: Event, i: number) => ({
-          id: i,
-          event: e.event,
-          blockNumber: e.blockNumber,
-          args: e.args ? e.args.join(', ') : '',
-        }));
+        const updatedEvents = await Promise.all(
+          events.map(async (e: Event, i: number) => ({
+            id: i,
+            event: e.event,
+            blockNumber: e.blockNumber,
+            args: e.args ? e.args.join(', ') : '',
+            localTime: fromUnixTime((await e.getBlock()).timestamp).toLocaleString(),
+          }))
+        );
 
         const eventsMap: IEventsMap = { [name]: updatedEvents };
 
@@ -53,9 +58,9 @@ const getEventArgProps = (contract: Contract) =>
     // final shape of the accumulator:
     //  {"RoleAdminChanged": [{name: "assetId", type: "bytes6"}, {name: "asset", type: "address"]}
     const [key, value] = curr;
-    const eventName = key.split('(')[0];
+    const eventName: string = key.split('(')[0];
     if (!(eventName in acc)) {
-      acc[eventName] = value.inputs.map(({ name, type }: any): any => ({ name, type }));
+      acc[eventName] = (value as EventFragment).inputs.map(({ name, type }) => ({ name, type }));
     }
     return acc;
   }, {});
@@ -64,9 +69,7 @@ export function getEventArgs(contractMap: IContractMap, name: string): any {
   return async function _getEventArg(dispatch: any) {
     /* Update the Event argument properties */
     const newEventArgPropsMap: IEventArgsPropsMap = {};
-    [...Object.keys(contractMap)].forEach((_name: string) => {
-      newEventArgPropsMap[name] = getEventArgProps(contractMap[_name]);
-    });
+    newEventArgPropsMap[name] = getEventArgProps(contractMap[name]);
     dispatch(updateEventArgPropsMap(newEventArgPropsMap));
   };
 }
