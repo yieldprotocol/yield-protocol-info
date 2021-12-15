@@ -10,6 +10,7 @@ import LinkMark from '../components/logos/LinkMark';
 import ENSMark from '../components/logos/ENSMark';
 import UNIMark from '../components/logos/UNIMark';
 import YFIMark from '../components/logos/YFIMark';
+import MakerMark from '../components/logos/MakerMark';
 
 export const markMap = new Map<string, any>([
   ['DAI', <DaiMark key="dai" />],
@@ -23,4 +24,5 @@ export const markMap = new Map<string, any>([
   ['ENS', <ENSMark key="ens" />],
   ['UNI', <UNIMark key="uni" />],
   ['YVUSDC', <YFIMark key="yvusdc" />],
+  ['MKR', <MakerMark key="mkr" />],
 ]);

@@ -7,3 +7,5 @@ export const wstETH = '0x303500000000';
 export const LINK = '0x303600000000';
 export const ENS = '0x303700000000';
 export const UNI = '0x313000000000';
+export const yvUSDC = '0x303900000000';
+export const MKR = '0x313100000000';
