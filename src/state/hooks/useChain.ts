@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Contract, ethers, EventFilter } from 'ethers';
+import { Contract, ethers, Event, EventFilter } from 'ethers';
 import { format } from 'date-fns';
 import { useAppDispatch } from './general';
 import {
@@ -24,15 +24,7 @@ import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
 import { getABI } from '../../utils/etherscan';
-
-const assetDigitFormatMap = new Map([
-  ['ETH', 6],
-  ['WBTC', 6],
-  ['DAI', 2],
-  ['USDC', 2],
-  ['USDT', 2],
-  ['STETH', 6],
-]);
+import { assetDigitFormatMap, USDC } from '../../config/assets';
 
 const useChain = (chainId: number) => {
   const dispatch = useAppDispatch();
@@ -105,14 +97,33 @@ const useChain = (chainId: number) => {
           const newAssets: any = {};
 
           await Promise.all(
-            assetAddedEvents.map(async (x: any) => {
+            assetAddedEvents.map(async (x: Event) => {
               const { assetId: id, asset: address } = Cauldron.interface.parseLog(x).args;
               const ERC20 = contracts.ERC20Permit__factory.connect(address, provider);
-              /* Add in any extra static asset Data */ // TODO is there any other fixed asset data needed?
-              const [name, symbol, decimals] = await Promise.all([ERC20.name(), ERC20.symbol(), ERC20.decimals()]);
 
-              // TODO check if any other tokens have different versions. maybe abstract this logic somewhere?
-              const version = id === '0x555344430000' ? '2' : '1';
+              // get the token info
+              let name: string;
+              let symbol: string;
+              let decimals: number;
+              let version: string;
+
+              try {
+                [name, symbol, decimals, version] = await Promise.all([
+                  ERC20.name(),
+                  ERC20.symbol(),
+                  ERC20.decimals(),
+                  id === USDC ? '2' : '1', // TODO ERC20.version()
+                ]);
+              } catch (e) {
+                /* TODO look at finding a better way to handle the pimple that is the Maker Token */
+                const mkrABI = ['function name() view returns (bytes32)', 'function symbol() view returns (bytes32)'];
+                const mkrERC20 = new ethers.Contract(address, mkrABI, provider);
+                const mkrInfo = await Promise.all([mkrERC20.name(), mkrERC20.symbol()]);
+                name = ethers.utils.parseBytes32String(mkrInfo[0]) as string;
+                symbol = ethers.utils.parseBytes32String(mkrInfo[1]) as string;
+                [decimals, version] = [18, '1'];
+              }
+
               const joinAddress = joinMap.get(id);
 
               let symbol_;
