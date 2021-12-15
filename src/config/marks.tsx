@@ -23,6 +23,6 @@ export const markMap = new Map<string, any>([
   ['LINK', <LinkMark key="link" />],
   ['ENS', <ENSMark key="ens" />],
   ['UNI', <UNIMark key="uni" />],
-  ['YVUSDC', <YFIMark key="yvusdc" />],
+  ['yvUSDC', <YFIMark key="yvusdc" />],
   ['MKR', <MakerMark key="mkr" />],
 ]);
