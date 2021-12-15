@@ -243,11 +243,11 @@ async function getPoolBalance(pool: Contract) {
         : +fyTokenRealBalance_; // estimated base cost of fyToken by the fyToken amount
       return fyTokenToBaseValueEstimate ? (fyTokenToBaseValueEstimate + +base_).toString() : base_;
     } catch (e) {
-      console.log(e);
+      console.log('Could not estimate the value of an fyToken for pool: ', pool.address);
     }
     return '0';
   } catch (e) {
-    console.log('error getting pool balance for', pool.id);
+    console.log('error getting pool balance for ', pool.address);
     console.log(e);
     return '0';
   }
