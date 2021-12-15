@@ -11,7 +11,7 @@ const SeriesItem: FC<{ item: ISeries }> = ({ item }) => {
 
   useEffect(() => {
     if (assets) setAsset(assets[item.baseId]);
-  }, []);
+  }, [assets, item.baseId]);
 
   return (
     <ListItemWrap type="series" item={item}>
