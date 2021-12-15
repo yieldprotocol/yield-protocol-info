@@ -24,16 +24,7 @@ import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
 import { getABI } from '../../utils/etherscan';
-import { USDC } from '../../config/assets';
-
-const assetDigitFormatMap = new Map([
-  ['ETH', 6],
-  ['WBTC', 6],
-  ['DAI', 2],
-  ['USDC', 2],
-  ['USDT', 2],
-  ['STETH', 6],
-]);
+import { assetDigitFormatMap, USDC } from '../../config/assets';
 
 const useChain = (chainId: number) => {
   const dispatch = useAppDispatch();
