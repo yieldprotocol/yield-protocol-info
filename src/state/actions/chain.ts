@@ -119,7 +119,6 @@ export function getAssetsTvl(
     if (provider && contractMap) {
       // get the balance of the asset in the respective join
       const _joinBalances: any = await getAssetJoinBalances(assets, contractMap, provider);
-      console.log(_joinBalances);
 
       // map through series to get the relevant pool to asset
       const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
