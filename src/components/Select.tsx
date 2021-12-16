@@ -46,7 +46,7 @@ const Selecty = ({ options, label, onChange }: any) => {
             </span>
           </Listbox.Button>
           <Transition as={Fragment}>
-            <Listbox.Options className="z-50 absolute w-full py-1 mt-1 overflow-hidden text-base bg-white rounded-lg shadow-lg max-h-60 ring-1 ring-green-300 ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="z-50 absolute w-full py-1 mt-1 overflow-hidden text-base bg-white rounded-lg shadow-lg ring-1 ring-green-300 ring-opacity-5 focus:outline-none sm:text-sm">
               {options.map((x: string, i: number) => {
                 const _x = x.length ? x[0] : x; // if the item has two values, use the first (second is a label)
                 return (
