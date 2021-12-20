@@ -1,10 +1,11 @@
 import { CHAIN_INFO } from '../config/chainData';
 
 export function addHexPrefix(addrLike: string) {
-  if (addrLike.startsWith('0x')) {
-    return addrLike;
+  const _addrLike = addrLike.trim();
+  if (_addrLike.startsWith('0x')) {
+    return _addrLike;
   }
-  return `0x${addrLike}`;
+  return `0x${_addrLike}`;
 }
 
 async function* asyncGenerator(max: number) {
