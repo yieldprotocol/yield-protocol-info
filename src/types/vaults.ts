@@ -48,13 +48,12 @@ export interface IVault {
   baseId: string;
   ilkId: string;
   owner: string;
-  isWitchOwner: boolean;
+  isWitchOwner: string;
   collatRatioPct: string;
   minCollatRatioPct: string;
   ink: string;
   art: string;
   decimals: string;
-  isActive: boolean;
 }
 
 export interface IPriceMap {
@@ -72,4 +71,26 @@ export interface IVaultRoot {
   ilkId: string;
   decimals: string;
   owner: string;
+}
+
+export interface IVaultGraph {
+  collateral: { asset: IAssetGraph };
+  collateralAmount: string;
+  debtAmount: string;
+  id: string;
+  owner: string;
+  series: ISeriesGraph;
+}
+
+interface IAssetGraph {
+  name: string;
+  symbol?: string;
+  assetId: string;
+  decimals: number;
+}
+
+interface ISeriesGraph {
+  baseAsset: IAssetGraph;
+  fyToken: { maturity: number };
+  id: string;
 }
