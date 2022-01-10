@@ -78,11 +78,6 @@ export function getVaults(): any {
           const { assetId: ilkId, decimals: ilkDecimals } = vault.collateral.asset;
           const seriesId = vault.series.id;
 
-          // const [{ ratio: minCollatRatio }, price] = await Promise.all([
-          //   await Cauldron.spotOracles(baseId, ilkId),
-          //   await getPrice(ilkId, baseId, contractMap, 18, chainId, prices!),
-          // ]);
-
           let price: string;
 
           try {
