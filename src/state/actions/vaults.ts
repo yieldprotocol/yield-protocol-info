@@ -1,16 +1,13 @@
-import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client';
-
 import { Dispatch } from 'redux';
-import { BigNumber, Contract, ethers, utils } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import client from '../../config/apolloClient';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
-import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
+import { decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
 import { IContractMap } from '../../types/contracts';
 import { IAssetPairData } from '../../types/chain';
 import {
-  IPrice,
   IPriceMap,
   IUpdatePricesAction,
   IUpdateVaultsAction,
