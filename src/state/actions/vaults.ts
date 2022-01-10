@@ -25,7 +25,7 @@ import { ORACLE_INFO } from '../../config/oracles';
 
 const TOP_VAULTS_QUERY = `
   query vaults {
-    vaults(orderBy: debtAmount, orderDirection: desc, first: 10) {
+    vaults(orderBy: debtAmount, orderDirection: desc, first: 100) {
       id
       owner
       debtAmount
@@ -53,7 +53,7 @@ const TOP_VAULTS_QUERY = `
 export function getVaults(): any {
   return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
     const {
-      chain: { series, assets, chainId, assetPairData },
+      chain: { chainId, assetPairData },
       contracts: { contractMap },
       vaults: { vaultsGot, prices },
     } = getState();
