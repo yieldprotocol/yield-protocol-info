@@ -55,6 +55,7 @@ const Vaults: FC = () => {
     }
   }, [dispatch, chainId]);
 
+  // get a specific vault
   useEffect(() => {
     // only get vaults for mainnet
     if (chainId === 1 && vaultSearch) {
