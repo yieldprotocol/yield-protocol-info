@@ -59,8 +59,6 @@ export function getVaults(): any {
     try {
       dispatch(setVaultsLoading(true));
 
-      // the graph
-
       const {
         data: { vaults },
       } = await client.query({
