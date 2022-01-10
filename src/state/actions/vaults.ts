@@ -48,22 +48,62 @@ const TOP_VAULTS_QUERY = `
   }
 `;
 
-export function getVaults(): any {
+const SINGLE_VAULT_QUERY = `
+  query getVault($address: ID!) {
+    vault(id: $address) {
+      id
+      owner
+      debtAmount
+      collateralAmount
+      collateral {
+        asset {
+          name
+          symbol
+          assetId
+          decimals
+        }
+      }
+      series {
+        baseAsset {
+          symbol
+          assetId
+          decimals
+        }
+        id
+      }
+    }
+  }
+`;
+
+export function getVaults(vaultId?: string | undefined): any {
   return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
     const {
       chain: { chainId, assetPairData },
       contracts: { contractMap },
-      vaults: { vaultsGot, prices },
+      vaults: { vaultsGot, prices, vaults: vaultsInState },
     } = getState();
-    if (vaultsGot) return;
+    if (vaultsGot && !vaultId) return;
     try {
       dispatch(setVaultsLoading(true));
 
-      const {
-        data: { vaults },
-      } = await client.query({
-        query: gql(TOP_VAULTS_QUERY),
-      });
+      let vaultsToUse;
+
+      if (vaultId) {
+        const {
+          data: { vault },
+        } = await client.query({
+          query: gql(SINGLE_VAULT_QUERY),
+          variables: { address: vaultId },
+        });
+        vaultsToUse = [vault];
+      } else {
+        const {
+          data: { vaults },
+        } = await client.query({
+          query: gql(TOP_VAULTS_QUERY),
+        });
+        vaultsToUse = vaults;
+      }
 
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch: Contract = contractMap[WITCH];
@@ -72,7 +112,7 @@ export function getVaults(): any {
 
       /* Add in the dynamic vault data by mapping the vaults list */
       const vaultListMod = await Promise.all(
-        (vaults as IVaultGraph[]).map(async (vault) => {
+        (vaultsToUse as IVaultGraph[]).map(async (vault) => {
           const { collateralAmount: ink, debtAmount: art, id, owner } = vault;
           const { assetId: baseId, decimals: baseDecimals } = vault.series.baseAsset;
           const { assetId: ilkId, decimals: ilkDecimals } = vault.collateral.asset;
@@ -130,7 +170,9 @@ export function getVaults(): any {
         })
       );
 
-      const newVaultMap = vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
+      const newVaultMap = (
+        vaultId ? [...Object.values(vaultsInState as IVaultMap), ...vaultListMod] : vaultListMod
+      ).reduce((acc: IVaultMap, item: IVault) => {
         acc[item.id] = item;
         return acc;
       }, {});
