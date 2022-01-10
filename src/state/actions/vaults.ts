@@ -137,8 +137,6 @@ export function getVaults(): any {
         })
       );
 
-      console.log('🦄 ~ file: vaults.ts ~ line 74 ~ return ~ vaultListMod', vaultListMod);
-
       const newVaultMap = vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
         acc[item.id] = item;
         return acc;
