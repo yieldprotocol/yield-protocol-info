@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { Dispatch } from 'redux';
 import { Contract, ethers } from 'ethers';
 import client from '../../config/apolloClient';
