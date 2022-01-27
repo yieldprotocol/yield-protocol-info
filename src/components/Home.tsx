@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { compareOraclePrices } from '../state/actions/vaults';
 import { useAppSelector } from '../state/hooks/general';
 import { IAssetPairData } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
@@ -50,6 +51,10 @@ const Home: FC = () => {
   useEffect(() => {
     setTotalDebt(totalDebtList.reduce((sum: number, x: ITvl) => sum + +x.value, 0));
   }, [totalDebtList]);
+
+  useEffect(() => {
+    compareOraclePrices(assets);
+  }, [assets]);
 
   return (
     <MainViewWrap>
