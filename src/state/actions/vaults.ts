@@ -21,6 +21,7 @@ import {
 } from '../../types/vaults';
 import { ORACLE_INFO } from '../../config/oracles';
 import * as contracts from '../../contracts'
+import { USDC, WETH } from '../../config/assets';
 
 const TOP_VAULTS_QUERY = `
   query vaults {
