@@ -87,6 +87,13 @@
       "Router": "0x052d9D62F15893e30298d0f7A0bc004Df669157B",
       "Witch": "0x7257575992431d7e55F0ccCD4253e7D77b6CD7E4",
       "Wand": "0x018878013f49476Cf1314ad61284aF4A6b28caaf"
+    },
+    "42161": {
+      "Cauldron": "",
+      "Ladle": "",
+      "ChainlinkUSDOracle": "0x30e042468e333Fde8E52Dd237673D7412045D2AC",
+      "AccumulatorOracle": "0x0ad9Ef93673B6081c0c3b753CcaaBDdd8d2e7848",
+      "Witch": ""
     }
   },
   "strategies": {

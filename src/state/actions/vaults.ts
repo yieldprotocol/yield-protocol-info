@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { Dispatch } from 'redux';
-import { Contract, ethers } from 'ethers';
+import { Contract, ethers, EventFilter } from 'ethers';
 import client from '../../config/apolloClient';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
@@ -20,6 +20,7 @@ import {
   IVaultsResetAction,
 } from '../../types/vaults';
 import { ORACLE_INFO } from '../../config/oracles';
+import * as contracts from '../../contracts'
 
 const TOP_VAULTS_QUERY = `
   query vaults {
@@ -67,6 +68,15 @@ export function getVaults(): any {
 
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch: Contract = contractMap[WITCH];
+
+      const vaultId = '0x7fcaa8c036ca4ec15d3a9fd1';
+
+      const _bytesToBytes32 = (x: string, n: number): string => x + '00'.repeat(32 - n);
+      const _vaultId = _bytesToBytes32(vaultId, 12);
+      console.log('🦄 ~ file: vaults.ts ~ line 75 ~ return ~ _vaultId', _vaultId);
+      const witchFilter = Witch.filters.Auctioned(_vaultId, null);
+      const events = await Witch.queryFilter(witchFilter);
+      console.log('🦄 ~ file: vaults.ts ~ line 76 ~ return ~ events', events);
 
       if (!Cauldron || !Witch) return;
 
@@ -187,3 +197,60 @@ export const setVaultsGot = (vaultsGot: boolean): any => ({
   type: ActionType.VAULTS_GOT,
   payload: vaultsGot,
 });
+
+export const compareOraclePrices = () => {
+  interface IPrice {
+    blocksAgo: number;
+    price: string;
+    baseId: string;
+    ilkId: string;
+  }
+
+  const mainnetProvider = new ethers.providers.JsonRpcProvider(
+    'https://mainnet.infura.io/v3/2af222f674024a0f84b5f0aad0day2a2'
+  );
+  const arbProvider = new ethers.providers.JsonRpcProvider(
+    'https://arbitrum-mainnet.infura.io/v3/2af222f674024a0f84b5f0aad0da72a2'
+  );
+  const mainnetChainId = 1;
+    const arbChainId = 42161;
+
+    const mainnetOracleAddr = '0xcDCe5C87f691058B61f3A65913f1a3cBCbAd9F52';
+    const arbOracleAddr = '0x30e042468e333Fde8E52Dd237673D7412045D2AC';
+
+    const mainnetCauldronAddr = '0xcDCe5C87f691058B61f3A65913f1a3cBCbAd9F52';
+    const arbCauldronAddr = '0x30e042468e333Fde8E52Dd237673D7412045D2AC';
+
+    const mainnetOracle = contracts.ChainlinkMultiOracle__factory.connect(mainnetOracleAddr, mainnetProvider);
+    const arbOracle = contracts.ChainlinkMultiOracle__factory.connect(arbOracleAddr, arbProvider);
+
+    const getBlocksAgoPrices = async (
+      oracle: contracts.ChainlinkMultiOracle | contracts.ChainlinkUSDOracle,
+      baseId: string,
+      ilkId: string,
+      ilkDecimals: number,
+      blocksAgo: number
+    ) => {
+      let price_: string;
+      const prices: IPrice[] = [];
+
+      for (let i = blocksAgo; i >= 0; i--) {
+        const [price] = await oracle.peek(
+          bytesToBytes32(ilkId, 6),
+          bytesToBytes32(baseId, 6),
+          decimal18ToDecimalN(WAD_BN, ilkDecimals),
+          { blockTag: -blocksAgo }
+        );
+        price_ = ethers.utils.formatUnits(price, ilkDecimals);
+        prices.push({ blocksAgo: i, price: price_, baseId, ilkId });
+      }
+
+      return prices;
+    };
+
+    const wethDecimals = 18;
+    const usdcWethMainnetPrices = await getBlocksAgoPrices(mainnetOracle, USDC, WETH, wethDecimals, 10);
+    console.log('🦄 ~ file: hardhat.config.ts ~ line 65 ~ usdcWethMainnetPrices', usdcWethMainnetPrices);
+    const usdcWethArbPrices = await getBlocksAgoPrices(arbOracle, USDC, WETH, wethDecimals, 10);
+  }
+}
