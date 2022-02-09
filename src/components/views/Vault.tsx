@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getVaults } from '../../state/actions/vaults';
+import { getMainnetVaults, getNotMainnetVaults } from '../../state/actions/vaults';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { IVault } from '../../types/vaults';
 import Spinner from '../Spinner';
@@ -11,6 +11,7 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 const Vault: FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
+  const { chainId } = useAppSelector(({ chain }) => chain);
   const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
   const [vault, setVault] = useState<IVault | undefined>();
 
@@ -19,8 +20,9 @@ const Vault: FC = () => {
   }, [vaults, id, dispatch]);
 
   useEffect(() => {
-    if (!vaults || !vaults[id]) dispatch(getVaults());
-  }, [vaults, dispatch, id]);
+    if (!vaults || (!vaults[id] && chainId === 1)) dispatch(getMainnetVaults());
+    if (!vaults || (!vaults[id] && chainId !== 1)) dispatch(getNotMainnetVaults());
+  }, [vaults, dispatch, id, chainId]);
 
   return (
     <MainViewWrap>

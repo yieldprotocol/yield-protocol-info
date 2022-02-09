@@ -28,6 +28,7 @@ import { assetDigitFormatMap, USDC } from '../../config/assets';
 
 const useChain = (chainId: number) => {
   const dispatch = useAppDispatch();
+  const BLOCK_NUM_TO_USE = chainId === 42161 || chainId === 421611 ? -90000 : 0;
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
 
@@ -81,13 +82,13 @@ const useChain = (chainId: number) => {
         digitFormat: assetDigitFormatMap.has(asset.symbol) ? assetDigitFormatMap.get(asset.symbol) : 6,
       });
 
-      const _getAssets = async () => {
+      const _getAssets = async (blockNum: number = 0) => {
         try {
           dispatch(setAssetsLoading(true));
           /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
           const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('AssetAdded' as EventFilter, 0),
-            Ladle.queryFilter('JoinAdded' as EventFilter, 0),
+            Cauldron.queryFilter('AssetAdded' as EventFilter, BLOCK_NUM_TO_USE),
+            Ladle.queryFilter('JoinAdded' as EventFilter, BLOCK_NUM_TO_USE),
           ]);
           /* Create a map from the joinAdded event data */
           const joinMap: Map<string, string> = new Map(
@@ -198,8 +199,8 @@ const useChain = (chainId: number) => {
           dispatch(setSeriesLoading(true));
           /* get poolAdded events and series events at the same time */
           const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('SeriesAdded' as any, 0),
-            Ladle.queryFilter('PoolAdded' as any, 0),
+            Cauldron.queryFilter('SeriesAdded' as any, BLOCK_NUM_TO_USE),
+            Ladle.queryFilter('PoolAdded' as any, BLOCK_NUM_TO_USE),
           ]);
 
           /* build a map from the poolAdded event data */
@@ -310,7 +311,7 @@ const useChain = (chainId: number) => {
         dispatch(setChainLoading(false));
       })();
     }
-  }, [chainId, dispatch]);
+  }, [chainId, dispatch, BLOCK_NUM_TO_USE]);
 };
 
 export { useChain };

@@ -10,7 +10,7 @@ import Spinner from '../Spinner';
 import { IVault } from '../../types/vaults';
 import { useVaults } from '../../state/hooks/useVaults';
 import Select from '../Select';
-import { getVaults } from '../../state/actions/vaults';
+import { getMainnetVaults } from '../../state/actions/vaults';
 
 const Vaults: FC = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +51,7 @@ const Vaults: FC = () => {
   useEffect(() => {
     // only get vaults for mainnet
     if (chainId === 1) {
-      dispatch(getVaults());
+      dispatch(getMainnetVaults());
     }
   }, [dispatch, chainId]);
 
@@ -59,7 +59,7 @@ const Vaults: FC = () => {
   useEffect(() => {
     // only get vaults for mainnet
     if (chainId === 1 && vaultSearch) {
-      dispatch(getVaults(vaultSearch));
+      dispatch(getMainnetVaults(vaultSearch));
     }
   }, [dispatch, chainId, vaultSearch]);
 
