@@ -27,8 +27,8 @@ import { getABI } from '../../utils/etherscan';
 import { assetDigitFormatMap, USDC } from '../../config/assets';
 
 const useChain = (chainId: number) => {
-  const BLOCK_NUM_TO_USE = chainId === (42161 || 421611) ? -90000 : 0;
   const dispatch = useAppDispatch();
+  const BLOCK_NUM_TO_USE = chainId === 42161 || chainId === 421611 ? -90000 : 0;
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
 
