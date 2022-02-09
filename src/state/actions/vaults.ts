@@ -168,7 +168,7 @@ export function getNotMainnetVaults(): any {
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-      const fromBlock = 1;
+      const fromBlock = chainId === (42161 || 421611) ? -90000 : 1;
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 

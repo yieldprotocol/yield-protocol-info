@@ -62,6 +62,7 @@ CHAIN_INFO.set(42161, {
   color: '#1F2937',
   bridge: 'https://bridge.arbitrum.io',
   explorer: 'https://explorer.arbitrum.io',
+  etherscanApi: 'https://api.arbiscan.io/api',
 });
 CHAIN_INFO.set(421611, {
   name: 'Arbitrum Testnet',
