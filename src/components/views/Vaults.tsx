@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useAppSelector } from '../../state/hooks/general';
+import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { formatValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
@@ -10,11 +10,13 @@ import Spinner from '../Spinner';
 import { IVault } from '../../types/vaults';
 import { useVaults } from '../../state/hooks/useVaults';
 import Select from '../Select';
+import { getVaults } from '../../state/actions/vaults';
 
 const Vaults: FC = () => {
+  const dispatch = useAppDispatch();
   const history = useHistory();
   const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
-  const { series, assets } = useAppSelector(({ chain }) => chain);
+  const { series, assets, chainId } = useAppSelector(({ chain }) => chain);
 
   useVaults();
 
@@ -26,7 +28,7 @@ const Vaults: FC = () => {
   const [filteredVaults, setFilteredVaults] = useState<IVault[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
-  const [vaultSearch, setVaultSearch] = useState<string>('');
+  const [vaultSearch, setVaultSearch] = useState<string | undefined>(undefined);
   const [ilkFilter, setIlkFilter] = useState<string>('');
   const [seriesFilter, setSeriesFilter] = useState<string>('');
 
@@ -46,10 +48,25 @@ const Vaults: FC = () => {
     }
   }, [vaults, assets, series]);
 
+  useEffect(() => {
+    // only get vaults for mainnet
+    if (chainId === 1) {
+      dispatch(getVaults());
+    }
+  }, [dispatch, chainId]);
+
+  // get a specific vault
+  useEffect(() => {
+    // only get vaults for mainnet
+    if (chainId === 1 && vaultSearch) {
+      dispatch(getVaults(vaultSearch));
+    }
+  }, [dispatch, chainId, vaultSearch]);
+
   const handleFilter = useCallback(
     (_vaults: IVault[]) => {
       const _filteredVaults = _vaults
-        .filter((v) => (vaultSearch !== '' ? v.id === vaultSearch || v.owner === vaultSearch : true))
+        .filter((v) => (vaultSearch ? v.id === vaultSearch || v.owner === vaultSearch : true))
         .filter((v) =>
           unhealthyFilter ? Number(v.collatRatioPct) <= Number(v.minCollatRatioPct) - 10 && v.baseId !== v.ilkId : true
         )
@@ -103,7 +120,7 @@ const Vaults: FC = () => {
           <div className="mb-4 w-1/3">
             <SearchInput
               name="search"
-              value={vaultSearch}
+              value={vaultSearch || ''}
               action={(e: any) => setVaultSearch(e.target.value)}
               placeHolder="Vault Id or Owner"
             />
