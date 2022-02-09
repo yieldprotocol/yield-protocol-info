@@ -111,15 +111,6 @@ export function getMainnetVaults(vaultId?: string | undefined): any {
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch: Contract = contractMap[WITCH];
 
-      const vaultId = '0x7fcaa8c036ca4ec15d3a9fd1';
-
-      const _bytesToBytes32 = (x: string, n: number): string => x + '00'.repeat(32 - n);
-      const _vaultId = _bytesToBytes32(vaultId, 12);
-      console.log('🦄 ~ file: vaults.ts ~ line 75 ~ return ~ _vaultId', _vaultId);
-      const witchFilter = Witch.filters.Auctioned(_vaultId, null);
-      const events = await Witch.queryFilter(witchFilter);
-      console.log('🦄 ~ file: vaults.ts ~ line 76 ~ return ~ events', events);
-
       if (!Cauldron || !Witch) return;
 
       /* Add in the dynamic vault data by mapping the vaults list */
@@ -210,7 +201,7 @@ export function getNotMainnetVaults(): any {
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-      const fromBlock = chainId === (42161 || 421611) ? -90000 : 1;
+      const fromBlock = (chainId as number) === (42161 || 421611) ? -50000 : 1;
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 
