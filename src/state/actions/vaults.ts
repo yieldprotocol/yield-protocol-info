@@ -1,12 +1,12 @@
 import { gql } from '@apollo/client';
 import { Dispatch } from 'redux';
 import { format, fromUnixTime } from 'date-fns';
-import { Contract, ethers, EventFilter } from 'ethers';
+import { Contract, ethers, EventFilter, utils } from 'ethers';
 import client from '../../config/apolloClient';
 import { ActionType } from '../actionTypes/vaults';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
-import { decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
+import { decimal18ToDecimalN, decimalNToDecimal18, calculateCollateralizationRatio } from '../../utils/yieldMath';
 import { IContractMap } from '../../types/contracts';
 import { IAssetMap, IAssetPairData, IAssetPairMap } from '../../types/chain';
 import {
@@ -51,7 +51,7 @@ const TOP_VAULTS_QUERY = `
   }
 `;
 
-export function getVaults(): any {
+export function getMainnetVaults(): any {
   return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
     const {
       chain: { chainId, assetPairData },
@@ -150,6 +150,86 @@ export function getVaults(): any {
       dispatch(updateVaults(newVaultMap));
       dispatch(setVaultsLoading(false));
 
+      dispatch(setVaultsGot(true)); // make sure there is no filter
+    } catch (e) {
+      dispatch(setVaultsLoading(false));
+      console.log(e);
+    }
+  };
+}
+
+export function getNotMainnetVaults(): any {
+  return async (dispatch: Dispatch<IVaultAction>, getState: any) => {
+    const {
+      chain: { chainId, series, assets },
+      contracts: { contractMap },
+      vaults: { vaultsGot, prices },
+    } = getState();
+    if (vaultsGot) return;
+    try {
+      dispatch(setVaultsLoading(true));
+      const fromBlock = 1;
+      const Cauldron: Contract = contractMap[CAULDRON];
+      const Witch = contractMap[WITCH];
+
+      if (!Cauldron || !Witch) return;
+
+      if (Object.keys(Cauldron.filters).length) {
+        const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
+
+        const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
+
+        const vaultEventList = await Promise.all(
+          vaultsBuilt.map(async (x: any) => {
+            const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
+            const _series = series[seriesId];
+            return {
+              id,
+              seriesId,
+              baseId: _series?.baseId!,
+              ilkId,
+              decimals: _series?.decimals!,
+              owner,
+            };
+          })
+        );
+
+        /* Add in the dynamic vault data by mapping the vaults list */
+        const vaultListMod = await Promise.all(
+          vaultEventList.map(async (vault: any) => {
+            /* update balance and series  ( series - because a vault can have been rolled to another series) */
+            const [{ ink, art }, { ratio: minCollatRatio }, price] = await Promise.all([
+              await Cauldron.balances(vault.id),
+              await Cauldron.spotOracles(vault.baseId, vault.ilkId),
+              await getPrice(vault.ilkId, vault.baseId, contractMap, 18, chainId, prices!),
+            ]);
+
+            const { owner, seriesId, ilkId, decimals } = vault;
+            const base = assets[vault.baseId];
+            const ilk = assets[ilkId];
+
+            return {
+              ...vault,
+              owner,
+              isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
+              collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price!, art, true), 2)}`,
+              minCollatRatioPct: `${utils.formatUnits(minCollatRatio * 100, 6)}`, // collat ratios always have 6 decimals
+              ink: ilk ? cleanValue(utils.formatUnits(ink, ilk.decimals), ilk.digitFormat) : '',
+              art: base ? cleanValue(utils.formatUnits(art, base.decimals), base.digitFormat) : '',
+              decimals,
+              seriesId,
+            };
+          })
+        );
+
+        const newVaultMap = vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
+          acc[item.id] = item;
+          return acc;
+        }, {});
+
+        dispatch(updateVaults(newVaultMap));
+        dispatch(setVaultsLoading(false));
+      }
       dispatch(setVaultsGot(true)); // make sure there is no filter
     } catch (e) {
       dispatch(setVaultsLoading(false));

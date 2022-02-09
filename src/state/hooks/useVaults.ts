@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getVaults } from '../actions/vaults';
+import { getMainnetVaults, getNotMainnetVaults } from '../actions/vaults';
 import { useAppDispatch, useAppSelector } from './general';
 
 export const useVaults = () => {
@@ -10,7 +10,9 @@ export const useVaults = () => {
   useEffect(() => {
     if (contractMap && series && assets && chainId === 1) {
       // only get vaults for mainnet
-      dispatch(getVaults());
+      dispatch(getMainnetVaults());
+    } else {
+      dispatch(getNotMainnetVaults());
     }
   }, [contractMap, series, assets, dispatch, chainId]);
 };
