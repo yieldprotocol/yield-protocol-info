@@ -201,7 +201,6 @@ export function getNotMainnetVaults(): any {
     if (vaultsGot) return;
     try {
       dispatch(setVaultsLoading(true));
-      const fromBlock = (chainId as number) === (42161 || 421611) ? -50000 : 1;
       const Cauldron: Contract = contractMap[CAULDRON];
       const Witch = contractMap[WITCH];
 
@@ -210,10 +209,10 @@ export function getNotMainnetVaults(): any {
       if (Object.keys(Cauldron.filters).length) {
         const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
 
-        const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, fromBlock);
+        const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, 0);
 
         const vaultEventList = await Promise.all(
-          vaultsBuilt.map(async (x: any) => {
+          vaultsBuilt.map(async (x) => {
             const { vaultId: id, ilkId, seriesId, owner } = Cauldron.interface.parseLog(x).args;
             const _series = series[seriesId];
             return {
