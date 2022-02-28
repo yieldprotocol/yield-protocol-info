@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import useTotalDebt from '../hooks/useTotalDebt';
 import { compareOraclePrices } from '../state/actions/vaults';
 import { useAppSelector } from '../state/hooks/general';
 import { IAssetPairData } from '../types/chain';
@@ -19,8 +20,9 @@ const Home: FC = () => {
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
-  const [totalDebt, setTotalDebt] = useState<number | null>(null);
   const [totalDebtList, setTotalDebtList] = useState<ITvl[]>([]);
+
+  const { totalDebt, loading: totalDebtLoading } = useTotalDebt();
 
   // sets the total value locked for all assets combined
   useEffect(() => {
@@ -49,10 +51,6 @@ const Home: FC = () => {
   }, [assetPairData, assets]);
 
   useEffect(() => {
-    setTotalDebt(totalDebtList.reduce((sum: number, x: ITvl) => sum + +x.value, 0));
-  }, [totalDebtList]);
-
-  useEffect(() => {
     compareOraclePrices(assets);
   }, [assets]);
 
@@ -78,7 +76,7 @@ const Home: FC = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Borrowed</div>
             <div className="text-3xl flex">
-              {totalDebt && !tvlLoading ? (
+              {totalDebt && !totalDebtLoading ? (
                 <>
                   $<AnimatedNum num={totalDebt} />
                 </>
