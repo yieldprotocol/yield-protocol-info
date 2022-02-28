@@ -22,7 +22,7 @@ const Home: FC = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(Object.values(assetsTvl).sort((a: any, b: any) => b.value - a.value)); // sort by largest tvl
+    setTvlList(Object.values(assetsTvl).sort((a, b) => +b.value - +a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
