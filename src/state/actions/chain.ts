@@ -262,7 +262,7 @@ async function getPoolBalance(pool: Contract) {
  * @param contractMap
  * @returns string
  */
-const convertValue = async (
+export const convertValue = async (
   fromValue: string,
   fromAsset: IAsset,
   toAsset: IAsset,

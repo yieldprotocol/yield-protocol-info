@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import useTotalDebt from '../hooks/useTotalDebt';
 import { compareOraclePrices } from '../state/actions/vaults';
 import { useAppSelector } from '../state/hooks/general';
 import { IAssetPairData } from '../types/chain';
@@ -19,8 +20,7 @@ const Home: FC = () => {
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
-  const [totalDebt, setTotalDebt] = useState<number | null>(null);
-  const [totalDebtList, setTotalDebtList] = useState<ITvl[]>([]);
+  const { totalDebt, loading: totalDebtLoading, totalDebtList } = useTotalDebt();
 
   // sets the total value locked for all assets combined
   useEffect(() => {
@@ -31,26 +31,6 @@ const Home: FC = () => {
   useEffect(() => {
     setTvlList(Object.values(assetsTvl).sort((a: any, b: any) => b.value - a.value)); // sort by largest tvl
   }, [assetsTvl]);
-
-  useEffect(() => {
-    if (!assets || !assetPairData) return;
-
-    const assetPairList = Object.values(assetPairData).map((assetData) => {
-      const base = assets[assetData[0].baseAssetId];
-
-      const newItem = {
-        id: base.id,
-        symbol: base.symbol,
-        value: Object.values(assetData).reduce((sum: number, x: IAssetPairData) => sum + +x.totalDebtInUSDC, 0),
-      };
-      return newItem;
-    });
-    setTotalDebtList(assetPairList.filter((x) => x.value !== 0).sort((a, b) => b.value - a.value)); // sort by largest debt and filter out 0
-  }, [assetPairData, assets]);
-
-  useEffect(() => {
-    setTotalDebt(totalDebtList.reduce((sum: number, x: ITvl) => sum + +x.value, 0));
-  }, [totalDebtList]);
 
   useEffect(() => {
     compareOraclePrices(assets);
@@ -78,7 +58,7 @@ const Home: FC = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Borrowed</div>
             <div className="text-3xl flex">
-              {totalDebt && !tvlLoading ? (
+              {totalDebt && !totalDebtLoading ? (
                 <>
                   $<AnimatedNum num={totalDebt} />
                 </>
