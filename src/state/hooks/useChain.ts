@@ -28,7 +28,6 @@ import { assetDigitFormatMap, USDC } from '../../config/assets';
 
 const useChain = (chainId: number) => {
   const dispatch = useAppDispatch();
-  const BLOCK_NUM_TO_USE = chainId === 42161 || chainId === 421611 ? -90000 : 0;
 
   dispatch(updateVersion(process.env.REACT_APP_VERSION!));
 
@@ -87,8 +86,8 @@ const useChain = (chainId: number) => {
           dispatch(setAssetsLoading(true));
           /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
           const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('AssetAdded' as EventFilter, BLOCK_NUM_TO_USE),
-            Ladle.queryFilter('JoinAdded' as EventFilter, BLOCK_NUM_TO_USE),
+            Cauldron.queryFilter('AssetAdded' as EventFilter, 0),
+            Ladle.queryFilter('JoinAdded' as EventFilter, 0),
           ]);
           /* Create a map from the joinAdded event data */
           const joinMap: Map<string, string> = new Map(
@@ -199,8 +198,8 @@ const useChain = (chainId: number) => {
           dispatch(setSeriesLoading(true));
           /* get poolAdded events and series events at the same time */
           const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('SeriesAdded' as any, BLOCK_NUM_TO_USE),
-            Ladle.queryFilter('PoolAdded' as any, BLOCK_NUM_TO_USE),
+            Cauldron.queryFilter('SeriesAdded' as any, 0),
+            Ladle.queryFilter('PoolAdded' as any, 0),
           ]);
 
           /* build a map from the poolAdded event data */
@@ -311,7 +310,7 @@ const useChain = (chainId: number) => {
         dispatch(setChainLoading(false));
       })();
     }
-  }, [chainId, dispatch, BLOCK_NUM_TO_USE]);
+  }, [chainId, dispatch]);
 };
 
 export { useChain };
