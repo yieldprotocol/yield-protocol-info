@@ -156,7 +156,6 @@ export function getAssetsTvl(
           };
         })
       );
-      console.log('🦄 ~ file: chain.ts ~ line 159 ~ _getAssetsTvl ~ totalTvl', totalTvl);
       dispatch(updateAssetsTvl(totalTvl));
       return dispatch(tvlLoading(false));
     }
