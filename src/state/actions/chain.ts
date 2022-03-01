@@ -118,17 +118,17 @@ export function getAssetsTvl(
     dispatch(tvlLoading(true));
     if (provider && contractMap) {
       // get the balance of the asset in the respective join
-      const _joinBalances: any = await getAssetJoinBalances(assets, contractMap, provider);
+      const _joinBalances = await getAssetJoinBalances(assets, contractMap, provider);
 
       // map through series to get the relevant pool to asset
       const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
-      const _poolBalances: any = await getPoolBalances(poolAddrToAssetMap, provider);
+      const _poolBalances = await getPoolBalances(poolAddrToAssetMap, provider);
 
       // denominate balance in usdc
-      const USDC: IAsset = Object.values(assets).filter((a: any) => a.symbol === 'USDC')[0];
+      const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
 
       // consolidate pool address asset balances
-      const totalPoolBalances = _poolBalances.reduce((balMap: any, bal: any) => {
+      const totalPoolBalances = _poolBalances?.reduce((balMap: any, bal: any) => {
         const newMap: any = balMap;
         const prevBalance: number = +balMap[bal.id]?.balance! || 0;
         const newBalance: number = prevBalance + Number(bal.balance);
@@ -138,7 +138,7 @@ export function getAssetsTvl(
 
       // convert the balances to usdc denomination
       const totalTvl = await Promise.all(
-        Object.values(_joinBalances)?.map(async (bal: any) => {
+        Object.values(_joinBalances!)?.map(async (bal: any) => {
           // get the usdc price of the asset
           const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
           const price = decimalNToDecimal18(_price, USDC?.decimals);
@@ -156,6 +156,7 @@ export function getAssetsTvl(
           };
         })
       );
+      console.log('🦄 ~ file: chain.ts ~ line 159 ~ _getAssetsTvl ~ totalTvl', totalTvl);
       dispatch(updateAssetsTvl(totalTvl));
       return dispatch(tvlLoading(false));
     }
@@ -197,12 +198,15 @@ async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.Jso
   }
 }
 
-async function getPoolBalances(poolAddrToAssetMap: any, provider: any) {
+async function getPoolBalances(
+  poolAddrToAssetMap: { [poolAddress: string]: IAssetPoolAddr },
+  provider: ethers.providers.JsonRpcProvider
+) {
   try {
-    const balances: any = [];
+    const balances: any[] = [];
     await Promise.all(
-      Object.values(poolAddrToAssetMap).map(async (pool: any) => {
-        const Pool: Contract = contracts.Pool__factory.connect(pool.poolAddress, provider);
+      Object.values(poolAddrToAssetMap).map(async (pool) => {
+        const Pool = contracts.Pool__factory.connect(pool.poolAddress, provider);
         balances.push({
           id: pool.id,
           balance: await getPoolBalance(Pool),
@@ -277,13 +281,16 @@ export const convertValue = async (
   return (+price_ * +fromValue).toString();
 };
 
+interface IAssetPoolAddr extends IAsset {
+  poolAddress: string;
+}
 const mapPoolAddrToAsset = (seriesMap: ISeriesMap, assets: IAssetMap) => {
   if (seriesMap && assets) {
-    const newMap: any = {};
-    Object.values(seriesMap).map((s: ISeries) => {
+    const newMap = {} as { [poolAddress: string]: IAssetPoolAddr };
+    Object.values(seriesMap).map((s) => {
       const asset = assets[s.baseId];
       const { poolAddress } = s;
-      newMap[poolAddress as string] = { ...asset, poolAddress };
+      newMap[poolAddress] = { ...asset, poolAddress };
       return asset;
     });
     return newMap;
