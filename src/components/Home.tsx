@@ -2,21 +2,14 @@ import React, { FC, useEffect, useState } from 'react';
 import useTotalDebt from '../hooks/useTotalDebt';
 import { compareOraclePrices } from '../state/actions/vaults';
 import { useAppSelector } from '../state/hooks/general';
-import { IAssetPairData } from '../types/chain';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
 import TvlTable from './TvlTable';
 import MainViewWrap from './wraps/MainViewWrap';
 import SkeletonWrap from './wraps/SkeletonWrap';
 
-interface ITvl {
-  symbol: string;
-  id: string;
-  value: number;
-}
-
 const Home: FC = () => {
-  const { assets, assetPairData, assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
+  const { assets, assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
@@ -29,7 +22,7 @@ const Home: FC = () => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(Object.values(assetsTvl).sort((a: any, b: any) => b.value - a.value)); // sort by largest tvl
+    setTvlList(Object.values(assetsTvl).sort((a, b) => +b.value - +a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
   useEffect(() => {
