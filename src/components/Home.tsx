@@ -36,12 +36,12 @@ const Home: FC = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
             <div className="text-3xl flex w-52">
-              {tvl && !tvlLoading ? (
-                <>
-                  $<AnimatedNum num={tvl} />
-                </>
-              ) : (
+              {tvlLoading || !tvl ? (
                 <SkeletonWrap width={150} />
+              ) : (
+                <>
+                  $<AnimatedNum num={tvl!} />
+                </>
               )}
             </div>
           </Summary>
@@ -51,12 +51,12 @@ const Home: FC = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Borrowed</div>
             <div className="text-3xl flex">
-              {totalDebt && !totalDebtLoading ? (
-                <>
-                  $<AnimatedNum num={totalDebt} />
-                </>
-              ) : (
+              {totalDebtLoading || tvlLoading || !totalDebt ? (
                 <SkeletonWrap width={150} />
+              ) : (
+                <>
+                  $<AnimatedNum num={totalDebt!} />
+                </>
               )}
             </div>
           </Summary>
