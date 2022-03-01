@@ -4,7 +4,6 @@ import { FYToken__factory } from '../contracts';
 import { useAppSelector } from '../state/hooks/general';
 import { convertValue } from '../state/actions/chain';
 import { USDC } from '../config/assets';
-import { ISeries } from '../types/chain';
 
 interface ITotalDebtItem {
   symbol: string;
