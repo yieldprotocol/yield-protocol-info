@@ -1,6 +1,6 @@
 {
   "name": "yield-protocol-info",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.5.6",
