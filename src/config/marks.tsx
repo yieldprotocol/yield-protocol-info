@@ -11,6 +11,8 @@ import ENSMark from '../components/logos/ENSMark';
 import UNIMark from '../components/logos/UNIMark';
 import YFIMark from '../components/logos/YFIMark';
 import MakerMark from '../components/logos/MakerMark';
+import NotionalDAIMark from '../components/logos/NotionalDAIMark';
+import NotionalUSDCMark from '../components/logos/NotionalUSDCMark';
 
 export const markMap = new Map<string, any>([
   ['DAI', <DaiMark key="dai" />],
@@ -18,11 +20,17 @@ export const markMap = new Map<string, any>([
   ['WBTC', <WBTCMark key="wbtc" />],
   ['TST', <TSTMark key="tst" />],
   ['ETH', <EthMark key="eth" />],
+  ['WETH', <EthMark key="eth" />],
   ['USDT', <USDTMark key="usdt" />],
   ['WSTETH', <StEthMark key="wsteth" />],
+  ['wstETH', <StEthMark key="wsteth" />],
   ['LINK', <LinkMark key="link" />],
   ['ENS', <ENSMark key="ens" />],
   ['UNI', <UNIMark key="uni" />],
   ['yvUSDC', <YFIMark key="yvusdc" />],
   ['MKR', <MakerMark key="mkr" />],
+  ['FDAI2203', <NotionalDAIMark key="notional" />],
+  ['FDAI2206', <NotionalDAIMark key="notional" />],
+  ['FUSDC2203', <NotionalUSDCMark key="notional" />],
+  ['FUSDC2206', <NotionalUSDCMark key="notional" />],
 ]);
