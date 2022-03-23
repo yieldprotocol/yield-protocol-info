@@ -141,7 +141,6 @@ export function getAssetsTvl(
         Object.values(_joinBalances!)?.map(async (bal: any) => {
           // get the usdc price of the asset
           const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
-          console.log('🦄 ~ file: chain.ts ~ line 144 ~ Object.values ~ contractMap', contractMap);
           const price = decimalNToDecimal18(_price, USDC?.decimals);
           const price_ = ethers.utils.formatUnits(price, 18);
           dispatch(updatePrices(bal.id, USDC.id, price_));
