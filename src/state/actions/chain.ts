@@ -124,8 +124,9 @@ export function getAssetsTvl(
       const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
       const _poolBalances = await getPoolBalances(poolAddrToAssetMap, provider);
 
-      // denominate balance in usdc
+      // denominate balance in usdc (or dai when usdc not applicable)
       const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
+      const DAI = Object.values(assets).filter((a) => a.symbol === 'DAI')[0];
 
       // consolidate pool address asset balances
       const totalPoolBalances = _poolBalances?.reduce((balMap: any, bal: any) => {
@@ -136,14 +137,26 @@ export function getAssetsTvl(
         return newMap;
       }, {});
 
-      // convert the balances to usdc denomination
+      // convert the balances to usdc (or dai) denomination
       const totalTvl = await Promise.all(
         Object.values(_joinBalances!)?.map(async (bal: any) => {
           // get the usdc price of the asset
-          const _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
-          const price = decimalNToDecimal18(_price, USDC?.decimals);
-          const price_ = ethers.utils.formatUnits(price, 18);
+          let _price: BigNumber;
+          let price_: string;
+
+          _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
+          const priceInUSDC = decimalNToDecimal18(_price, USDC?.decimals);
+          price_ = ethers.utils.formatUnits(priceInUSDC, 18);
           dispatch(updatePrices(bal.id, USDC.id, price_));
+
+          // if could not get usdc price, try with dai
+          if (_price === ethers.constants.Zero) {
+            _price = await getPrice(bal.id, DAI.id, contractMap, bal.asset.decimals, chainId, prices);
+            const priceInDAI = decimalNToDecimal18(_price, DAI?.decimals);
+            price_ = ethers.utils.formatUnits(priceInDAI, 18);
+            dispatch(updatePrices(bal.id, DAI.id, price_));
+          }
+
           const joinBalance_ = bal.balance;
           const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
           const totalBalance = +joinBalance_ + +poolBalance_;

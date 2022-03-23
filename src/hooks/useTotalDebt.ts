@@ -56,7 +56,7 @@ const useTotalDebt = () => {
 
   useEffect(() => {
     const _totalDebtList = Array.from(totalDebtMap.values());
-    setTotalDebtList(_totalDebtList);
+    setTotalDebtList(_totalDebtList.sort((a, b) => +b.value - +a.value));
     setTotalDebt(_totalDebtList.reduce((total, x) => total + x.value, 0));
   }, [totalDebtMap]);
 
