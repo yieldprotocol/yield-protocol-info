@@ -5,7 +5,7 @@ import NotionalMark from './NotionalMark';
 const NotionalDAIMark = () => (
   <div className="relative">
     <NotionalMark />
-    <div className="absolute -right-2 -top-2">
+    <div className="absolute -left-2 -top-2">
       <DaiMark />
     </div>
   </div>

@@ -5,7 +5,7 @@ import USDCMark from './USDCMark';
 const NotionalUSDCMark = () => (
   <div className="relative">
     <NotionalMark />
-    <div className="absolute -right-2 -top-2">
+    <div className="absolute -left-2 -top-2">
       <USDCMark />
     </div>
   </div>
