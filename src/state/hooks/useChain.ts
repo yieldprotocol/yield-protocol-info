@@ -22,9 +22,9 @@ import { getSeason, SeasonType } from '../../utils/appUtils';
 import { IAsset, IAssetMap } from '../../types/chain';
 import { updateVersion } from '../actions/application';
 import { IContractMap } from '../../types/contracts';
-import { CAULDRON, LADLE, POOLVIEW, SECONDS_PER_YEAR } from '../../utils/constants';
+import { CAULDRON, LADLE } from '../../utils/constants';
 import { getABI } from '../../utils/etherscan';
-import { assetDigitFormatMap, USDC } from '../../config/assets';
+import { assetDigitFormatMap, ASSET_INFO, TokenType } from '../../config/assets';
 
 const useChain = (chainId: number) => {
   const dispatch = useAppDispatch();
@@ -99,54 +99,59 @@ const useChain = (chainId: number) => {
           await Promise.all(
             assetAddedEvents.map(async (x: Event) => {
               const { assetId: id, asset: address } = Cauldron.interface.parseLog(x).args;
-              const ERC20 = contracts.ERC20Permit__factory.connect(address, provider);
+              const assetInfo = ASSET_INFO.get(id);
+              let { name, symbol, decimals, version } = assetInfo!;
 
-              // get the token info
-              let name: string;
-              let symbol: string;
-              let decimals: number;
-              let version: string;
-
-              try {
-                [name, symbol, decimals, version] = await Promise.all([
-                  ERC20.name(),
-                  ERC20.symbol(),
-                  ERC20.decimals(),
-                  id === USDC ? '2' : '1', // TODO ERC20.version()
-                ]);
-              } catch (e) {
-                /* TODO look at finding a better way to handle the pimple that is the Maker Token */
-                const mkrABI = ['function name() view returns (bytes32)', 'function symbol() view returns (bytes32)'];
-                const mkrERC20 = new ethers.Contract(address, mkrABI, provider);
-                const mkrInfo = await Promise.all([mkrERC20.name(), mkrERC20.symbol()]);
-                name = ethers.utils.parseBytes32String(mkrInfo[0]) as string;
-                symbol = ethers.utils.parseBytes32String(mkrInfo[1]) as string;
-                [decimals, version] = [18, '1'];
+              /* On first load Checks/Corrects the ERC20 name/symbol/decimals  (if possible ) */
+              if (
+                assetInfo?.tokenType === TokenType.ERC20_ ||
+                assetInfo?.tokenType === TokenType.ERC20_Permit ||
+                assetInfo?.tokenType === TokenType.ERC20_DaiPermit
+              ) {
+                const contract = contracts.ERC20__factory.connect(address, provider);
+                try {
+                  [name, symbol, decimals] = await Promise.all([
+                    contract.name(),
+                    contract.symbol(),
+                    contract.decimals(),
+                  ]);
+                } catch (e) {
+                  console.log(
+                    address,
+                    ': ERC20 contract auto-validation unsuccessfull. Please manually ensure symbol and decimals are correct.'
+                  );
+                }
               }
 
-              const joinAddress = joinMap.get(id);
-
-              let symbol_;
-              switch (symbol) {
-                case 'WETH':
-                  symbol_ = 'ETH';
-                  break;
-                case 'wstETH':
-                  symbol_ = 'WSTETH';
-                  break;
-                default:
-                  symbol_ = symbol;
+              /* Checks/Corrects the version for ERC20Permit tokens */
+              if (
+                assetInfo?.tokenType === TokenType.ERC20_Permit ||
+                assetInfo?.tokenType === TokenType.ERC20_DaiPermit
+              ) {
+                const contract = contracts.ERC20Permit__factory.connect(address, provider);
+                try {
+                  version = await contract.version();
+                } catch (e) {
+                  console.log(
+                    address,
+                    ': contract version auto-validation unsuccessfull. Please manually ensure version is correct.'
+                  );
+                }
               }
+
+              const idToUse = assetInfo?.wrappedTokenId || id; // here we are using the unwrapped id
+              const joinAddress = joinMap.get(idToUse);
 
               const newAsset = {
                 id,
                 address,
                 name,
-                symbol: symbol_,
+                symbol,
                 decimals,
                 version,
                 joinAddress,
               };
+
               if (joinAddress) (newAssets as IAssetMap)[id] = _chargeAsset(newAsset);
             })
           );
