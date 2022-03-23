@@ -4,7 +4,6 @@ const COMPOSITE_MULTI_ORACLE = 'CompositeMultiOracle';
 const CHAINLINK_MULTI_ORACLE = 'ChainlinkMultiOracle';
 const YEARNVAULT_MULTI_ORACLE = 'YearnVaultMultiOracle';
 const CHAINLINK_USD_ORACLE = 'ChainlinkUSDOracle';
-
 const NOTIONAL_MULTI_ORACLE = 'NotionalMultiOracle';
 
 // map chain id to oracle info
