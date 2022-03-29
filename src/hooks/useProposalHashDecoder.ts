@@ -28,31 +28,33 @@ const useProposalHashDecoder = (proposalHash: string) => {
             chainId,
             new URLSearchParams({
               module: 'contract',
-              action: 'getsourcecode',
+              action: 'getabi',
               address: addHexPrefix(target),
               apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
             }),
             (x) => console.warn(x)
           ).then((ret: any) => {
-            const result = ret.result[0];
-            const iface = new Interface(result.ABI);
-            const functions = new Map<string, FunctionFragment>();
+            const result = ret[0];
+            if (result) {
+              const iface = new Interface(result);
+              const functions = new Map<string, FunctionFragment>();
 
-            Object.keys(iface.functions).map((f) =>
-              functions.set(iface.getSighash(iface.functions[f]), iface.functions[f])
-            );
+              Object.keys(iface.functions).map((f) =>
+                functions.set(iface.getSighash(iface.functions[f]), iface.functions[f])
+              );
 
-            setDecoded((d: any) => ({
-              ...d,
-              contracts: {
-                ...d.contracts,
-                [target]: result.ContractName,
-              },
-              abis: {
-                ...d.abis,
-                [target]: { interface: iface, functions },
-              },
-            }));
+              setDecoded((d: any) => ({
+                ...d,
+                contracts: {
+                  ...d.contracts,
+                  [target]: result.ContractName,
+                },
+                abis: {
+                  ...d.abis,
+                  [target]: { interface: iface, functions },
+                },
+              }));
+            }
           });
         }
         return undefined;
@@ -115,7 +117,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   function getFunctionName(target: string, calldata: string): any {
     if (!(target in decoded.abis)) {
-      return 'Fetching function name...';
+      return calldata;
     }
 
     const abi = decoded.abis[target];
@@ -123,7 +125,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
     const f = abi.functions.get(selector);
 
     if (!f) {
-      return "Selector not found, that's bad";
+      return 'Selector not found';
     }
 
     const fn = f.format(ethers.utils.FormatTypes.full);
@@ -132,7 +134,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
 
   function getFunctionArguments(target: string, calldata: string): Array<[string, string]> {
     if (!(target in decoded.abis)) {
-      return [['status', 'Fetching function arguments...']];
+      return [['status', 'no contract address']];
     }
 
     const abi = decoded.abis[target];
@@ -140,7 +142,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
     const f = abi.functions.get(selector);
 
     if (!f) {
-      return [['status', "Selector not found, that's bad"]];
+      return [['status', 'Selector not found']];
     }
 
     try {
