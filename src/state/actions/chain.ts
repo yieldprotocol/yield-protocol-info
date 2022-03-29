@@ -31,6 +31,7 @@ import {
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
 import { IPriceMap } from '../../types/vaults';
+import { FDAI2203, FDAI2206 } from '../../config/assets';
 
 export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
   return async (dispatch: any, getState: any) => {
@@ -150,7 +151,7 @@ export function getAssetsTvl(
           dispatch(updatePrices(bal.id, USDC.id, price_));
 
           // if could not get usdc price, try with dai
-          if (_price === ethers.constants.Zero) {
+          if (_price === ethers.constants.Zero || [FDAI2203, FDAI2206].includes(bal.id)) {
             _price = await getPrice(bal.id, DAI.id, contractMap, bal.asset.decimals, chainId, prices);
             const priceInDAI = decimalNToDecimal18(_price, DAI?.decimals);
             price_ = ethers.utils.formatUnits(priceInDAI, 18);
