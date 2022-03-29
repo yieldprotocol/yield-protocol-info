@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import useTotalDebt from '../hooks/useTotalDebt';
-import { compareOraclePrices } from '../state/actions/vaults';
+// import { compareOraclePrices } from '../state/actions/vaults';
 import { useAppSelector } from '../state/hooks/general';
 import AnimatedNum from './AnimatedNum';
 import Summary from './Summary';
@@ -9,7 +9,7 @@ import MainViewWrap from './wraps/MainViewWrap';
 import SkeletonWrap from './wraps/SkeletonWrap';
 
 const Home: FC = () => {
-  const { assets, assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
+  const { assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
 
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
@@ -25,9 +25,9 @@ const Home: FC = () => {
     setTvlList(Object.values(assetsTvl).sort((a, b) => +b.value - +a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
-  useEffect(() => {
-    compareOraclePrices(assets);
-  }, [assets]);
+  // useEffect(() => {
+  //   compareOraclePrices(assets);
+  // }, [assets]);
 
   return (
     <MainViewWrap>
