@@ -145,17 +145,15 @@ export function getAssetsTvl(
           let _price: BigNumber;
           let price_: string;
 
-          _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
-          const priceInUSDC = decimalNToDecimal18(_price, USDC?.decimals);
-          price_ = ethers.utils.formatUnits(priceInUSDC, 18);
-          dispatch(updatePrices(bal.id, USDC.id, price_));
-
-          // if could not get usdc price, try with dai
-          if (_price === ethers.constants.Zero || [FDAI2203, FDAI2206].includes(bal.id)) {
-            _price = await getPrice(bal.id, DAI.id, contractMap, bal.asset.decimals, chainId, prices);
-            const priceInDAI = decimalNToDecimal18(_price, DAI?.decimals);
-            price_ = ethers.utils.formatUnits(priceInDAI, 18);
-            dispatch(updatePrices(bal.id, DAI.id, price_));
+          if ([FDAI2203, FDAI2206].includes(bal.id)) {
+            _price = BigNumber.from('1');
+            price_ = ethers.utils.formatUnits(_price, 18);
+            dispatch(updatePrices(bal.id, USDC.id, price_));
+          } else {
+            _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
+            const priceInUSDC = decimalNToDecimal18(_price, USDC.decimals);
+            price_ = ethers.utils.formatUnits(priceInUSDC, 18);
+            dispatch(updatePrices(bal.id, USDC.id, price_));
           }
 
           const joinBalance_ = bal.balance;
