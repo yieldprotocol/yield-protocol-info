@@ -146,8 +146,7 @@ export function getAssetsTvl(
           let price_: string;
 
           if ([FDAI2203, FDAI2206].includes(bal.id)) {
-            _price = BigNumber.from('1');
-            price_ = ethers.utils.formatUnits(_price, 18);
+            price_ = '1';
             dispatch(updatePrices(bal.id, USDC.id, price_));
           } else {
             _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId, prices);
@@ -201,6 +200,10 @@ async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.Jso
   try {
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
+
+    if ([FDAI2203, FDAI2206].includes(asset.id)) {
+      return ethers.utils.formatUnits(await Join.storedBalance(), 18);
+    }
     return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);
