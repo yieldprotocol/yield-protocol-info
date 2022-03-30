@@ -124,7 +124,6 @@ export function getAssetsTvl(
       // map through series to get the relevant pool to asset
       const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
       const _poolBalances = await getPoolBalances(poolAddrToAssetMap, provider);
-      console.log('🦄 ~ file: chain.ts ~ line 127 ~ _getAssetsTvl ~  _poolBalances ', _poolBalances);
 
       // denominate balance in usdc (or dai when usdc not applicable)
       const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
