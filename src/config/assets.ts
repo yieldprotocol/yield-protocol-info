@@ -13,6 +13,8 @@ export const FDAI2203 = '0x313200000000';
 export const FUSDC2203 = '0x313300000000';
 export const FDAI2206 = '0x313400000000';
 export const FUSDC2206 = '0x313500000000';
+export const FDAI2209 = '0x313600000000';
+export const FUSDC2209 = '0x313700000000';
 
 export const assetDigitFormatMap = new Map([
   ['ETH', 6],
@@ -260,4 +262,60 @@ ASSET_INFO.set(FUSDC2206, {
   tokenType: TokenType.ERC1155_,
   tokenIdentifier: 844848939859969,
   limitToSeries: ['0x303230360000'],
+});
+
+ASSET_INFO.set(FDAI2206, {
+  version: '1',
+  name: 'fDAI2206',
+  decimals: 8,
+  symbol: 'FDAI2206',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563373963149313,
+  limitToSeries: ['0x303130360000'],
+});
+
+ASSET_INFO.set(FUSDC2206, {
+  version: '1',
+  name: 'fUSDC2206',
+  decimals: 8,
+  symbol: 'FUSDC2206',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844848939859969,
+  limitToSeries: ['0x303230360000'],
+});
+
+ASSET_INFO.set(FDAI2209, {
+  version: '1',
+  name: 'fDAI2209',
+  decimals: 8,
+  symbol: 'FDAI2209',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563375953805313,
+  limitToSeries: ['0x303130370000'],
+});
+
+ASSET_INFO.set(FUSDC2209, {
+  version: '1',
+  name: 'fUSDC2209',
+  decimals: 8,
+  symbol: 'FUSDC2209',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844850930515969,
+  limitToSeries: ['0x303230370000'],
 });
