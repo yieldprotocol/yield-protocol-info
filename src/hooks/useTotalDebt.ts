@@ -23,32 +23,34 @@ const useTotalDebt = () => {
   // fetches the total fyTokenBalance for the current chain
   useEffect(() => {
     const _getTotalDebt = async () => {
-      try {
-        setLoading(true);
-        const _totalDebtMap = await Object.values(series!).reduce(async (map, x) => {
-          const fyToken = FYToken__factory.connect(x.fyTokenAddress, provider!);
-          const fyTokenSupply = await fyToken.totalSupply();
-          const fyTokenSupply_ = ethers.utils.formatUnits(fyTokenSupply, x.decimals);
-          const base = assets![x.baseId];
-          const usdc = assets![USDC];
-          const fyTokenToUSDC = await convertValue(fyTokenSupply_, base, usdc, contractMap!, chainId, prices);
+      if (assets) {
+        try {
+          setLoading(true);
+          const _totalDebtMap = await Object.values(series!).reduce(async (map, x) => {
+            const fyToken = FYToken__factory.connect(x.fyTokenAddress, provider!);
+            const fyTokenSupply = await fyToken.totalSupply();
+            const fyTokenSupply_ = ethers.utils.formatUnits(fyTokenSupply, x.decimals);
+            const base = assets![x.baseId];
+            const usdc = assets![USDC];
+            const fyTokenToUSDC = await convertValue(fyTokenSupply_, base, usdc, contractMap!, chainId, prices);
 
-          const newMap = await map;
-          const currItemValue = newMap.has(base.id) ? newMap.get(base.id)?.value : 0;
-          const newItem = {
-            id: base.id,
-            symbol: base.symbol,
-            value: (currItemValue || 0) + +fyTokenToUSDC,
-          };
-          newMap.set(base.id, newItem);
-          return newMap;
-        }, Promise.resolve(new Map() as Map<string, ITotalDebtItem>));
+            const newMap = await map;
+            const currItemValue = newMap.has(base.id) ? newMap.get(base.id)?.value : 0;
+            const newItem = {
+              id: base.id,
+              symbol: base.symbol,
+              value: (currItemValue || 0) + +fyTokenToUSDC,
+            };
+            newMap.set(base.id, newItem);
+            return newMap;
+          }, Promise.resolve(new Map() as Map<string, ITotalDebtItem>));
 
-        setTotalDebtMap(_totalDebtMap);
-        setLoading(false);
-      } catch (e) {
-        console.log('error getting total debt');
-        setLoading(false);
+          setTotalDebtMap(_totalDebtMap);
+          setLoading(false);
+        } catch (e) {
+          console.log('error getting total debt');
+          setLoading(false);
+        }
       }
     };
     _getTotalDebt();
