@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { cleanValue } from '../../utils/appUtils';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
@@ -24,7 +23,6 @@ import {
   IChainUpdateAssetsTVLAction,
   IChainUpdateSeriesAction,
   IChainUpdateStrategiesAction,
-  ISeries,
   ISeriesMap,
   IStrategyMap,
 } from '../../types/chain';
