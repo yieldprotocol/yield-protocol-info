@@ -52,10 +52,10 @@ export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: 
           const price_ = decimalNToDecimal18(_price, x.decimals);
           dispatch(updatePrices(asset.id, x.id, ethers.utils.formatUnits(price_, 18)));
 
-          const minDebt: string = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-          const maxDebt: string = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-          const totalDebt_: string = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
-          const USDC: IAsset = Object.values(assets as IAssetMap).filter((a: IAsset) => a.symbol === 'USDC')[0];
+          const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+          const totalDebt_ = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
+          const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
 
           return {
             baseAssetId: asset.id,
@@ -198,10 +198,6 @@ async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.Jso
   try {
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
-
-    if ([FDAI2203, FDAI2206, FDAI2209].includes(asset.id)) {
-      return ethers.utils.formatUnits(await Join.storedBalance(), 18);
-    }
     return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);

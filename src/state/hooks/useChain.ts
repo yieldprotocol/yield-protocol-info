@@ -86,8 +86,8 @@ const useChain = (chainId: number) => {
           dispatch(setAssetsLoading(true));
           /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
           const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('AssetAdded' as EventFilter, 0),
-            Ladle.queryFilter('JoinAdded' as EventFilter, 0),
+            Cauldron.queryFilter('AssetAdded' as EventFilter),
+            Ladle.queryFilter('JoinAdded' as EventFilter),
           ]);
           /* Create a map from the joinAdded event data */
           const joinMap: Map<string, string> = new Map(
@@ -158,7 +158,7 @@ const useChain = (chainId: number) => {
           dispatch(updateAssets(newAssets));
 
           // get asset pair data
-          Object.values(newAssets as IAssetMap).map((a: IAsset) =>
+          Object.values(newAssets as IAssetMap).map((a) =>
             dispatch(getAssetPairData(a, newAssets, newContractMap, chainId))
           );
 
@@ -203,8 +203,8 @@ const useChain = (chainId: number) => {
           dispatch(setSeriesLoading(true));
           /* get poolAdded events and series events at the same time */
           const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
-            Cauldron.queryFilter('SeriesAdded' as any, 0),
-            Ladle.queryFilter('PoolAdded' as any, 0),
+            Cauldron.queryFilter('SeriesAdded' as EventFilter),
+            Ladle.queryFilter('PoolAdded' as EventFilter),
           ]);
 
           /* build a map from the poolAdded event data */
