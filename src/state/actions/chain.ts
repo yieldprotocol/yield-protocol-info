@@ -199,7 +199,7 @@ async function getAssetJoinBalance(asset: IAsset, provider: ethers.providers.Jso
     const joinAddr = asset.joinAddress;
     const Join = contracts.Join__factory.connect(joinAddr, provider);
 
-    if ([FDAI2203, FDAI2206].includes(asset.id)) {
+    if ([FDAI2203, FDAI2206, FDAI2209].includes(asset.id)) {
       return ethers.utils.formatUnits(await Join.storedBalance(), 18);
     }
     return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
