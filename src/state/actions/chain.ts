@@ -29,7 +29,7 @@ import {
 import { IContractMap } from '../../types/contracts';
 import { CAULDRON } from '../../utils/constants';
 import { IPriceMap } from '../../types/vaults';
-import { FDAI2203, FDAI2206 } from '../../config/assets';
+import { FDAI2203, FDAI2206, FDAI2209 } from '../../config/assets';
 
 export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
   return async (dispatch: any, getState: any) => {
@@ -143,7 +143,7 @@ export function getAssetsTvl(
           let _price: BigNumber;
           let price_: string;
 
-          if ([FDAI2203, FDAI2206].includes(bal.id)) {
+          if ([FDAI2203, FDAI2206, FDAI2209].includes(bal.id)) {
             price_ = '1';
             dispatch(updatePrices(bal.id, USDC.id, price_));
           } else {
