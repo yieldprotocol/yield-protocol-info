@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Home from './Home';
+import Home from './views/Home';
 import SeriesList from './views/SeriesList';
 import Series from './views/Series';
 import Strategies from './views/Strategies';

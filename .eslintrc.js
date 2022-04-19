@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-undef
 module.exports = {
-  // root: true,
+  root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  extends: ['airbnb-typescript', 'react-app', 'prettier'],
+  extends: ['airbnb-typescript', 'react-app', 'prettier', 'eslint:recommended', 'next'],
   parserOptions: {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
@@ -44,7 +43,7 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx', 'src/tests/**/*'],
+        devDependencies: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx', '*/tests/**/*'],
       },
     ],
     'react/jsx-props-no-spreading': 'off',

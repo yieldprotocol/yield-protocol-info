@@ -4,7 +4,7 @@ import { ActionType } from '../actionTypes/chain';
 
 const INITIAL_STATE = {
   provider: null as ethers.providers.JsonRpcProvider | null,
-  chainId: (JSON.parse(localStorage.getItem('chainId')!) as number) || 1,
+  chainId: 1,
 
   /* flags */
   chainLoading: true,
