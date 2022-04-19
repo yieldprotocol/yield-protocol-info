@@ -36,8 +36,7 @@ const useBatchDecoder = (txHash: string) => {
         action: 'getsourcecode',
         address: addHexPrefix(target),
         apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
-      }),
-      (x) => console.log(x)
+      })
     );
     const iface = new Interface(ret.result[0].ABI);
     const functions = new Map<string, FunctionFragment>();

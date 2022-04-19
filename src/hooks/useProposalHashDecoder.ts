@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
-import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
+import { addHexPrefix, fetchEtherscan, getABI } from '../utils/etherscan';
 import * as yieldEnv from '../yieldEnv.json';
 import { useAppSelector } from '../state/hooks/general';
 
@@ -20,47 +20,53 @@ const useProposalHashDecoder = (proposalHash: string) => {
     calls: {},
   });
 
-  async function startFetchingABIs(targets: any) {
-    await Promise.all(
-      [...targets.values()].map((target: any) => {
-        if (!(target in decoded.abis)) {
-          fetchEtherscan(
-            chainId,
-            new URLSearchParams({
-              module: 'contract',
-              action: 'getabi',
-              address: addHexPrefix(target),
-              apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
-            }),
-            (x) => console.warn(x)
-          ).then((ret: any) => {
-            const result = ret[0];
-            if (result) {
-              const iface = new Interface(result);
-              const functions = new Map<string, FunctionFragment>();
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-              Object.keys(iface.functions).map((f) =>
-                functions.set(iface.getSighash(iface.functions[f]), iface.functions[f])
-              );
+  async function startFetchingABIs(targets: Set<any>) {
+    const targetsArr = Array.from(targets.values());
 
-              setDecoded((d: any) => ({
-                ...d,
-                contracts: {
-                  ...d.contracts,
-                  [target]: result.ContractName,
-                },
-                abis: {
-                  ...d.abis,
-                  [target]: { interface: iface, functions },
-                },
-              }));
-            }
-          });
+    let _decoded = decoded;
+
+    for (let idx = 0; idx < targetsArr.length; idx++) {
+      const target = targetsArr[idx];
+      const shouldDelay = idx % 5 === 0 && idx !== 0;
+
+      if (shouldDelay) delay(1000);
+
+      if (!(target in decoded.abis)) {
+        console.log('🦄 ~ file: useProposalHashDecoder.ts ~ line 37 ~ startFetchingABIs ~ target ', target);
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const result = await getABI(chainId, target);
+
+          if (result) {
+            const iface = new Interface(result);
+            const functions = new Map<string, FunctionFragment>();
+
+            Object.keys(iface.functions).map((f) =>
+              functions.set(iface.getSighash(iface.functions[f]), iface.functions[f])
+            );
+
+            _decoded = {
+              ..._decoded,
+              contracts: {
+                ..._decoded.contracts,
+                [target]: result.ContractName,
+              },
+              abis: {
+                ..._decoded.abis,
+                [target]: { interface: iface, functions },
+              },
+            };
+          }
+        } catch (e) {
+          console.log('could not parse abi', e);
         }
-        return undefined;
-      })
-    );
+      }
+    }
     setLoading(false);
+    setDecoded(_decoded);
+    return undefined;
   }
 
   async function decodeTxHash(epoch: string, hash: string) {
@@ -92,8 +98,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
           topic0: addHexPrefix(PROPOSE_EVENT),
           topic1: addHexPrefix(hash),
           apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
-        }),
-        (x) => console.warn(x)
+        })
       );
 
       const txHashArray: Array<any> = tx.result;
