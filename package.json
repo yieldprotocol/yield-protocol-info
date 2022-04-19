@@ -16,6 +16,7 @@
     "focus-visible": "^5.2.0",
     "graphql": "^16.2.0",
     "identicon.js": "^2.3.3",
+    "next": "^12.1.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.2.0",
@@ -33,10 +34,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "type-contracts": "typechain --target=ethers-v5 './src/contracts/abis/*.json' --out-dir './src/contracts/'",
     "license-checker": "license-checker --csv --out licenses.csv"
