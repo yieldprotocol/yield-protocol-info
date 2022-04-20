@@ -16,24 +16,6 @@ export const FUSDC2206 = '0x313500000000';
 export const FDAI2209 = '0x313600000000';
 export const FUSDC2209 = '0x313700000000';
 
-export const assetDigitFormatMap = new Map([
-  ['ETH', 6],
-  ['WBTC', 6],
-  ['DAI', 2],
-  ['USDC', 2],
-  ['USDT', 2],
-  ['STETH', 6],
-  ['ENS', 2],
-  ['UNI', 2],
-  ['yvUSDC', 2],
-  ['MKR', 2],
-  ['MKR', 2],
-  ['FYUSDC2203', 2],
-  ['FYUSDC2206', 2],
-  ['FYDAI2203', 2],
-  ['FYDAI2206', 2],
-]);
-
 export enum TokenType {
   ERC20_,
   ERC20_Permit,

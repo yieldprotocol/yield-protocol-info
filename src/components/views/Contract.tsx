@@ -30,8 +30,8 @@ const Contract: FC = () => {
     <>
       <SubNav
         paths={[
-          { path: `contracts/${name}/events`, name: 'events' },
-          { path: `contracts/${name}/roles`, name: 'roles' },
+          { path: `/contracts/${name}/events`, name: 'events' },
+          { path: `/contracts/${name}/roles`, name: 'roles' },
         ]}
       />
       <div className="ml-56">

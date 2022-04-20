@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import useTotalDebt from '../../hooks/useTotalDebt';
-import { useAppSelector } from '../../state/hooks/general';
 import AnimatedNum from '../AnimatedNum';
 import Summary from '../Summary';
 import TvlTable from '../TvlTable';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SkeletonWrap from '../wraps/SkeletonWrap';
 
-const Home = () => {
-  const { assetsTvl, tvlLoading } = useAppSelector(({ chain }) => chain);
+interface HomeProps {
+  assetsTvl: { symbol: string; id: string; value: number }[];
+}
 
+const Home = ({ assetsTvl }: HomeProps) => {
   const [tvl, setTvl] = useState<number | null>(null);
   const [tvlList, setTvlList] = useState<any[]>([]);
   const { totalDebt, loading: totalDebtLoading, totalDebtList } = useTotalDebt();
@@ -17,11 +18,11 @@ const Home = () => {
   // sets the total value locked for all assets combined
   useEffect(() => {
     Object.values(assetsTvl).length &&
-      setTvl(Object.values(assetsTvl).reduce((acc: number, item: any) => acc + item.value, 0));
+      setTvl(Object.values(assetsTvl).reduce((acc: number, item) => acc + item.value, 0));
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(Object.values(assetsTvl).sort((a, b) => +b.value - +a.value)); // sort by largest tvl
+    setTvlList(Object.values(assetsTvl).sort((a, b) => b.value - a.value)); // sort by largest tvl
   }, [assetsTvl]);
 
   return (
@@ -31,7 +32,7 @@ const Home = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
             <div className="text-3xl flex w-52">
-              {tvlLoading || !tvl ? (
+              {!tvl ? (
                 <SkeletonWrap width={150} />
               ) : (
                 <>
@@ -46,7 +47,7 @@ const Home = () => {
           <Summary>
             <div className="text-xl text-gray-500">Total Borrowed</div>
             <div className="text-3xl flex">
-              {totalDebtLoading || tvlLoading || !totalDebt ? (
+              {totalDebtLoading || !totalDebt ? (
                 <SkeletonWrap width={150} />
               ) : (
                 <>
@@ -55,7 +56,7 @@ const Home = () => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{totalDebt! > 0 && !tvlLoading && <TvlTable data={totalDebtList} />}</div>
+          <div className="w-52">{totalDebt! > 0 && <TvlTable data={totalDebtList} />}</div>
         </div>
       </div>
     </MainViewWrap>

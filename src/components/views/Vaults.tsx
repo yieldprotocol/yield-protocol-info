@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { formatValue } from '../../utils/appUtils';
@@ -12,7 +12,7 @@ import { useVaults } from '../../state/hooks/useVaults';
 import Select from '../Select';
 import { getMainnetVaults } from '../../state/actions/vaults';
 
-const Vaults: FC = () => {
+const Vaults = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
   const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);

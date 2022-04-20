@@ -270,29 +270,6 @@ export function getNotMainnetVaults(): any {
   };
 }
 
-export async function getPrice(
-  ilk: string,
-  base: string,
-  contractMap: IContractMap,
-  decimals: number = 18,
-  chainId: number,
-  priceMap: IPriceMap
-) {
-  const oracleName = ORACLE_INFO.get(chainId)?.get(base)?.get(ilk);
-  const Oracle = contractMap[oracleName!];
-
-  try {
-    const [price] = await Oracle.peek(
-      bytesToBytes32(ilk, 6),
-      bytesToBytes32(base, 6),
-      decimal18ToDecimalN(WAD_BN, decimals)
-    );
-    return price;
-  } catch (e) {
-    return ethers.constants.Zero;
-  }
-}
-
 export const updateVaults = (vaults: IVaultMap): IUpdateVaultsAction => ({
   type: ActionType.UPDATE_VAULTS,
   payload: vaults,

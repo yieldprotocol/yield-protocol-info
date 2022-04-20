@@ -137,7 +137,7 @@ export interface ISeries {
   poolAddress: string;
   poolVersion: string;
   poolName: string;
-  poolSymbol: string; // for signing
+  poolSymbol: string;
   totalSupply: BigNumber;
   fullDate: Date;
   displayName: string;
@@ -170,9 +170,9 @@ export interface IStrategy {
   name: string;
   version: string;
   baseId: string;
-  decimals: string;
+  decimals: number;
   poolAddress: string;
-  currInvariant: string;
+  currInvariant?: string;
 }
 
 export interface IAssetPairData {

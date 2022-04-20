@@ -1,7 +1,7 @@
 import Governance from '../../components/views/Governance';
 
-const GovernancePage = () => {
+const Decode = () => {
   return <Governance />;
 };
 
-export default GovernancePage;
+export default Decode;
