@@ -1,11 +1,18 @@
-import React from 'react';
-import { useAppSelector } from '../../state/hooks/general';
+import React, { useEffect, useState } from 'react';
+import useSeries from '../../hooks/useSeries';
 import NotionalMark from './NotionalMark';
 import USDCMark from './USDCMark';
 
-const NotionalUSDCMark = ({ series }: { series: string }) => {
-  const { series: seriesMap } = useAppSelector(({ chain }) => chain);
-  const seriesColor = seriesMap![series].color;
+const NotionalUSDCMark = ({ seriesId }: { seriesId: string }) => {
+  const seriesMap = useSeries();
+  const [seriesColor, setSeriesColor] = useState<string>();
+
+  useEffect(() => {
+    if (seriesMap) {
+      setSeriesColor(seriesMap[seriesId].color);
+    }
+  }, [seriesId, seriesMap]);
+
   return (
     <div className="relative">
       <NotionalMark />

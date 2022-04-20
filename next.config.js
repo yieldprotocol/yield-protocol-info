@@ -13,6 +13,9 @@ const nextConfig = {
     REACT_APP_RPC_URL_69: process.env.REACT_APP_RPC_URL_69,
     REACT_APP_RPC_URL_42161: process.env.REACT_APP_RPC_URL_42161,
     REACT_APP_RPC_URL_421611: process.env.REACT_APP_RPC_URL_421611,
+    infuraKey: process.env.INFURA_KEY,
+    alchemyArbKey: process.env.ALCHEMY_ARBITRUM_KEY,
+    alchemyArbRinkebyKey: process.env.ALCHEMY_ARBITRUM_RINKEBY_KEY,
   },
 };
 

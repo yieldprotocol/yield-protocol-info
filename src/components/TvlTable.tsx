@@ -1,18 +1,14 @@
-import React, { FC } from 'react';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
-import { useAppSelector } from '../state/hooks/general';
+import { IAssetMap } from '../types/chain';
 import { formatValue } from '../utils/appUtils';
-import SkeletonWrap from './wraps/SkeletonWrap';
 
-const TvlTable: FC<{ data: any[] }> = ({ data }) => {
-  const { assets, tvlLoading } = useAppSelector((st) => st.chain);
-
-  return data && assets ? (
+const TvlTable = ({ data, assets }: { data: any[]; assets: IAssetMap }) =>
+  data && assets ? (
     <div className="rounded-lg shadow-sm p-2 dark:bg-green-200 bg-green-200 w-full">
       <table className="table min-w-full divide-y">
         <tbody className="divide-y">
-          {data.map((x: any) => {
+          {data.map((x) => {
             const asset = assets[x.id];
             const assetLogo = markMap.get(asset.symbol);
             return (
@@ -20,15 +16,13 @@ const TvlTable: FC<{ data: any[] }> = ({ data }) => {
                 <td className="p-3 text-start items-center flex gap-4">
                   <div className="flex relative">
                     <div className="h-6 w-6">
-                      {tvlLoading ? <SkeletonWrap /> : <div className="z-0">{assetLogo}</div>}
+                      <div className="z-0">{assetLogo}</div>
                     </div>
                   </div>
-                  {x.value >= 0 && !tvlLoading ? (
-                    <div className="text-md font-medium text-gray-900  truncate">
+                  {x.value >= 0 && (
+                    <div className="text-md font-medium text-gray-900 truncate">
                       <div>${formatValue(x.value, 0)}</div>
                     </div>
-                  ) : (
-                    <SkeletonWrap />
                   )}
                 </td>
               </tr>
@@ -38,6 +32,5 @@ const TvlTable: FC<{ data: any[] }> = ({ data }) => {
       </table>
     </div>
   ) : null;
-};
 
 export default TvlTable;

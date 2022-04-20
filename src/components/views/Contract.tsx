@@ -1,17 +1,15 @@
+import { useRouter } from 'next/router';
 import React, { FC, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getEventArgs, getEvents } from '../../state/actions/contracts';
 import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
-import { useRouter } from 'next/router';
 
 const Contract: FC = () => {
   const router = useRouter();
   const name = router.query.name as string;
-  console.log('🦄 ~ file: Contract.tsx ~ line 14 ~ name ', name);
   const dispatch = useAppDispatch();
   const { contractMap, events, eventsLoading, eventArgsPropsMap } = useAppSelector(({ contracts }) => contracts);
   const eventArgsProps = eventArgsPropsMap[name];

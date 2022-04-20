@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { ActionType } from '../state/actionTypes/chain';
 
 export interface IChainState {
@@ -138,7 +138,7 @@ export interface ISeries {
   poolVersion: string;
   poolName: string;
   poolSymbol: string;
-  totalSupply: BigNumber;
+  totalSupply: string;
   fullDate: Date;
   displayName: string;
   season: string;

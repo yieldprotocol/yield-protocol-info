@@ -4,8 +4,8 @@ import { IContractMap } from '../../types/contracts';
 import * as contracts from '../../contracts';
 import { getABI } from '../../utils/etherscan';
 
-export const getContracts = async (provider: ethers.providers.JsonRpcProvider) => {
-  const chainId = (await provider.getNetwork()).chainId;
+export const getContracts = async (provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider) => {
+  const { chainId } = await provider.getNetwork();
 
   /* Get the instances of the Base contracts */
   const addrs = yieldEnv.addresses[chainId];
@@ -23,18 +23,22 @@ export const getContracts = async (provider: ethers.providers.JsonRpcProvider) =
       console.log(`could not connect directly to contract ${name}`);
     }
 
-    // try to connect to contract via etherscan
-    if (!contract) {
-      try {
-        const abi = await getABI(chainId, addrs[name]);
-        contract = new ethers.Contract(addrs[name], abi, provider);
-      } catch (e) {
-        console.log(`could not connect to contract ${name} via etherscan`);
-      }
-    }
-
     if (contract) newContractMap[name] = contract;
   });
 
   return newContractMap;
+};
+
+export const getContract = async (provider: ethers.providers.Web3Provider, name: string) => {
+  const { chainId } = await provider.getNetwork();
+  const addrs = yieldEnv.addresses[chainId];
+
+  // try to connect to contract via etherscan
+  try {
+    const abi = await getABI(chainId, addrs[name]);
+    return new ethers.Contract(addrs[name], abi, provider);
+  } catch (e) {
+    console.log(`could not connect to contract ${name} via etherscan`);
+    return undefined;
+  }
 };

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
-import { BigNumber, Contract, ethers, EventFilter } from 'ethers';
-import { ASSET_INFO, FDAI2203, FDAI2206, FDAI2209, TokenType } from '../../config/assets';
+import { BigNumber, ethers, EventFilter } from 'ethers';
+import { ASSET_INFO, FDAI2203, FDAI2206, FDAI2209, TokenType, USDC } from '../../config/assets';
 import yieldEnv from '../../config/yieldEnv';
 import {
   ERC20Permit__factory,
@@ -20,6 +20,7 @@ import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { CAULDRON, LADLE } from '../../utils/constants';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { getPrice } from '../vaults';
+import { ITotalDebtItem } from './types';
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
   const Ladle = contractMap[LADLE];
@@ -73,7 +74,7 @@ export const getSeries = async (provider: ethers.providers.JsonRpcProvider, cont
             poolVersion,
             poolName,
             poolSymbol,
-            totalSupply,
+            totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
           };
 
           newSeriesObj[id] = _chargeSeries(newSeries);
@@ -425,3 +426,34 @@ const getPoolBalance = async (pool: Pool) => {
     return '0';
   }
 };
+
+export const getTotalDebtList = async (
+  provider: ethers.providers.JsonRpcProvider,
+  contractMap: IContractMap,
+  series: ISeriesMap,
+  assets: IAssetMap
+) => {
+  const totalDebtMap = await Object.values(series).reduce(async (map, x) => {
+    const { chainId } = await provider.getNetwork();
+    const fyToken = FYToken__factory.connect(x.fyTokenAddress, provider!);
+    const fyTokenSupply = await fyToken.totalSupply();
+    const fyTokenSupply_ = ethers.utils.formatUnits(fyTokenSupply, x.decimals);
+    const base = assets![x.baseId];
+    const usdc = assets![USDC];
+    const fyTokenToUSDC = await convertValue(fyTokenSupply_, base, usdc, contractMap!, chainId);
+
+    const newMap = await map;
+    const currItemValue = newMap.has(base.id) ? newMap.get(base.id)?.value : 0;
+    const newItem = {
+      id: base.id,
+      symbol: base.symbol,
+      value: (currItemValue || 0) + +fyTokenToUSDC,
+    };
+    newMap.set(base.id, newItem);
+    return newMap;
+  }, Promise.resolve(new Map() as Map<string, ITotalDebtItem>));
+
+  return Array.from(totalDebtMap.values()).sort((a, b) => b.value - a.value);
+};
+
+export const getTotalDebt = (totalDebtList: ITotalDebtItem[]) => totalDebtList.reduce((total, x) => total + x.value, 0);
