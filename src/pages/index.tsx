@@ -21,7 +21,7 @@ export const getServerSideProps = async ({ query }) => {
   const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
 
   // get asset tvl data
-  const contractMap = await getContracts(provider);
+  const contractMap = await getContracts(provider, chainId);
   const assetMap = await getAssets(provider, contractMap);
   const seriesMap = await getSeries(provider, contractMap);
   const assetsTvl = await getAssetsTvl(provider, contractMap, assetMap, seriesMap);

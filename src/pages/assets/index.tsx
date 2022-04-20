@@ -13,7 +13,7 @@ export default AssetsPage;
 export const getServerSideProps = async ({ query }) => {
   const chainId = (query.chainId || 1) as number;
   const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
-  const contractMap = await getContracts(provider);
+  const contractMap = await getContracts(provider, chainId);
   const assetMap = await getAssets(provider, contractMap);
   const assetList = Array.from(Object.values(assetMap));
 

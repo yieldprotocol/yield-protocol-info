@@ -4,16 +4,17 @@ import { IContractMap } from '../../types/contracts';
 import * as contracts from '../../contracts';
 import { getABI } from '../../utils/etherscan';
 
-export const getContracts = async (provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider) => {
-  const { chainId } = await provider.getNetwork();
-
+export const getContracts = async (
+  provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider,
+  chainId: number
+) => {
   /* Get the instances of the Base contracts */
   const addrs = yieldEnv.addresses[chainId];
 
   /* Update the baseContracts state */
   const newContractMap: IContractMap = {};
 
-  [...Object.keys(addrs)].forEach(async (name: string) => {
+  [...Object.keys(addrs)].forEach((name: string) => {
     let contract: Contract | undefined;
 
     // try to connect directly to contract
@@ -29,8 +30,7 @@ export const getContracts = async (provider: ethers.providers.Web3Provider | eth
   return newContractMap;
 };
 
-export const getContract = async (provider: ethers.providers.Web3Provider, name: string) => {
-  const { chainId } = await provider.getNetwork();
+export const getContract = async (provider: ethers.providers.Web3Provider, chainId: number, name: string) => {
   const addrs = yieldEnv.addresses[chainId];
 
   // try to connect to contract via etherscan

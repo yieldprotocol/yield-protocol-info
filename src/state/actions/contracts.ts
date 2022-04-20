@@ -10,15 +10,6 @@ import {
   IUpdateContractMapAction,
 } from '../../types/contracts';
 import { ActionType } from '../actionTypes/contracts';
-import * as yieldEnv from '../../yieldEnv.json';
-import * as contracts from '../../contracts';
-import { getABI } from '../../utils/etherscan';
-
-export const getContractsForState = (chainId: number, provider: ethers.providers.JsonRpcProvider) => {
-  return async (dispatch: any) => {
-    dispatch(updateContractMap(await getContracts(chainId, provider)));
-  };
-};
 
 export function getEvents(contractMap: IContractMap, name: string, filter: any = '*'): any {
   return async function _getEvents(dispatch: any) {

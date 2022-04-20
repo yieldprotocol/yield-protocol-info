@@ -7,7 +7,7 @@ const useContracts = () => {
   const { provider, chainId } = useWeb3React();
   const { data } = useSWR(
     provider ? `/contracts?chainId=${chainId}` : null,
-    () => getContracts(provider as ethers.providers.Web3Provider),
+    () => getContracts(provider as ethers.providers.Web3Provider, chainId),
     {
       revalidateOnFocus: false,
     }
