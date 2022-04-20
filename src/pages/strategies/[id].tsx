@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import Strategy from '../../components/views/Strategy';
 import useStrategies from '../../hooks/useStrategies';
 
-const AssetPage = () => {
+const StrategiesPage = () => {
   const strategyMap = useStrategies();
   const router = useRouter();
   const { id: strategyId } = router.query;
@@ -13,4 +13,4 @@ const AssetPage = () => {
   return <Strategy strategy={strategy} />;
 };
 
-export default AssetPage;
+export default StrategiesPage;
