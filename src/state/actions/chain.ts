@@ -31,55 +31,6 @@ import { CAULDRON, LADLE } from '../../utils/constants';
 import { IPriceMap } from '../../types/vaults';
 import { ASSET_INFO, FDAI2203, FDAI2206, FDAI2209, TokenType } from '../../config/assets';
 
-export function getAssetPairData(asset: IAsset, assets: IAssetMap, contractMap: IContractMap, chainId: number): any {
-  return async (dispatch: any, getState: any) => {
-    const {
-      vaults: { prices },
-    } = getState();
-    dispatch(assetPairDataLoading(true));
-    try {
-      const Cauldron = contractMap[CAULDRON];
-
-      const assetPairData: IAssetPairData[] = await Promise.all(
-        Object.values(assets as IAssetMap).map(async (x: IAsset) => {
-          const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
-            await Cauldron.debt(asset.id, x.id),
-            await Cauldron.spotOracles(asset.id, x.id),
-            (await Cauldron.debt(asset.id, x.id)).sum,
-          ]);
-
-          const _price: BigNumber = await getPrice(asset.id, x.id, contractMap, asset.decimals, chainId, prices);
-          const price_ = decimalNToDecimal18(_price, x.decimals);
-          dispatch(updatePrices(asset.id, x.id, ethers.utils.formatUnits(price_, 18)));
-
-          const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-          const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-          const totalDebt_ = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
-          const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
-
-          return {
-            baseAssetId: asset.id,
-            ilkAssetId: x.id,
-            minCollatRatioPct: `${ethers.utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
-            minDebt,
-            maxDebt,
-            minDebt_: ethers.utils.formatUnits(minDebt, decimals),
-            maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
-            totalDebt_,
-            totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, USDC, contractMap, chainId, prices), 2),
-          };
-        })
-      );
-
-      dispatch(updateAssetPairData(asset.id, assetPairData));
-      dispatch(assetPairDataLoading(false));
-    } catch (e) {
-      console.log('Error getting asset pair data', e);
-      dispatch(assetPairDataLoading(false));
-    }
-  };
-}
-
 export const reset = (): IChainResetAction => ({ type: ActionType.RESET });
 
 const updateAssetsTvl = (assetsTvl: any): IChainUpdateAssetsTVLAction => ({
@@ -106,78 +57,74 @@ export const updateChain =
     dispatch(updateChainId(chainId));
   };
 
-export const getSeriesForState = async (contractMap: IContractMap) => {
-  return async (dispatch: any) => {
-    dispatch(setSeriesLoading(true));
+export const getSeriesForState = async (contractMap: IContractMap) => async (dispatch: any) => {
+  dispatch(setSeriesLoading(true));
 
-    const Ladle = contractMap[LADLE];
-    const Cauldron = contractMap[CAULDRON];
+  const Ladle = contractMap[LADLE];
+  const Cauldron = contractMap[CAULDRON];
 
-    try {
-      /* get poolAdded events and series events at the same time */
-      const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
-        Cauldron.queryFilter('SeriesAdded' as EventFilter),
-        Ladle.queryFilter('PoolAdded' as EventFilter),
-      ]);
+  try {
+    /* get poolAdded events and series events at the same time */
+    const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
+      Cauldron.queryFilter('SeriesAdded' as EventFilter),
+      Ladle.queryFilter('PoolAdded' as EventFilter),
+    ]);
 
-      /* build a map from the poolAdded event data */
-      const poolMap: Map<string, string> = new Map(
-        poolAddedEvents.map((log: any) => Ladle.interface.parseLog(log).args) as [[string, string]]
-      );
+    /* build a map from the poolAdded event data */
+    const poolMap: Map<string, string> = new Map(
+      poolAddedEvents.map((log: any) => Ladle.interface.parseLog(log).args) as [[string, string]]
+    );
 
-      const newSeriesObj: any = {};
+    const newSeriesObj: any = {};
 
-      /* Add in any extra static series */
-      await Promise.all([
-        ...seriesAddedEvents.map(async (x: any): Promise<void> => {
-          const { seriesId: id, baseId, fyToken } = Cauldron.interface.parseLog(x).args;
-          const { maturity } = await Cauldron.series(id);
+    /* Add in any extra static series */
+    await Promise.all([
+      ...seriesAddedEvents.map(async (x: any): Promise<void> => {
+        const { seriesId: id, baseId, fyToken } = Cauldron.interface.parseLog(x).args;
+        const { maturity } = await Cauldron.series(id);
 
-          if (poolMap.has(id)) {
-            // only add series if it has a pool
-            const poolAddress: string = poolMap.get(id) as string;
-            const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
-            const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
+        if (poolMap.has(id)) {
+          // only add series if it has a pool
+          const poolAddress: string = poolMap.get(id) as string;
+          const poolContract = contracts.Pool__factory.connect(poolAddress, provider);
+          const fyTokenContract = contracts.FYToken__factory.connect(fyToken, provider);
 
-            const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol, totalSupply] = await Promise.all(
-              [
-                fyTokenContract.name(),
-                fyTokenContract.symbol(),
-                fyTokenContract.version(),
-                fyTokenContract.decimals(),
-                poolContract.name(),
-                poolContract.version(),
-                poolContract.symbol(),
-                poolContract.totalSupply(),
-              ]
-            );
-            const newSeries = {
-              id,
-              baseId,
-              maturity,
-              name,
-              symbol,
-              version,
-              address: fyToken,
-              fyTokenAddress: fyToken,
-              decimals,
-              poolAddress,
-              poolVersion,
-              poolName,
-              poolSymbol,
-              totalSupply,
-            };
-            newSeriesObj[id] = _chargeSeries(newSeries);
-          }
-        }),
-      ]);
-      dispatch(updateSeries(newSeriesObj));
-      dispatch(setSeriesLoading(false));
-    } catch (e) {
-      dispatch(setSeriesLoading(false));
-      console.log('Error fetching series data: ', e);
-    }
-  };
+          const [name, symbol, version, decimals, poolName, poolVersion, poolSymbol, totalSupply] = await Promise.all([
+            fyTokenContract.name(),
+            fyTokenContract.symbol(),
+            fyTokenContract.version(),
+            fyTokenContract.decimals(),
+            poolContract.name(),
+            poolContract.version(),
+            poolContract.symbol(),
+            poolContract.totalSupply(),
+          ]);
+          const newSeries = {
+            id,
+            baseId,
+            maturity,
+            name,
+            symbol,
+            version,
+            address: fyToken,
+            fyTokenAddress: fyToken,
+            decimals,
+            poolAddress,
+            poolVersion,
+            poolName,
+            poolSymbol,
+            totalSupply,
+          };
+          newSeriesObj[id] = _chargeSeries(newSeries);
+        }
+      }),
+    ]);
+    dispatch(updateSeries(newSeriesObj));
+    dispatch(setSeriesLoading(false));
+  } catch (e) {
+    dispatch(setSeriesLoading(false));
+    console.log('Error fetching series data: ', e);
+  }
 };
 
 export const updateChainId = (chainId: number): IChainChainIdAction => ({

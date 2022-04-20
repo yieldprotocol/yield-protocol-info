@@ -13,7 +13,7 @@ import {
 } from '../../contracts';
 import { SeriesAddedEvent } from '../../contracts/Cauldron';
 import { JoinAddedEvent, PoolAddedEvent } from '../../contracts/Ladle';
-import { IAsset, IAssetMap, ISeries, ISeriesMap, IStrategyMap } from '../../types/chain';
+import { IAsset, IAssetMap, IAssetPairData, ISeries, ISeriesMap, IStrategyMap } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { IPriceMap } from '../../types/vaults';
 import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
@@ -457,3 +457,44 @@ export const getTotalDebtList = async (
 };
 
 export const getTotalDebt = (totalDebtList: ITotalDebtItem[]) => totalDebtList.reduce((total, x) => total + x.value, 0);
+
+export const getAssetPairData = async (
+  asset: IAsset,
+  assets: IAssetMap,
+  contractMap: IContractMap,
+  chainId: number
+): Promise<IAssetPairData[] | undefined> => {
+  try {
+    const Cauldron = contractMap[CAULDRON];
+
+    return await Promise.all(
+      Object.values(assets).map(async (x) => {
+        const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
+          await Cauldron.debt(asset.id, x.id),
+          await Cauldron.spotOracles(asset.id, x.id),
+          (await Cauldron.debt(asset.id, x.id)).sum,
+        ]);
+
+        const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+        const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+        const totalDebt_ = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
+        const _USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
+
+        return {
+          baseAssetId: asset.id,
+          ilkAssetId: x.id,
+          minCollatRatioPct: `${ethers.utils.formatUnits(minCollatRatio * 100, 6)}%`, // collat ratios always have 6 decimals
+          minDebt,
+          maxDebt,
+          minDebt_: ethers.utils.formatUnits(minDebt, decimals),
+          maxDebt_: ethers.utils.formatUnits(maxDebt, decimals),
+          totalDebt_,
+          totalDebtInUSDC: cleanValue(await convertValue(totalDebt_, asset, _USDC, contractMap, chainId), 2),
+        };
+      })
+    );
+  } catch (e) {
+    console.log('Error getting asset pair data', e);
+    return undefined;
+  }
+};
