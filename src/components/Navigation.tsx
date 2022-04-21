@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAppSelector } from '../state/hooks/general';
+import { useColorTheme } from '../hooks/useColorTheme';
 import DarkModeToggle from './DarkModeToggle';
 import YieldMark from './logos/YieldMark';
 import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
-  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'decode', 'liquidations'];
-  const darkMode = useAppSelector((st) => st.application.darkMode);
   const router = useRouter();
+  const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'decode', 'liquidations'];
+
+  const { theme } = useColorTheme();
+  const darkMode = theme === 'dark';
 
   return (
     <div className="sticky top-0 z-10 flex-none">

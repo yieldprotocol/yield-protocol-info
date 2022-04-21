@@ -34,3 +34,4 @@ export const CHAINLINK_USD_ORACLE = 'ChainlinkUSDOracle';
 
 // localStorage settings
 export const CHAIN_ID_LOCAL_STORAGE = 'yield-protocol-info-chainId';
+export const THEME_KEY = 'yield-protocol-info-theme';

@@ -1,13 +1,7 @@
-import React from 'react';
-import { useAppSelector } from '../state/hooks/general';
-
-const Footer = () => {
-  const version = useAppSelector((st) => st.application.version);
-  return (
-    <div className="z-10 fixed bottom-1 left-1 text-xs">
-      <i>Version: {version}</i>
-    </div>
-  );
-};
+const Footer = () => (
+  <div className="z-10 fixed bottom-1 left-1 text-xs">
+    <i>Version: {process.env.REACT_APP_VERSION}</i>
+  </div>
+);
 
 export default Footer;

@@ -3,11 +3,11 @@
 import { useWeb3React } from '@web3-react/core';
 import { useEffect, useState } from 'react';
 import { CHAIN_INFO, SUPPORTED_CHAIN_IDS } from '../config/chainData';
-import { useCachedState } from '../hooks/useCachedState';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import { CHAIN_ID_LOCAL_STORAGE } from '../utils/constants';
 
 const NetworkModal = () => {
-  const [cachedChainId, setCachedChainId] = useCachedState(CHAIN_ID_LOCAL_STORAGE, 1);
+  const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, '1');
   const { chainId, connector } = useWeb3React();
   const [showModal, setShowModal] = useState<boolean>(false);
 
