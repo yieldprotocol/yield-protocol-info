@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useBatchDecoder } from '../../hooks/useBatchDecoder';
@@ -6,11 +6,12 @@ import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
 import Spinner from '../Spinner';
 import { markMap } from '../../config/marks';
-import { useAppSelector } from '../../state/hooks/general';
-import { IAsset, IAssetMap, ISeries, ISeriesMap } from '../../types/chain';
+import useSeries from '../../hooks/useSeries';
+import useAssets from '../../hooks/useAssets';
 
 const CallDisplay = ({ call }: any): any => {
-  const { assets, series } = useAppSelector(({ chain }) => chain);
+  const assets = useAssets();
+  const series = useSeries();
   return (
     <table>
       <tbody>
@@ -21,9 +22,9 @@ const CallDisplay = ({ call }: any): any => {
           const args: any = Array.isArray(ogArgs) ? ogArgs : [ogArgs];
           const asset = assets![args[0]]
             ? assets![args[0]]
-            : Object.values(assets as IAssetMap).filter((a: IAsset) => a.address === args[0])[0];
+            : Object.values(assets).filter((a) => a.address === args[0])[0];
           const logo = asset ? markMap?.get(assets![asset.id].symbol!) : null;
-          const seriesItem = Object.values(series as ISeriesMap).filter((a: ISeries) => a.id === args[0])[0];
+          const seriesItem = Object.values(series).filter((a) => a.id === args[0])[0];
           return (
             <Fragment key={uuid()}>
               <tr className="no-wrap">
@@ -75,7 +76,7 @@ const CallDisplay = ({ call }: any): any => {
   );
 };
 
-const BatchDecoder: FC = () => {
+const BatchDecoder = () => {
   const [txHash, setTxHash] = useState('');
   const { decodeTxHash, loading, call } = useBatchDecoder(txHash);
   const handleDecode = useCallback(() => {

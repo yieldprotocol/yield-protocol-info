@@ -9,7 +9,6 @@ import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal
 import { IVault, IVaultGraph, IVaultMap } from '../../types/vaults';
 import { IAssetMap, IAssetPairData, ISeriesMap } from '../../types/chain';
 import { VaultBuiltEvent } from '../../contracts/Cauldron';
-import { USDC, WETH } from '../../config/assets';
 
 const TOP_VAULTS_QUERY = `
   query vaults {

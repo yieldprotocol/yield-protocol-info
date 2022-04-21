@@ -16,10 +16,10 @@ const SubNav = ({ paths }: { paths: IPath[] }) => {
         <div className="p-2 lg:px-0 mt-10">
           {paths.map((path: IPath) => (
             <div key={path.name} className="py-4 ml-0">
-              <Link href={`${path.path}`}>
+              <Link href={`${path.path}`} passHref>
                 <div
                   className={
-                    pathname.includes(path.path)
+                    pathname.includes(path.name)
                       ? `cursor-pointer underline text-gray-900 hover:underline dark:hover:underline flex-shrink-0 inline-flex items-start overflow-hidden font-medium focus:outline-none dark:text-white text-lg`
                       : `cursor-pointer text-gray-900 hover:underline dark:text-gray-200 dark:hover:underline dark:hover:text-white rounded-lg text-lg font-medium`
                   }

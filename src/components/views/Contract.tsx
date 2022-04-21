@@ -1,24 +1,26 @@
 import { useRouter } from 'next/router';
-import React, { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getEventArgs, getEvents } from '../../state/actions/contracts';
 import EventTable from '../EventTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
+import useContracts from '../../hooks/useContracts';
 
-const Contract: FC = () => {
+const Contract = () => {
+  const contractMap = useContracts();
   const router = useRouter();
-  const name = router.query.name as string;
+  const { name } = router.query;
   const dispatch = useAppDispatch();
-  const { contractMap, events, eventsLoading, eventArgsPropsMap } = useAppSelector(({ contracts }) => contracts);
-  const eventArgsProps = eventArgsPropsMap[name];
-  const contractEvents = events[name];
+  const { events, eventsLoading, eventArgsPropsMap } = useAppSelector(({ contracts }) => contracts);
+  const eventArgsProps = eventArgsPropsMap[name as string];
+  const contractEvents = events[name as string];
 
   useEffect(() => {
-    if (contractMap && name && !events[name]) {
-      dispatch(getEvents(contractMap, name, undefined));
-      dispatch(getEventArgs(contractMap, name));
+    if (contractMap && name && !events[name as string]) {
+      dispatch(getEvents(contractMap, name as string, undefined));
+      dispatch(getEventArgs(contractMap, name as string));
     }
   }, [contractMap, dispatch, name, events]);
 
@@ -28,8 +30,8 @@ const Contract: FC = () => {
     <>
       <SubNav
         paths={[
-          { path: `/contracts/${name}/events`, name: 'events' },
-          { path: `/contracts/${name}/roles`, name: 'roles' },
+          { path: `/contracts/events/${name}`, name: 'events' },
+          { path: `/contracts/roles/${name}`, name: 'roles' },
         ]}
       />
       <div className="ml-56">

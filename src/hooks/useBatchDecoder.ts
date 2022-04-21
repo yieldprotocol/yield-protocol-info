@@ -35,9 +35,10 @@ const useBatchDecoder = (txHash: string) => {
         module: 'contract',
         action: 'getsourcecode',
         address: addHexPrefix(target),
-        apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
+        apikey: process.env.etherscanApiKey,
       })
     );
+    console.log('🦄 ~ file: useBatchDecoder.ts ~ line 41 ~ getABI ~ ret', ret);
     const iface = new Interface(ret.result[0].ABI);
     const functions = new Map<string, FunctionFragment>();
     // eslint-disable-next-line guard-for-in
