@@ -35,16 +35,16 @@ const Liquidations = () => {
     <div className="dark:text-white">
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>Active auctions</h1>
-        {activeAuctionsDef && <Image alt="activeauctions" src={activeAuctionsDef} height={100} width={100} />}
+        {activeAuctionsDef && <Image alt="activeauctions" src={activeAuctionsDef} height={250} width={1368} />}
       </div>
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>Vaults</h1>
-        {vaultsDef && <Image alt="vaults" src={vaultsDef} height={100} width={100} />}
+        {vaultsDef && <Image alt="vaults" src={vaultsDef} height={250} width={1368} />}
       </div>
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>New block discovery lag</h1>
         {newBlockDiscoveryLagDef && (
-          <Image alt="newblockdiscoverylag" src={newBlockDiscoveryLagDef} height={100} width={100} />
+          <Image alt="newblockdiscoverylag" src={newBlockDiscoveryLagDef} height={250} width={1368} />
         )}
       </div>
     </div>
