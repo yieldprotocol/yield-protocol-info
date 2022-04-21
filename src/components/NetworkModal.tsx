@@ -13,7 +13,7 @@ const NetworkModal = () => {
 
   // update the connection to the proper chainId
   useEffect(() => {
-    connector.activate(cachedChainId);
+    connector.activate(+cachedChainId);
   }, [cachedChainId, connector]);
 
   return (

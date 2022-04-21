@@ -1,11 +1,11 @@
 export const RPC_URLS: { [chainId: number]: string } = {
-  1: process.env.REACT_APP_RPC_URL_1 as string,
-  4: process.env.REACT_APP_RPC_URL_4 as string,
-  42: process.env.REACT_APP_RPC_URL_42 as string,
-  10: process.env.REACT_APP_RPC_URL_10 as string,
-  69: process.env.REACT_APP_RPC_URL_69 as string,
-  42161: process.env.REACT_APP_RPC_URL_42161 as string,
-  421611: process.env.REACT_APP_RPC_URL_421611 as string,
+  1: process.env.REACT_APP_RPC_URL_1,
+  4: process.env.REACT_APP_RPC_URL_4,
+  42: process.env.REACT_APP_RPC_URL_42,
+  10: process.env.REACT_APP_RPC_URL_10,
+  69: process.env.REACT_APP_RPC_URL_69,
+  42161: process.env.REACT_APP_RPC_URL_42161,
+  421611: process.env.REACT_APP_RPC_URL_421611,
 };
 
 export const SUPPORTED_RPC_URLS: { [chainId: number]: string } = {

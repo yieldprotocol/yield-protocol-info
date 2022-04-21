@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
 import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
+import MainViewWrap from '../components/wraps/MainViewWrap';
 import useHomePageData from '../hooks/useHomePageData';
 import { getAssets, getAssetsTvl, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
@@ -9,7 +10,12 @@ import { getContracts } from '../lib/contracts';
 const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data, loading } = useHomePageData();
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <MainViewWrap>
+        <Spinner />
+      </MainViewWrap>
+    );
 
   return (
     <Home

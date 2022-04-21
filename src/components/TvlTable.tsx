@@ -10,7 +10,7 @@ const TvlTable = ({ data, assets }: { data: any[]; assets: IAssetMap }) =>
         <tbody className="divide-y">
           {data.map((x) => {
             const asset = assets[x.id];
-            const assetLogo = markMap.get(asset.symbol);
+            const assetLogo = markMap.get(asset?.symbol);
             return (
               <tr key={uuid()} className="items-center group">
                 <td className="p-3 text-start items-center flex gap-4">
