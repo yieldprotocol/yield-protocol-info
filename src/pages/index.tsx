@@ -13,10 +13,10 @@ const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStatic
 
   return (
     <Home
-      assetsTvl={data.assetsTvl ?? assetsTvl}
-      totalDebtList={data.totalDebtList ?? totalDebtList}
-      totalDebt={data.totalDebt ?? totalDebt}
-      assets={data.assetMap ?? assetMap}
+      assetsTvl={data?.assetsTvl ?? assetsTvl}
+      totalDebtList={data?.totalDebtList ?? totalDebtList}
+      totalDebt={data?.totalDebt ?? totalDebt}
+      assets={data?.assetMap ?? assetMap}
     />
   );
 };
