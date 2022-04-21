@@ -18,6 +18,9 @@ const nextConfig = {
     alchemyArbKey: process.env.ALCHEMY_ARBITRUM_KEY,
     alchemyArbRinkebyKey: process.env.ALCHEMY_ARBITRUM_RINKEBY_KEY,
   },
+  images: {
+    domains: ['n6fcc052ak.execute-api.us-west-2.amazonaws.com'],
+  },
 };
 
 module.exports = nextConfig;
