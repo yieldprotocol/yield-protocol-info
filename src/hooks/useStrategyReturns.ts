@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { formatDistanceStrict } from 'date-fns';
-import { useBlockNum } from './useBlockNum';
+import { useWeb3React } from '@web3-react/core';
 import { burnFromStrategy, SECONDS_PER_YEAR } from '../utils/yieldMath';
-import { useAppSelector } from '../state/hooks/general';
 import { IStrategy } from '../types/chain';
 import * as contracts from '../contracts';
 
@@ -12,9 +11,9 @@ import * as contracts from '../contracts';
  * @param strategy
  * @param previousBlocks number of blocks to use for comparison (lookback window)
  */
-export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) => {
-  const { provider } = useAppSelector((st) => st.chain);
-  const currentBlock = useBlockNum();
+export const useStrategyReturns = async (strategy: IStrategy, previousBlocks: number) => {
+  const { provider } = useWeb3React();
+  const [currentBlock, setCurrentBlock] = useState<number>();
   const [previousBlock, setPreviousBlock] = useState<number>();
 
   const [strategyReturns, setStrategyReturns] = useState<string | null>(null);
@@ -23,6 +22,12 @@ export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) 
   const [secondsToDays, setSecondsToDays] = useState<string | null>(null);
   const [previousBlockTimestamp, setPreviousBlockTimestamp] = useState<number>();
   const [currBlockTimestamp, setCurrBlockTimestamp] = useState<number>();
+
+  useEffect(() => {
+    (async () => {
+      setCurrentBlock(await provider.getBlockNumber());
+    })();
+  }, [provider]);
 
   useEffect(() => {
     const _getStrategyBaseValuePerShare = async (blockTag: number) => {
