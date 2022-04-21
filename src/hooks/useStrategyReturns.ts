@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { formatDistanceStrict } from 'date-fns';
 import { useBlockNum } from './useBlockNum';
-import { burnFromStrategy, SECONDS_PER_YEAR } from '../../utils/yieldMath';
-import { useAppSelector } from './general';
-import { IStrategy } from '../../types/chain';
-import * as contracts from '../../contracts';
+import { burnFromStrategy, SECONDS_PER_YEAR } from '../utils/yieldMath';
+import { useAppSelector } from '../state/hooks/general';
+import { IStrategy } from '../types/chain';
+import * as contracts from '../contracts';
 
 /**
  * returns the strategy's corresponding apy estimated based on the base value per share of the current block num and a previous block num (using last 7-8 days)

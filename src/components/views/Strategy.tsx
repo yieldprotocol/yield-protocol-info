@@ -2,7 +2,7 @@ import { cleanValue } from '../../utils/appUtils';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import SkeletonWrap from '../wraps/SkeletonWrap';
-import { useStrategyReturns } from '../../state/hooks/useStrategyReturns';
+import { useStrategyReturns } from '../../hooks/useStrategyReturns';
 import { IStrategy } from '../../types/chain';
 
 const Strategy = ({ strategy }: { strategy: IStrategy }) => {
