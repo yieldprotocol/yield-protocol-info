@@ -10,7 +10,7 @@ import { getContracts } from '../lib/contracts';
 const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data, loading } = useHomePageData();
 
-  if (loading)
+  if (loading && !assetsTvl)
     return (
       <MainViewWrap>
         <Spinner />
