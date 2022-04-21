@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import useTotalDebt from '../../hooks/useTotalDebt';
 import { ITotalDebtItem } from '../../lib/chain/types';
 import { IAssetMap } from '../../types/chain';
 import AnimatedNum from '../AnimatedNum';

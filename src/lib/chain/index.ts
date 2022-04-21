@@ -13,9 +13,8 @@ import {
 } from '../../contracts';
 import { SeriesAddedEvent } from '../../contracts/Cauldron';
 import { JoinAddedEvent, PoolAddedEvent } from '../../contracts/Ladle';
-import { IAsset, IAssetMap, IAssetPairData, ISeries, ISeriesMap, IStrategyMap } from '../../types/chain';
+import { IAsset, IAssetMap, IAssetPairData, ISeriesMap, IStrategyMap } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
-import { IPriceMap } from '../../types/vaults';
 import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
 import { CAULDRON, LADLE } from '../../utils/constants';
 import { decimalNToDecimal18 } from '../../utils/yieldMath';
@@ -259,8 +258,7 @@ export const getAssetsTvl = async (
   const _poolBalances = await getPoolBalances(poolAddrToAssetMap, provider);
 
   // denominate balance in usdc (or dai when usdc not applicable)
-  const USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
-  const DAI = Object.values(assets).filter((a) => a.symbol === 'DAI')[0];
+  const _USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
 
   // consolidate pool address asset balances
   const totalPoolBalances = _poolBalances?.reduce((balMap: any, bal: any) => {
@@ -281,9 +279,9 @@ export const getAssetsTvl = async (
       if ([FDAI2203, FDAI2206, FDAI2209].includes(bal.id)) {
         price_ = '1';
       } else {
-        _price = await getPrice(bal.id, USDC.id, contractMap, bal.asset.decimals, chainId);
+        _price = await getPrice(bal.id, _USDC.id, contractMap, bal.asset.decimals, chainId);
 
-        const priceInUSDC = decimalNToDecimal18(_price, USDC.decimals);
+        const priceInUSDC = decimalNToDecimal18(_price, _USDC.decimals);
         price_ = ethers.utils.formatUnits(priceInUSDC, 18);
       }
 
@@ -376,10 +374,10 @@ async function getPoolBalances(
     const balances: { id: string; balance: string; asset: IAssetPoolAddr }[] = [];
     await Promise.all(
       Object.values(poolAddrToAssetMap).map(async (pool) => {
-        const Pool = Pool__factory.connect(pool.poolAddress, provider);
+        const _Pool = Pool__factory.connect(pool.poolAddress, provider);
         balances.push({
           id: pool.id,
-          balance: await getPoolBalance(Pool),
+          balance: await getPoolBalance(_Pool),
           asset: pool,
         });
       })
