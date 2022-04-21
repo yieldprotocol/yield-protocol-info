@@ -45,7 +45,7 @@ const NetworkModal = () => {
                         <button
                           key={id}
                           className="my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300 items-center justify-center overflow-hidden font-medium focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:hover:bg-green-500 text-md rounded-lg py-2"
-                          onClick={() => setCachedChainId(id)}
+                          onClick={() => setCachedChainId(id.toString())}
                           type="button"
                         >
                           <div className="text-sm">{CHAIN_INFO.get(id)?.name}</div>
