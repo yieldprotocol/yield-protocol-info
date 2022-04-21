@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { ActionType } from '../state/actionTypes/chain';
 
 export interface IChainState {
   provider: ethers.providers.JsonRpcProvider | null;
@@ -15,91 +14,6 @@ export interface IChainState {
   assets: IAssetMap | null;
   assetsTvl: IAssetsTvl[];
   assetPairData: IAssetPairMap | null;
-}
-
-export type IChainAction =
-  | IChainProviderAction
-  | IChainChainIdAction
-  | IChainChainLoadingAction
-  | IChainSeriesLoadingAction
-  | IChainStrategiesLoadingAction
-  | IChainAssetsLoadingAction
-  | IChainAssetPairDataLoadingAction
-  | IChainUpdateSeriesAction
-  | IChainUpdateStrategiesAction
-  | IChainUpdateAssetsAction
-  | IChainUpdateAssetPairMapAction
-  | IChainUpdateAssetsTVLAction
-  | IChainTvlLoadingAction
-  | IChainResetAction;
-
-export interface IChainProviderAction {
-  type: ActionType.PROVIDER;
-  payload: ethers.providers.JsonRpcProvider;
-}
-
-export interface IChainChainIdAction {
-  type: ActionType.CHAIN_ID;
-  payload: number;
-}
-
-export interface IChainChainLoadingAction {
-  type: ActionType.CHAIN_LOADING;
-  payload: boolean;
-}
-
-export interface IChainSeriesLoadingAction {
-  type: ActionType.SERIES_LOADING;
-  payload: boolean;
-}
-
-export interface IChainStrategiesLoadingAction {
-  type: ActionType.STRATEGIES_LOADING;
-  payload: boolean;
-}
-
-export interface IChainAssetsLoadingAction {
-  type: ActionType.ASSETS_LOADING;
-  payload: boolean;
-}
-
-export interface IChainAssetPairDataLoadingAction {
-  type: ActionType.ASSET_PAIR_DATA_LOADING;
-  payload: boolean;
-}
-
-export interface IChainUpdateSeriesAction {
-  type: ActionType.UPDATE_SERIES;
-  payload: ISeriesMap;
-}
-
-export interface IChainUpdateStrategiesAction {
-  type: ActionType.UPDATE_STRATEGIES;
-  payload: IStrategyMap;
-}
-
-export interface IChainUpdateAssetsAction {
-  type: ActionType.UPDATE_ASSETS;
-  payload: IAssetMap;
-}
-
-export interface IChainUpdateAssetPairMapAction {
-  type: ActionType.UPDATE_ASSET_PAIR_DATA;
-  payload: { assetId: string; assetPairData: IAssetPairData[] };
-}
-
-export interface IChainUpdateAssetsTVLAction {
-  type: ActionType.UPDATE_ASSETS_TVL;
-  payload: IAssetsTvl[];
-}
-
-export interface IChainTvlLoadingAction {
-  type: ActionType.TVL_LOADING;
-  payload: boolean;
-}
-
-export interface IChainResetAction {
-  type: ActionType.RESET;
 }
 
 export interface ISeriesMap {
