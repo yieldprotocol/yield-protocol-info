@@ -8,7 +8,7 @@ const NotionalDAIMark = ({ seriesId }: { seriesId: string }) => {
   const [seriesColor, setSeriesColor] = useState<string>();
 
   useEffect(() => {
-    if (seriesMap) {
+    if (seriesMap && seriesId) {
       setSeriesColor(seriesMap[seriesId].color);
     }
   }, [seriesId, seriesMap]);

@@ -1,11 +1,14 @@
 import { ethers } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
 import Assets from '../../components/views/Assets';
+import useAssets from '../../hooks/useAssets';
 import { getAssets } from '../../lib/chain';
 import { getContracts } from '../../lib/contracts';
 
-const AssetsPage = ({ assetList }: InferGetStaticPropsType<typeof getStaticProps>) => <Assets assetList={assetList} />;
-
+const AssetsPage = ({ assetList }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const assetMap = useAssets();
+  return <Assets assetList={assetMap ? Object.values(assetMap) : assetList} />;
+};
 export default AssetsPage;
 
 export const getStaticProps = async () => {
