@@ -15,6 +15,7 @@ export const FDAI2206 = '0x313400000000';
 export const FUSDC2206 = '0x313500000000';
 export const FDAI2209 = '0x313600000000';
 export const FUSDC2209 = '0x313700000000';
+export const FRAX = '0x313800000000';
 
 export enum TokenType {
   ERC20_,
@@ -300,4 +301,17 @@ ASSET_INFO.set(FUSDC2209, {
   tokenType: TokenType.ERC1155_,
   tokenIdentifier: 844850930515969,
   limitToSeries: ['0x303230370000'],
+});
+
+ASSET_INFO.set(FRAX, {
+  version: '1',
+  name: 'frax',
+  decimals: 18,
+  symbol: 'FRAX',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#ffffff',
+  digitFormat: 6,
+  tokenType: TokenType.ERC20_,
+  limitToSeries: [],
 });
