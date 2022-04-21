@@ -78,7 +78,7 @@ const Vaults = ({
   return (
     <MainViewWrap>
       {!vaultList ? (
-        <Spinner loading={true} />
+        <Spinner />
       ) : (
         <div>
           <div className="mb-4 w-1/3">

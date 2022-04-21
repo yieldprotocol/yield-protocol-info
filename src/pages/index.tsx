@@ -1,12 +1,25 @@
 import { ethers } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
+import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
+import useHomePageData from '../hooks/useHomePageData';
 import { getAssets, getAssetsTvl, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
 
-const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => (
-  <Home assetsTvl={assetsTvl} totalDebtList={totalDebtList} totalDebt={totalDebt} assets={assetMap} />
-);
+const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data, loading } = useHomePageData();
+
+  if (loading) return <Spinner />;
+
+  return (
+    <Home
+      assetsTvl={data.assetsTvl ?? assetsTvl}
+      totalDebtList={data.totalDebtList ?? totalDebtList}
+      totalDebt={data.totalDebt ?? totalDebt}
+      assets={data.assetMap ?? assetMap}
+    />
+  );
+};
 
 export default Index;
 

@@ -37,7 +37,7 @@ const Contract = () => {
       <div className="ml-56">
         <Header> </Header>
         <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
-          <Spinner loading={eventsLoading} />
+          {eventsLoading && <Spinner />}
           {!eventsLoading && (
             <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
               <div className="text-lg pb-4 flex gap-x-2">
