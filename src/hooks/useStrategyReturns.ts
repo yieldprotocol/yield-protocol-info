@@ -11,7 +11,7 @@ import * as contracts from '../contracts';
  * @param strategy
  * @param previousBlocks number of blocks to use for comparison (lookback window)
  */
-export const useStrategyReturns = async (strategy: IStrategy, previousBlocks: number) => {
+export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) => {
   const { provider } = useWeb3React();
   const [currentBlock, setCurrentBlock] = useState<number>();
   const [previousBlock, setPreviousBlock] = useState<number>();
