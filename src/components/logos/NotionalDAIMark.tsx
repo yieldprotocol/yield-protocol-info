@@ -9,7 +9,7 @@ const NotionalDAIMark = ({ seriesId }: { seriesId: string }) => {
 
   useEffect(() => {
     if (seriesMap && seriesId) {
-      setSeriesColor(seriesMap[seriesId].color);
+      setSeriesColor(seriesMap[seriesId]?.color!);
     }
   }, [seriesId, seriesMap]);
 
