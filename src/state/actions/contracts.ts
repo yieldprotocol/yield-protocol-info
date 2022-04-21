@@ -19,7 +19,7 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
     if (contract) {
       try {
         dispatch(setEventsLoading(true));
-        const events = await contract.queryFilter(filter, undefined, undefined);
+        const events = await contract.queryFilter(filter, -10000, undefined);
 
         const updatedEvents = await Promise.all(
           events.map(async (e: Event, i: number) => ({
