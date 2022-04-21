@@ -9,11 +9,12 @@ const Contracts = () => {
   const [contractsList, setContractsList] = useState<IContract[]>([]);
 
   useEffect(() => {
-    setContractsList(
-      [...Object.keys(contractMap).map((name) => ({ contract: contractMap[name], name }))].sort((s1, s2) =>
-        s1.name < s2.name ? -1 : 1
-      )
-    );
+    if (contractMap)
+      setContractsList(
+        Object.keys(contractMap)
+          .map((name) => ({ contract: contractMap[name], name }))
+          .sort((s1, s2) => (s1.name < s2.name ? -1 : 1))
+      );
   }, [contractMap]);
 
   return (

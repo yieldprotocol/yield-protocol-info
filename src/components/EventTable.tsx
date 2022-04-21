@@ -1,5 +1,4 @@
-import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { v4 as uuid } from 'uuid';
 import { IEventArgsProps, IEvents } from '../types/contracts';
 import AddressDisplay from './AddressDisplay';
@@ -12,19 +11,21 @@ const ArgsCell = ({ values, eventArgs }: any) => (
           <tr key={uuid()}>
             <td style={{ minWidth: '8rem' }}>{eventArgs ? eventArgs[idx].name : `unknown arg${idx}`}:</td>
             <td>
-              <p>
+              <div>
                 {(eventArgs && eventArgs[idx].type) === 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <AddressDisplay addr={value} />
                 )}
                 {eventArgs && eventArgs[idx].name === 'vaultId' && (
-                  <Link to={`/vaults/${value}`} className="hover:underline">
-                    <code>{value}</code>
+                  <Link href={`/vaults/${value}`} passHref>
+                    <div className="hover:underline">
+                      <code>{value}</code>
+                    </div>
                   </Link>
                 )}
                 {eventArgs && eventArgs[idx].type !== 'address' && eventArgs[idx].name !== 'vaultId' && (
                   <code>{value}</code>
                 )}
-              </p>
+              </div>
             </td>
           </tr>
         ))}
@@ -32,7 +33,7 @@ const ArgsCell = ({ values, eventArgs }: any) => (
   </table>
 );
 
-const EventTable: FC<{ events: IEvents[]; eventArgsProps: IEventArgsProps }> = ({ events, eventArgsProps }) => (
+const EventTable = ({ events, eventArgsProps }: { events: IEvents[]; eventArgsProps: IEventArgsProps }) => (
   <div>
     <table className="table min-w-full divide-y divide-gray-200">
       <thead className="">

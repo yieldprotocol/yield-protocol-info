@@ -14,7 +14,7 @@ const Role = () => {
   const { name } = router.query;
   const dispatch = useAppDispatch();
   const { roles, roleNames, rolesLoading } = useAppSelector(({ contracts }) => contracts);
-  const contractRoles = (roles as any)[name as string];
+  const contractRoles = roles[name as string];
 
   useEffect(() => {
     if (contractMap && name) dispatch(getRoles(contractMap, name as string));
