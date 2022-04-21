@@ -16,7 +16,7 @@ export const getServerSideProps = async ({ query }) => {
   const contractMap = await getContracts(provider, chainId);
   const seriesMap = await getSeries(provider, contractMap);
 
-  const seriesList = [...Object.values(seriesMap)]
+  const seriesList = Object.values(seriesMap)
     .sort((s1, s2) => (s1.name < s2.name ? -1 : 1))
     .sort((s1, s2) => s1.maturity - s2.maturity);
 
