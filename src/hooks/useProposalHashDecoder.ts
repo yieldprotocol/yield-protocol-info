@@ -11,7 +11,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';
 
-  const ADDRESS_TIMELOCK = yieldEnv.addresses[chainId].Timelock;
+  const ADDRESS_TIMELOCK = yieldEnv.addresses[chainId]?.Timelock;
   const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
@@ -97,7 +97,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
           address: addHexPrefix(ADDRESS_TIMELOCK),
           topic0: addHexPrefix(PROPOSE_EVENT),
           topic1: addHexPrefix(hash),
-          apikey: process.env.etherscanApiKey,
+          apikey: process.env.ETHERSCAN_API_KEY,
         })
       );
 

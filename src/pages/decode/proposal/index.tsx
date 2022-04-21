@@ -6,8 +6,8 @@ const ProposalDecoderPage = () => (
   <>
     <SubNav
       paths={[
-        { path: `/decode/batch`, name: 'Batch Decoder' },
-        { path: `/decode/proposal`, name: 'Proposal Decoder' },
+        { path: `/decode/batch`, name: 'batch' },
+        { path: `/decode/proposal`, name: 'proposal' },
       ]}
     />
     <MainViewWrap>

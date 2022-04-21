@@ -14,7 +14,7 @@ const SubNav = ({ paths }: { paths: IPath[] }) => {
     <div className="z-12 bg-gray-100 dark:bg-gray-800 h-full fixed lg:w-60 md:w-32 sm:w-16 dark:border-gray-700 ">
       <div className="py-4 sm:px-6 lg:px-8">
         <div className="p-2 lg:px-0 mt-10">
-          {paths.map((path: IPath) => (
+          {paths.map((path) => (
             <div key={path.name} className="py-4 ml-0">
               <Link href={`${path.path}`} passHref>
                 <div
