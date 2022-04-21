@@ -1,22 +1,17 @@
 import { ethers } from 'ethers';
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import Home from '../components/views/Home';
 import { getAssets, getAssetsTvl, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
 
-const Index = ({
-  assetsTvl,
-  totalDebtList,
-  totalDebt,
-  assetMap,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => (
+const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => (
   <Home assetsTvl={assetsTvl} totalDebtList={totalDebtList} totalDebt={totalDebt} assets={assetMap} />
 );
 
 export default Index;
 
-export const getServerSideProps = async ({ query }) => {
-  const chainId = (query.chainId || 1) as number;
+export const getStaticProps = async () => {
+  const chainId = 1;
 
   const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
 
