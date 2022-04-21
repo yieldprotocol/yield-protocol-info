@@ -13,6 +13,7 @@ import YFIMark from '../components/logos/YFIMark';
 import MakerMark from '../components/logos/MakerMark';
 import NotionalDAIMark from '../components/logos/NotionalDAIMark';
 import NotionalUSDCMark from '../components/logos/NotionalUSDCMark';
+import FRAXMark from '../components/logos/FRAXMark';
 
 export const markMap = new Map<string, any>([
   ['DAI', <DaiMark key="dai" />],
@@ -35,4 +36,5 @@ export const markMap = new Map<string, any>([
   ['FUSDC2203', <NotionalUSDCMark key="notional" series="0x303230350000" />],
   ['FUSDC2206', <NotionalUSDCMark key="notional" series="0x303230360000" />],
   ['FUSDC2209', <NotionalUSDCMark key="notional" series="0x303230370000" />],
+  ['FRAX', <FRAXMark key="frax" />],
 ]);

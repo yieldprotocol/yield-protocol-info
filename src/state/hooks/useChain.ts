@@ -99,14 +99,14 @@ const useChain = (chainId: number) => {
           await Promise.all(
             assetAddedEvents.map(async (x: Event) => {
               const { assetId: id, asset: address } = Cauldron.interface.parseLog(x).args;
-              const assetInfo = ASSET_INFO.get(id);
+              const assetInfo = ASSET_INFO?.get(id)!;
               let { name, symbol, decimals, version } = assetInfo!;
 
               /* On first load Checks/Corrects the ERC20 name/symbol/decimals  (if possible ) */
               if (
-                assetInfo?.tokenType === TokenType.ERC20_ ||
-                assetInfo?.tokenType === TokenType.ERC20_Permit ||
-                assetInfo?.tokenType === TokenType.ERC20_DaiPermit
+                assetInfo?.tokenType! === TokenType.ERC20_ ||
+                assetInfo?.tokenType! === TokenType.ERC20_Permit ||
+                assetInfo?.tokenType! === TokenType.ERC20_DaiPermit
               ) {
                 const contract = contracts.ERC20__factory.connect(address, provider);
                 try {
@@ -125,8 +125,8 @@ const useChain = (chainId: number) => {
 
               /* Checks/Corrects the version for ERC20Permit tokens */
               if (
-                assetInfo?.tokenType === TokenType.ERC20_Permit ||
-                assetInfo?.tokenType === TokenType.ERC20_DaiPermit
+                assetInfo?.tokenType! === TokenType.ERC20_Permit ||
+                assetInfo?.tokenType! === TokenType.ERC20_DaiPermit
               ) {
                 const contract = contracts.ERC20Permit__factory.connect(address, provider);
                 try {
