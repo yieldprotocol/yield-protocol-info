@@ -16,8 +16,8 @@ const Vaults = ({
   assetMap,
 }: {
   vaultList: IVault[];
-  seriesMap: ISeriesMap;
-  assetMap: IAssetMap;
+  seriesMap: ISeriesMap | undefined;
+  assetMap: IAssetMap | undefined;
 }) => {
   const router = useRouter();
 
@@ -74,6 +74,13 @@ const Vaults = ({
       handleFilter(allVaults);
     }
   }, [allVaults, handleFilter, ilkFilter, seriesFilter, unhealthyFilter, vaultSearch]);
+
+  if (!assetMap || !seriesMap)
+    return (
+      <MainViewWrap>
+        <Spinner />
+      </MainViewWrap>
+    );
 
   return (
     <MainViewWrap>
@@ -141,8 +148,8 @@ const Vaults = ({
                 {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map((v) => {
                   const debtAsset = assetMap[v.baseId];
                   const collatAsset = assetMap[v.ilkId];
-                  const debtAssetLogo = markMap.get(debtAsset.symbol);
-                  const collatAssetLogo = markMap.get(collatAsset.symbol);
+                  const debtAssetLogo = markMap.get(debtAsset?.symbol);
+                  const collatAssetLogo = markMap.get(collatAsset?.symbol);
                   return (
                     <tr
                       key={v.id}

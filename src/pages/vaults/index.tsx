@@ -1,13 +1,25 @@
 import { ethers } from 'ethers';
 import { InferGetServerSidePropsType } from 'next';
 import Vaults from '../../components/views/Vaults';
+import useAssets from '../../hooks/useAssets';
+import useSeries from '../../hooks/useSeries';
+import useVaults from '../../hooks/useVaults';
 import { getAssets, getSeries } from '../../lib/chain';
 import { getContracts } from '../../lib/contracts';
 import { getMainnetVaults, getNotMainnetVaults } from '../../lib/vaults';
 
-const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetServerSidePropsType<typeof getServerSideProps>) => (
-  <Vaults vaultList={vaultList} assetMap={assetMap} seriesMap={seriesMap} />
-);
+const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const _vaultMap = useVaults();
+  const _assetMap = useAssets();
+  const _seriesMap = useSeries();
+  return (
+    <Vaults
+      vaultList={_vaultMap ? Object.values(_vaultMap) : vaultList}
+      assetMap={_assetMap ?? assetMap}
+      seriesMap={_seriesMap ?? seriesMap}
+    />
+  );
+};
 
 export default StrategiesPage;
 
