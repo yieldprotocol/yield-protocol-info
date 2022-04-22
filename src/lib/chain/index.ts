@@ -25,8 +25,6 @@ export const getProvider = (chainId: number) => {
   if (chainId === 42161) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbKey);
   if (chainId === 421611) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbRinkebyKey);
   return new ethers.providers.InfuraProvider(chainId, process.env.infuraKey);
-  // const defaultProvider = ethers.providers.(chainId, process.env.infuraKey);
-  // const provider = new ethers.providers.Web3Provider(defaultProvider);
 };
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
