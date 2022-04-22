@@ -1,7 +1,9 @@
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import Asset from '../../components/views/Asset';
 import MainViewWrap from '../../components/wraps/MainViewWrap';
 import useAssets from '../../hooks/useAssets';
+
+const DynamicAsset = dynamic(() => import('../../components/views/Asset'), { ssr: false });
 
 const AssetPage = () => {
   const assetMap = useAssets();
@@ -13,7 +15,7 @@ const AssetPage = () => {
 
   if (!asset) return <MainViewWrap>Asset does not exist on this network</MainViewWrap>;
 
-  return <Asset asset={asset} />;
+  return <DynamicAsset asset={asset} />;
 };
 
 export default AssetPage;

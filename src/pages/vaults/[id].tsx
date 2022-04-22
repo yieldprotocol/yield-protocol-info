@@ -1,6 +1,8 @@
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import Vault from '../../components/views/Vault';
 import useVaults from '../../hooks/useVaults';
+
+const DynamicVault = dynamic(() => import('../../components/views/Vault'), { ssr: false });
 
 const VaultPage = () => {
   const vaultMap = useVaults();
@@ -10,7 +12,7 @@ const VaultPage = () => {
 
   const vault = vaultMap[vaultId as string];
 
-  return <Vault vault={vault} />;
+  return <DynamicVault vault={vault} />;
 };
 
 export default VaultPage;
