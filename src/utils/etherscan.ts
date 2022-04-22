@@ -41,7 +41,7 @@ export async function getABI(chainId: number, target: string) {
       module: 'contract',
       action: 'getsourcecode',
       address: addHexPrefix(target),
-      apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
+      apikey: process.env.ETHERSCAN_API_KEY,
     })
   );
 

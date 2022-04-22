@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
-import { useAppSelector } from '../../state/hooks/general';
+import { useWeb3React } from '@web3-react/core';
+import Image from 'next/image';
 
-const Liquidations: FC = () => {
-  const chainId: number = useAppSelector((st) => st.chain.chainId);
+const Liquidations = () => {
+  const { chainId } = useWeb3React();
+
   let activeAuctionsDef: string | undefined;
   let vaultsDef: string | undefined;
   let newBlockDiscoveryLagDef: string | undefined;
@@ -34,15 +35,17 @@ const Liquidations: FC = () => {
     <div className="dark:text-white">
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>Active auctions</h1>
-        {activeAuctionsDef && <img alt="activeauctions" src={activeAuctionsDef} />}
+        {activeAuctionsDef && <Image alt="activeauctions" src={activeAuctionsDef} height={250} width={1368} />}
       </div>
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>Vaults</h1>
-        {vaultsDef && <img alt="vaults" src={vaultsDef} />}
+        {vaultsDef && <Image alt="vaults" src={vaultsDef} height={250} width={1368} />}
       </div>
       <div style={{ padding: '1rem 3rem 1rem 3rem' }}>
         <h1>New block discovery lag</h1>
-        {newBlockDiscoveryLagDef && <img alt="newblockdiscoverylag" src={newBlockDiscoveryLagDef} />}
+        {newBlockDiscoveryLagDef && (
+          <Image alt="newblockdiscoverylag" src={newBlockDiscoveryLagDef} height={250} width={1368} />
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { formatValue } from '../../utils/appUtils';
 import { markMap } from '../../config/marks';
 import MainViewWrap from '../wraps/MainViewWrap';
@@ -8,17 +7,19 @@ import Button from '../Button';
 import SearchInput from '../SearchInput';
 import Spinner from '../Spinner';
 import { IVault } from '../../types/vaults';
-import { useVaults } from '../../state/hooks/useVaults';
 import Select from '../Select';
-import { getMainnetVaults } from '../../state/actions/vaults';
+import { IAssetMap, ISeriesMap } from '../../types/chain';
 
-const Vaults: FC = () => {
-  const dispatch = useAppDispatch();
-  const history = useHistory();
-  const { vaults, vaultsLoading } = useAppSelector((st) => st.vaults);
-  const { series, assets, chainId } = useAppSelector(({ chain }) => chain);
-
-  useVaults();
+const Vaults = ({
+  vaultList,
+  seriesMap,
+  assetMap,
+}: {
+  vaultList: IVault[];
+  seriesMap: ISeriesMap | undefined;
+  assetMap: IAssetMap | undefined;
+}) => {
+  const router = useRouter();
 
   // filters
   const [seriesFilterChoices, setSeriesFilterChoices] = useState<string[][]>();
@@ -33,35 +34,16 @@ const Vaults: FC = () => {
   const [seriesFilter, setSeriesFilter] = useState<string>('');
 
   const handleClick = (id: string) => {
-    history.push(`/vaults/${id}`);
+    router.push(`/vaults/${id}`);
   };
 
   useEffect(() => {
-    if (vaults && assets && series) {
-      const seriesChoices = Array.from(new Set(Object.keys(vaults).map((key) => vaults[key].seriesId))).filter(
-        (x) => x !== '0x000000000000'
-      );
-      setSeriesFilterChoices(seriesChoices.map((sc) => [sc, series[sc] ? series[sc].name : '']));
+    const seriesChoices = Array.from(new Set(vaultList.map((v) => v.seriesId))).filter((x) => x !== '0x000000000000');
+    setSeriesFilterChoices(seriesChoices.map((sc) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']));
 
-      const ilkChoices = Array.from(new Set(Object.keys(vaults).map((key) => vaults[key].ilkId)));
-      setIlkFilterChoices(ilkChoices.map((ic) => [ic, assets[ic].name]));
-    }
-  }, [vaults, assets, series]);
-
-  useEffect(() => {
-    // only get vaults for mainnet
-    if (chainId === 1) {
-      dispatch(getMainnetVaults());
-    }
-  }, [dispatch, chainId]);
-
-  // get a specific vault
-  useEffect(() => {
-    // only get vaults for mainnet
-    if (chainId === 1 && vaultSearch) {
-      dispatch(getMainnetVaults(vaultSearch));
-    }
-  }, [dispatch, chainId, vaultSearch]);
+    const ilkChoices = Array.from(new Set(vaultList.map((v) => v.ilkId)));
+    setIlkFilterChoices(ilkChoices.map((ic) => [ic, assetMap[ic].name]));
+  }, [assetMap, seriesMap, vaultList]);
 
   const handleFilter = useCallback(
     (_vaults: IVault[]) => {
@@ -79,28 +61,31 @@ const Vaults: FC = () => {
   );
 
   useEffect(() => {
-    if (vaults) {
-      const _allVaults = Object.values(vaults)
-        .filter((v) => Number(v.art) !== 0 && Number(v.ink) !== 0)
-        // sorting by debt balance
-        .sort((vA, vB) => (Number(vA.art) < Number(vB.art) ? 1 : -1));
+    const _allVaults = vaultList
+      .filter((v) => Number(v.art) !== 0 && Number(v.ink) !== 0)
+      // sorting by debt balance
+      .sort((vA, vB) => (Number(vA.art) < Number(vB.art) ? 1 : -1));
 
-      setAllVaults(_allVaults);
-    }
-  }, [vaults, handleFilter]);
+    setAllVaults(_allVaults);
+  }, [vaultList]);
 
   useEffect(() => {
     if (unhealthyFilter || vaultSearch || seriesFilter || ilkFilter) {
       handleFilter(allVaults);
     }
-  }, [unhealthyFilter, ilkFilter, allVaults, handleFilter, seriesFilter, vaultSearch]);
+  }, [allVaults, handleFilter, ilkFilter, seriesFilter, unhealthyFilter, vaultSearch]);
 
-  if (!vaultsLoading && (!vaults || ![...Object.values(vaults!)].length)) return <MainViewWrap>No Vaults</MainViewWrap>;
+  if (!assetMap || !seriesMap)
+    return (
+      <MainViewWrap>
+        <Spinner />
+      </MainViewWrap>
+    );
 
   return (
     <MainViewWrap>
-      {vaultsLoading ? (
-        <Spinner loading={vaultsLoading} />
+      {!vaultList ? (
+        <Spinner />
       ) : (
         <div>
           <div className="mb-4 w-1/3">
@@ -161,10 +146,10 @@ const Vaults: FC = () => {
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
                 {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map((v) => {
-                  const debtAsset = assets![v.baseId];
-                  const collatAsset = assets![v.ilkId];
-                  const debtAssetLogo = markMap.get(debtAsset.symbol);
-                  const collatAssetLogo = markMap.get(collatAsset.symbol);
+                  const debtAsset = assetMap[v.baseId];
+                  const collatAsset = assetMap[v.ilkId];
+                  const debtAssetLogo = markMap.get(debtAsset?.symbol);
+                  const collatAssetLogo = markMap.get(collatAsset?.symbol);
                   return (
                     <tr
                       key={v.id}

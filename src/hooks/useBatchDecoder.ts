@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
+import { useWeb3React } from '@web3-react/core';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
-import { useAppSelector } from '../state/hooks/general';
 
 const useBatchDecoder = (txHash: string) => {
-  const { provider, chainId } = useAppSelector(({ chain }) => chain);
+  const { provider, chainId } = useWeb3React();
 
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>(null);
@@ -35,9 +35,10 @@ const useBatchDecoder = (txHash: string) => {
         module: 'contract',
         action: 'getsourcecode',
         address: addHexPrefix(target),
-        apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
+        apikey: process.env.ETHERSCAN_API_KEY,
       })
     );
+    console.log('🦄 ~ file: useBatchDecoder.ts ~ line 41 ~ getABI ~ ret', ret);
     const iface = new Interface(ret.result[0].ABI);
     const functions = new Map<string, FunctionFragment>();
     // eslint-disable-next-line guard-for-in

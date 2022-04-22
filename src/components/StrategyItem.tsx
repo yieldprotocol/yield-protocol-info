@@ -1,12 +1,11 @@
-import React, { FC } from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 import { markMap } from '../config/marks';
-import { useAppSelector } from '../state/hooks/general';
 import { IStrategy } from '../types/chain';
+import useAssets from '../hooks/useAssets';
 
-const StrategyItem: FC<{ item: IStrategy }> = ({ item }) => {
-  const { assets } = useAppSelector(({ chain }) => chain);
-  const asset = assets ? assets![item.baseId] : null;
+const StrategyItem = ({ item }: { item: IStrategy }) => {
+  const assets = useAssets();
+  const asset = assets ? assets[item.baseId] : undefined;
   const logo = markMap.get(asset?.symbol!);
 
   return (

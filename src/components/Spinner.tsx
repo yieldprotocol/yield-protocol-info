@@ -1,14 +1,15 @@
 import React from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { useAppSelector } from '../state/hooks/general';
+import { useColorTheme } from '../hooks/useColorTheme';
 
-const Spinner = ({ loading, ...props }: { loading: boolean }) => {
-  const darkMode = useAppSelector((st) => st.application.darkMode);
-  return loading ? (
+const Spinner = ({ ...props }) => {
+  const { theme } = useColorTheme();
+  const darkMode = theme === 'dark';
+  return (
     <div className="text-center">
-      <ClipLoader loading={loading} color={darkMode ? '#34D399' : 'black'} {...props} />
+      <ClipLoader loading={true} color={darkMode ? '#34D399' : 'black'} {...props} />
     </div>
-  ) : null;
+  );
 };
 
 export default Spinner;

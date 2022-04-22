@@ -3,10 +3,12 @@ import { Listbox, Transition } from '@headlessui/react';
 import { FiChevronDown as SelectorIcon, FiCheck as CheckIcon } from 'react-icons/fi';
 import { v4 as uuid } from 'uuid';
 import { markMap } from '../config/marks';
-import { useAppSelector } from '../state/hooks/general';
+import useAssets from '../hooks/useAssets';
+import useSeries from '../hooks/useSeries';
 
 const Selecty = ({ options, label, onChange }: any) => {
-  const { assets, series } = useAppSelector(({ chain }) => chain);
+  const assetMap = useAssets();
+  const seriesMap = useSeries();
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [selectedLogo, setSelectedLogo] = useState(null);
 
@@ -25,12 +27,12 @@ const Selecty = ({ options, label, onChange }: any) => {
   );
 
   useEffect(() => {
-    if (assets && series && selectedOption) {
-      const asset = label === 'Series' ? assets[series[selectedOption].baseId] : assets[selectedOption];
+    if (selectedOption) {
+      const asset = label === 'Series' ? assetMap[seriesMap[selectedOption].baseId] : assetMap[selectedOption];
       const logo = markMap?.get(asset?.symbol!);
       selectedOption && logo && setSelectedLogo(logo);
     }
-  }, [selectedOption, series, assets, label]);
+  }, [assetMap, label, selectedOption, seriesMap]);
 
   if (!options) return null;
   return (
@@ -59,7 +61,7 @@ const Selecty = ({ options, label, onChange }: any) => {
                     value={_x}
                   >
                     {({ selected, active }) => {
-                      const asset = label === 'Series' ? assets![series![_x].baseId] : assets![_x];
+                      const asset = label === 'Series' ? assetMap[seriesMap[_x].baseId] : assetMap[_x];
                       const logo = markMap.get(asset.symbol);
                       return (
                         <div className="flex justify-between">

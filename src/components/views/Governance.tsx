@@ -1,24 +1,24 @@
-import React, { FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import SubNav from '../SubNav';
 import MainViewWrap from '../wraps/MainViewWrap';
 import BatchDecoder from './BatchDecoder';
 import ProposalHashDecoder from './ProposalHashDecoder';
 
-const Governance: FC = () => {
-  const { subnav } = useParams<{ subnav: string }>();
+const Governance = () => {
+  const router = useRouter();
+  const { pathname } = router;
 
   return (
     <>
       <SubNav
         paths={[
-          { path: `governance/batchDecoder`, name: 'Batch Decoder' },
-          { path: `governance/proposalDecoder`, name: 'Proposal Decoder' },
+          { path: `/decode/batch`, name: 'batch' },
+          { path: `/decode/proposal`, name: 'proposal' },
         ]}
       />
       <MainViewWrap>
-        {subnav === 'batchDecoder' && <BatchDecoder />}
-        {subnav === 'proposalDecoder' && <ProposalHashDecoder />}
+        {pathname.includes('batch') && <BatchDecoder />}
+        {pathname.includes('proposal') && <ProposalHashDecoder />}
       </MainViewWrap>
     </>
   );

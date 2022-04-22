@@ -1,20 +1,23 @@
-import React, { FC, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from '../../state/hooks/general';
 import { getRoles } from '../../state/actions/roles';
 import RolesTable from '../RolesTable';
 import SubNav from '../SubNav';
 import Header from '../Header';
 import Spinner from '../Spinner';
+import useContracts from '../../hooks/useContracts';
 
-const Role: FC = () => {
-  const { name } = useParams<{ name: string }>();
+const Role = () => {
+  const contractMap = useContracts();
+  const router = useRouter();
+  const { name } = router.query;
   const dispatch = useAppDispatch();
-  const { contractMap, roles, roleNames, rolesLoading } = useAppSelector(({ contracts }) => contracts);
-  const contractRoles = (roles as any)[name];
+  const { roles, roleNames, rolesLoading } = useAppSelector(({ contracts }) => contracts);
+  const contractRoles = roles[name as string];
 
   useEffect(() => {
-    if (contractMap && name) dispatch(getRoles(contractMap, name));
+    if (contractMap && name) dispatch(getRoles(contractMap, name as string));
   }, [contractMap, dispatch, name]);
 
   if (!contractMap) return null;
@@ -23,14 +26,14 @@ const Role: FC = () => {
     <>
       <SubNav
         paths={[
-          { path: `contracts/${name}/events`, name: 'events' },
-          { path: `contracts/${name}/roles`, name: 'roles' },
+          { path: `/contracts/events/${name}`, name: 'events' },
+          { path: `/contracts/roles/${name}`, name: 'roles' },
         ]}
       />
       <div className="ml-56">
         <Header> </Header>
         <div className="flex justify-center sm:pt-8 md:pt-10 md:pb-20">
-          <Spinner loading={rolesLoading} />
+          {rolesLoading && <Spinner />}
           {!rolesLoading && (
             <div className="rounded-lg p-8 align-middle justify-items-start shadow-md bg-green-100 dark:bg-green-200">
               <div className="text-lg pb-4 flex gap-x-2">

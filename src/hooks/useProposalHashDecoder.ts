@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
+import { useWeb3React } from '@web3-react/core';
 import { addHexPrefix, fetchEtherscan, getABI } from '../utils/etherscan';
-import * as yieldEnv from '../yieldEnv.json';
-import { useAppSelector } from '../state/hooks/general';
+import yieldEnv from '../config/yieldEnv';
 
 const useProposalHashDecoder = (proposalHash: string) => {
+  const { provider, chainId } = useWeb3React();
+
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';
 
-  const { provider, chainId } = useAppSelector((st) => st.chain);
-  const ADDRESS_TIMELOCK = (yieldEnv.addresses as any)[chainId].Timelock;
+  const ADDRESS_TIMELOCK = yieldEnv.addresses[chainId]?.Timelock;
   const [loading, setLoading] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<any>();
   const [calls, setCalls] = useState<any>();
@@ -31,10 +32,9 @@ const useProposalHashDecoder = (proposalHash: string) => {
       const target = targetsArr[idx];
       const shouldDelay = idx % 5 === 0 && idx !== 0;
 
-      if (shouldDelay) delay(1000);
+      if (shouldDelay) delay(2000);
 
       if (!(target in decoded.abis)) {
-        console.log('🦄 ~ file: useProposalHashDecoder.ts ~ line 37 ~ startFetchingABIs ~ target ', target);
         try {
           // eslint-disable-next-line no-await-in-loop
           const result = await getABI(chainId, target);
@@ -97,7 +97,7 @@ const useProposalHashDecoder = (proposalHash: string) => {
           address: addHexPrefix(ADDRESS_TIMELOCK),
           topic0: addHexPrefix(PROPOSE_EVENT),
           topic1: addHexPrefix(hash),
-          apikey: process.env.REACT_APP_ETHERSCAN_API_KEY as string,
+          apikey: process.env.ETHERSCAN_API_KEY,
         })
       );
 

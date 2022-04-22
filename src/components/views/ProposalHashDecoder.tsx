@@ -1,15 +1,15 @@
-import React, { FC, Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { v4 as uuid } from 'uuid';
 import TextInput from '../TextInput';
 import { useProposalHashDecoder } from '../../hooks/useProposalHashDecoder';
 import Button from '../Button';
 import AddressDisplay from '../AddressDisplay';
-import { useAppSelector } from '../../state/hooks/general';
 import { markMap } from '../../config/marks';
+import useAssets from '../../hooks/useAssets';
 
-const ProposalHashDecoder: FC = () => {
-  const { assets } = useAppSelector(({ chain }) => chain);
+const ProposalHashDecoder = () => {
+  const assets = useAssets();
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);

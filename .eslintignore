@@ -2,6 +2,7 @@
 node_modules
 
 # don't lint build output or public
+.next
 build/*
 public/*
 src/react-app-env.d.ts
@@ -10,9 +11,6 @@ src/serviceWorker.ts
 # ignore js lint files outside src
 .eslintrc.js
 .prettier.config.js
-
-# ignore all js
-# **/*
 
 # ignore tailwind config
 tailwind.config.js
