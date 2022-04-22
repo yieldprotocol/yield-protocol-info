@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { InferGetStaticPropsType } from 'next';
 import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
