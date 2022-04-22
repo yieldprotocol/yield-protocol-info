@@ -1,10 +1,10 @@
 import React from 'react';
 import { ethers } from 'ethers';
-import { useAppSelector } from '../state/hooks/general';
+import { useWeb3React } from '@web3-react/core';
 import { CHAIN_INFO } from '../config/chainData';
 
 const AddressDisplay = ({ addr, tx }: any) => {
-  const chainId: number = useAppSelector((st: any) => st.chain.chainId);
+  const { chainId } = useWeb3React();
 
   if (!addr) return null;
 
