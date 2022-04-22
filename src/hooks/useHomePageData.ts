@@ -21,7 +21,10 @@ const useHomePageData = () => {
     return { assetsTvl, totalDebtList, totalDebt, assetMap };
   };
 
-  const { data, error } = useSWR(`/home/${chainId}`, () => _getHomePageData(), { revalidateOnFocus: false });
+  const { data, error } = useSWR(`/home/${chainId}`, () => _getHomePageData(), {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+  });
 
   return { data, loading: !error && !data };
 };
