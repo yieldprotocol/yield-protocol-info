@@ -1,5 +1,7 @@
-import Role from '../../../components/views/Role';
+import dynamic from 'next/dynamic';
 
-const ContractRoles = () => <Role />;
+const DynamicRoles = dynamic(() => import('../../../components/views/Role'), { ssr: false });
+
+const ContractRoles = () => <DynamicRoles />;
 
 export default ContractRoles;
