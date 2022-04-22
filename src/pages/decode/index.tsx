@@ -1,5 +1,7 @@
-import Governance from '../../components/views/Governance';
+import dynamic from 'next/dynamic';
 
-const Decode = () => <Governance />;
+const DynamicGovernance = dynamic(() => import('../../components/views/Governance'), { ssr: false });
+
+const Decode = () => <DynamicGovernance />;
 
 export default Decode;
