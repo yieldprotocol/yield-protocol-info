@@ -12,6 +12,7 @@ const useStrategies = () => {
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
+      revalidateOnReconnect: false,
     }
   );
 

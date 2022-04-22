@@ -25,8 +25,6 @@ export const getProvider = (chainId: number) => {
   if (chainId === 42161) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbKey);
   if (chainId === 421611) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbRinkebyKey);
   return new ethers.providers.InfuraProvider(chainId, process.env.infuraKey);
-  // const externalProvider = new ethers.providers.BaseProvider()
-  // return new ethers.providers.Web3Provider()
   // const defaultProvider = ethers.providers.(chainId, process.env.infuraKey);
   // const provider = new ethers.providers.Web3Provider(defaultProvider);
 };
@@ -166,6 +164,7 @@ export const getStrategies = async (provider: ethers.providers.JsonRpcProvider) 
 };
 
 export const getAssets = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
+  console.log('getting assets');
   const Ladle = contractMap[LADLE];
   const Cauldron = contractMap[CAULDRON];
 

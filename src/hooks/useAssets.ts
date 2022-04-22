@@ -13,6 +13,8 @@ const useAssets = () => {
     () => getAssets(provider as ethers.providers.Web3Provider, contractMap),
     {
       revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
     }
   );
 

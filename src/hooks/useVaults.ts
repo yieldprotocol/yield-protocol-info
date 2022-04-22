@@ -20,6 +20,7 @@ const useVaults = (vaultId = undefined) => {
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
+      revalidateOnReconnect: false,
     }
   );
 

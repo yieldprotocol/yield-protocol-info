@@ -14,6 +14,7 @@ const useSeries = () => {
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
+      revalidateOnReconnect: false,
     }
   );
 
