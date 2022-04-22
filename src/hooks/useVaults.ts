@@ -19,6 +19,7 @@ const useVaults = (vaultId = undefined) => {
         : getNotMainnetVaults(contractMap, undefined, seriesMap, assetMap, chainId, vaultId),
     {
       revalidateOnFocus: false,
+      revalidateIfStale: false,
     }
   );
 

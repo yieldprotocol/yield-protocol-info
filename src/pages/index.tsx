@@ -4,7 +4,7 @@ import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
 import MainViewWrap from '../components/wraps/MainViewWrap';
 import useHomePageData from '../hooks/useHomePageData';
-import { getAssets, getAssetsTvl, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
+import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
 
 const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -31,8 +31,7 @@ export default Index;
 
 export const getStaticProps = async () => {
   const chainId = 1;
-
-  const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
+  const provider = getProvider(chainId);
 
   // get asset tvl data
   const contractMap = await getContracts(provider, chainId);
