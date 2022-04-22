@@ -24,6 +24,7 @@ const useHomePageData = () => {
   const { data, error } = useSWR(`/home/${chainId}`, () => _getHomePageData(), {
     revalidateOnFocus: false,
     revalidateIfStale: false,
+    revalidateOnReconnect: false,
   });
 
   return { data, loading: !error && !data };
