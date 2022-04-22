@@ -1,6 +1,8 @@
+import dynamic from 'next/dynamic';
 import SubNav from '../../../components/SubNav';
-import ProposalHashDecoder from '../../../components/views/ProposalHashDecoder';
 import MainViewWrap from '../../../components/wraps/MainViewWrap';
+
+const DynamicProposalDecoder = dynamic(() => import('../../../components/views/ProposalHashDecoder'), { ssr: false });
 
 const ProposalDecoderPage = () => (
   <>
@@ -11,7 +13,7 @@ const ProposalDecoderPage = () => (
       ]}
     />
     <MainViewWrap>
-      <ProposalHashDecoder />
+      <DynamicProposalDecoder />
     </MainViewWrap>
   </>
 );

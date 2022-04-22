@@ -1,6 +1,8 @@
+import dynamic from 'next/dynamic';
 import SubNav from '../../../components/SubNav';
-import BatchDecoder from '../../../components/views/BatchDecoder';
 import MainViewWrap from '../../../components/wraps/MainViewWrap';
+
+const DynamicBatchDecoder = dynamic(() => import('../../../components/views/BatchDecoder'), { ssr: false });
 
 const BatchDecoderPage = () => (
   <>
@@ -11,7 +13,7 @@ const BatchDecoderPage = () => (
       ]}
     />
     <MainViewWrap>
-      <BatchDecoder />
+      <DynamicBatchDecoder />
     </MainViewWrap>
   </>
 );
