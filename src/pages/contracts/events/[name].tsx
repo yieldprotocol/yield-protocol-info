@@ -1,5 +1,7 @@
-import Contract from '../../../components/views/Contract';
+import dynamic from 'next/dynamic';
 
-const ContractEvents = () => <Contract />;
+const DynamicContract = dynamic(() => import('../../../components/views/Contract'), { ssr: false });
+
+const ContractEvents = () => <DynamicContract />;
 
 export default ContractEvents;
