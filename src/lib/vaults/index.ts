@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { gql } from '@apollo/client';
+import { fromUnixTime } from 'date-fns';
 import client from '../../config/apolloClient';
 import { ORACLE_INFO } from '../../config/oracles';
 import { IContractMap } from '../../types/contracts';
@@ -11,7 +12,6 @@ import { IAssetMap, IAssetPairData, ISeriesMap } from '../../types/chain';
 import { VaultBuiltEvent } from '../../contracts/Cauldron';
 import { ChainlinkMultiOracle, ChainlinkMultiOracle__factory, ChainlinkUSDOracle } from '../../contracts';
 import { USDC, WETH } from '../../config/assets';
-import { fromUnixTime } from 'date-fns';
 
 const TOP_VAULTS_QUERY = `
   query vaults {
