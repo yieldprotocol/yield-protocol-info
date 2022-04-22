@@ -1,5 +1,7 @@
-import Liquidations from '../../components/views/Liquidations';
+import dynamic from 'next/dynamic';
 
-const LiquidationsPage = () => <Liquidations />;
+const DynamicLiquidations = dynamic(() => import('../../components/views/Liquidations'), { ssr: false });
+
+const LiquidationsPage = () => <DynamicLiquidations />;
 
 export default LiquidationsPage;
