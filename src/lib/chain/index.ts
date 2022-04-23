@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers, EventFilter } from 'ethers';
 import { ASSET_INFO, FDAI2203, FDAI2206, FDAI2209, TokenType, USDC } from '../../config/assets';
+import { SUPPORTED_RPC_URLS } from '../../config/chainData';
 import yieldEnv from '../../config/yieldEnv';
 import {
   ERC20Permit__factory,
@@ -21,11 +22,7 @@ import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { getPrice } from '../vaults';
 import { ITotalDebtItem } from './types';
 
-export const getProvider = (chainId: number) => {
-  if (chainId === 42161) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbKey);
-  if (chainId === 421611) return new ethers.providers.AlchemyProvider(chainId, process.env.alchemyArbRinkebyKey);
-  return new ethers.providers.InfuraProvider(chainId, process.env.infuraKey);
-};
+export const getProvider = (chainId: number) => new ethers.providers.StaticJsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
   const Ladle = contractMap[LADLE];

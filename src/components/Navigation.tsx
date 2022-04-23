@@ -10,6 +10,7 @@ const Navigation = () => {
   const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'decode', 'liquidations'];
 
   const { theme } = useColorTheme();
+  console.log('🦄 ~ file: Navigation.tsx ~ line 13 ~ Navigation ~ theme', theme);
   const darkMode = theme === 'dark';
 
   return (

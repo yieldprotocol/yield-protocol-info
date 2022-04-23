@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useWeb3React } from '@web3-react/core';
+import Router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CHAIN_INFO, SUPPORTED_CHAIN_IDS } from '../config/chainData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { CHAIN_ID_LOCAL_STORAGE } from '../utils/constants';
 
 const NetworkModal = () => {
+  const router = useRouter();
   const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, '1');
   const { chainId, connector } = useWeb3React();
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -45,7 +47,13 @@ const NetworkModal = () => {
                         <button
                           key={id}
                           className="my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300 items-center justify-center overflow-hidden font-medium focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:hover:bg-green-500 text-md rounded-lg py-2"
-                          onClick={() => setCachedChainId(id.toString())}
+                          onClick={() => {
+                            setCachedChainId(id.toString());
+                            const url = { pathname: router.asPath.split('?')[0], query: { chainId: id } };
+                            // const urlAs = { pathname: router.asPath };
+                            // router.push(url, urlAs);
+                            router.push(url);
+                          }}
                           type="button"
                         >
                           <div className="text-sm">{CHAIN_INFO.get(id)?.name}</div>
