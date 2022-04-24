@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { updateTheme } from '../state/actions/application';
+import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { THEME_KEY } from '../utils/constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -6,11 +8,12 @@ const LIGHT = 'light';
 const DARK = 'dark';
 
 export const useColorTheme = () => {
+  const dispatch = useAppDispatch();
+  const { theme } = useAppSelector(({ application }) => application);
   const [cachedTheme, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
-  const [theme, setTheme] = useState(cachedTheme);
 
   const _setTheme = (_theme: string) => {
-    setTheme(_theme);
+    dispatch(updateTheme(_theme));
     setCachedTheme(_theme);
   };
 
