@@ -15,6 +15,15 @@ const NetworkModal = () => {
   const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, chainId.toString());
   const [showModal, setShowModal] = useState<boolean>(false);
 
+  const handleChainIdChange = (id: number) => {
+    setCachedChainId(id.toString()); // set chain id in local storage
+    dispatch(updateChainId(id)); // set chain id in redux
+
+    // push to a new url with the updated chain id as a query param
+    const url = { pathname: router.asPath.split('?')[0], query: { chainId: id } };
+    router.push(url);
+  };
+
   return (
     <>
       <div>
@@ -44,14 +53,7 @@ const NetworkModal = () => {
                         <button
                           key={id}
                           className="my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300 items-center justify-center overflow-hidden font-medium focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:hover:bg-green-500 text-md rounded-lg py-2"
-                          onClick={() => {
-                            setCachedChainId(id.toString()); // set chain id in local storage
-                            dispatch(updateChainId(id)); // set chain id in redux
-                            const url = { pathname: router.asPath.split('?')[0], query: { chainId: id } };
-                            // const urlAs = { pathname: router.asPath };
-                            // router.push(url, urlAs);
-                            router.push(url);
-                          }}
+                          onClick={() => handleChainIdChange(id)}
                           type="button"
                         >
                           <div className="text-sm">{CHAIN_INFO.get(id)?.name}</div>
