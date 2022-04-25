@@ -1,14 +1,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useColorTheme } from '../hooks/useColorTheme';
-import { useAppSelector } from '../state/hooks/general';
 import DarkModeToggle from './DarkModeToggle';
 import YieldMark from './logos/YieldMark';
 import NetworkModal from './NetworkModal';
 
 const Navigation = () => {
   const router = useRouter();
-  const { chainId } = useAppSelector(({ application }) => application);
   const views = ['contracts', 'series', 'strategies', 'assets', 'vaults', 'decode', 'liquidations'];
 
   const { theme } = useColorTheme();
@@ -20,7 +18,7 @@ const Navigation = () => {
         <div className="mx-auto px-2 sm:px-4 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
             <div className="flex items-center px-2">
-              <Link href={`/?chainId=${chainId}`} passHref>
+              <Link href="/" passHref>
                 <div className="rounded-lg cursor-pointer" style={{ textDecoration: 'none' }}>
                   <YieldMark colors={darkMode ? ['white'] : ['black']} height="1.75em" />
                 </div>
@@ -28,7 +26,7 @@ const Navigation = () => {
               <div className="flex">
                 <div className="ml-10 flex space-x-4">
                   {views.map((view) => (
-                    <Link key={view} href={`/${view}?chainId=${chainId}`} passHref>
+                    <Link key={view} href={`/${view}`} passHref>
                       <div
                         className={
                           router.pathname.includes(view)

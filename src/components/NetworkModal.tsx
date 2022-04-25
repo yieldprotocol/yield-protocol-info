@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { CHAIN_INFO, SUPPORTED_CHAIN_IDS } from '../config/chainData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -9,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { CHAIN_ID_LOCAL_STORAGE } from '../utils/constants';
 
 const NetworkModal = () => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const { chainId } = useAppSelector(({ application }) => application);
   const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, chainId.toString());
@@ -18,10 +16,6 @@ const NetworkModal = () => {
   const handleChainIdChange = (id: number) => {
     setCachedChainId(id.toString()); // set chain id in local storage
     dispatch(updateChainId(id)); // set chain id in redux
-
-    // push to a new url with the updated chain id as a query param
-    const url = { pathname: router.asPath.split('?')[0], query: { chainId: id } };
-    router.push(url);
   };
 
   return (
