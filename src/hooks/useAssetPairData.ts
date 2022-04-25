@@ -8,7 +8,7 @@ import useContracts from './useContracts';
 const useAssetPairData = (asset: IAsset) => {
   const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
-  const assetMap = useAssets();
+  const { data: assetMap } = useAssets();
 
   const { data, error } = useSWR(
     chainId && contractMap && assetMap && asset ? `/assetPairData?chainId=${chainId}&assetId=${asset.id}` : null,

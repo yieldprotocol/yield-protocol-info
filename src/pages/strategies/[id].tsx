@@ -6,7 +6,7 @@ import useStrategies from '../../hooks/useStrategies';
 const DynamicStrategy = dynamic(() => import('../../components/views/Strategy'), { ssr: false });
 
 const StrategiesPage = () => {
-  const strategyMap = useStrategies();
+  const { data: strategyMap } = useStrategies();
   const router = useRouter();
   const { id: strategyId } = router.query;
   if (!strategyMap || !strategyId) return null;

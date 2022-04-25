@@ -7,7 +7,7 @@ import useAssetPairData from '../../hooks/useAssetPairData';
 import useAssets from '../../hooks/useAssets';
 
 const Asset = ({ asset }: { asset: IAsset }) => {
-  const assetMap = useAssets();
+  const { data: assetMap } = useAssets();
   const { data: assetPairData, loading } = useAssetPairData(asset);
   const logo = markMap.get(asset.symbol);
 

@@ -4,7 +4,7 @@ import NotionalMark from './NotionalMark';
 import USDCMark from './USDCMark';
 
 const NotionalUSDCMark = ({ seriesId }: { seriesId: string }) => {
-  const seriesMap = useSeries();
+  const { data: seriesMap } = useSeries();
   const [seriesColor, setSeriesColor] = useState<string>();
 
   useEffect(() => {

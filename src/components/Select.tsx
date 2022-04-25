@@ -7,8 +7,8 @@ import useAssets from '../hooks/useAssets';
 import useSeries from '../hooks/useSeries';
 
 const Selecty = ({ options, label, onChange }: any) => {
-  const assetMap = useAssets();
-  const seriesMap = useSeries();
+  const { data: assetMap } = useAssets();
+  const { data: seriesMap } = useSeries();
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [selectedLogo, setSelectedLogo] = useState(null);
 
