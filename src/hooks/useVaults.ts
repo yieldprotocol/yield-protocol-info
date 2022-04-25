@@ -1,17 +1,17 @@
-import { useWeb3React } from '@web3-react/core';
 import useSWR from 'swr';
 import { getMainnetVaults, getNotMainnetVaults } from '../lib/vaults';
+import { useAppSelector } from '../state/hooks/general';
 import useAssets from './useAssets';
 import useContracts from './useContracts';
 import useSeries from './useSeries';
 
 const useVaults = (vaultId = undefined) => {
-  const { chainId } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
-  const seriesMap = useSeries();
-  const assetMap = useAssets();
+  const { data: seriesMap } = useSeries();
+  const { data: assetMap } = useAssets();
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     `/vaults?chainId=${chainId}`,
     () =>
       chainId === 1
@@ -24,7 +24,7 @@ const useVaults = (vaultId = undefined) => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useVaults;

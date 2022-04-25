@@ -1,20 +1,22 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useWeb3React } from '@web3-react/core';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CHAIN_INFO, SUPPORTED_CHAIN_IDS } from '../config/chainData';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { updateChainId } from '../state/actions/application';
+import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { CHAIN_ID_LOCAL_STORAGE } from '../utils/constants';
 
 const NetworkModal = () => {
-  const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, '1');
-  const { chainId, connector } = useWeb3React();
+  const dispatch = useAppDispatch();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+  const [, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, chainId.toString());
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  // update the connection to the proper chainId
-  useEffect(() => {
-    connector.activate(+cachedChainId);
-  }, [cachedChainId, connector]);
+  const handleChainIdChange = (id: number) => {
+    setCachedChainId(id.toString()); // set chain id in local storage
+    dispatch(updateChainId(id)); // set chain id in redux
+  };
 
   return (
     <>
@@ -45,7 +47,7 @@ const NetworkModal = () => {
                         <button
                           key={id}
                           className="my-2 w-full text-gray-900 hover:bg-green-500 bg-green-300 items-center justify-center overflow-hidden font-medium focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-green-800 focus-visible:ring-offset-green-900 transition dark:hover:bg-green-500 text-md rounded-lg py-2"
-                          onClick={() => setCachedChainId(id.toString())}
+                          onClick={() => handleChainIdChange(id)}
                           type="button"
                         >
                           <div className="text-sm">{CHAIN_INFO.get(id)?.name}</div>

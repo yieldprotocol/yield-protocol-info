@@ -5,7 +5,7 @@ import { IAsset, ISeries } from '../types/chain';
 import useAssets from '../hooks/useAssets';
 
 const SeriesItem = ({ item }: { item: ISeries }) => {
-  const assets = useAssets();
+  const { data: assets } = useAssets();
   const [asset, setAsset] = useState<IAsset>();
   const logo = markMap.get(asset?.symbol!);
 

@@ -10,8 +10,8 @@ import useSeries from '../../hooks/useSeries';
 import useAssets from '../../hooks/useAssets';
 
 const CallDisplay = ({ call }: any): any => {
-  const assets = useAssets();
-  const series = useSeries();
+  const { data: assets } = useAssets();
+  const { data: series } = useSeries();
   return (
     <table>
       <tbody>

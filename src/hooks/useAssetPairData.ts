@@ -1,14 +1,14 @@
-import { useWeb3React } from '@web3-react/core';
 import useSWR from 'swr';
 import { getAssetPairData } from '../lib/chain';
+import { useAppSelector } from '../state/hooks/general';
 import { IAsset } from '../types/chain';
 import useAssets from './useAssets';
 import useContracts from './useContracts';
 
 const useAssetPairData = (asset: IAsset) => {
-  const { chainId } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
-  const assetMap = useAssets();
+  const { data: assetMap } = useAssets();
 
   const { data, error } = useSWR(
     chainId && contractMap && assetMap && asset ? `/assetPairData?chainId=${chainId}&assetId=${asset.id}` : null,

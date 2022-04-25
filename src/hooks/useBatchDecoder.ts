@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
-import { useWeb3React } from '@web3-react/core';
 import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
+import { useAppSelector } from '../state/hooks/general';
+import { getProvider } from '../lib/chain';
 
 const useBatchDecoder = (txHash: string) => {
-  const { provider, chainId } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+  const provider = getProvider(chainId);
 
   const [loading, setLoading] = useState(false);
   const [finalCall, setFinalCall] = useState<any>(null);

@@ -1,17 +1,16 @@
-import { ethers } from 'ethers';
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import Vaults from '../../components/views/Vaults';
 import useAssets from '../../hooks/useAssets';
 import useSeries from '../../hooks/useSeries';
 import useVaults from '../../hooks/useVaults';
-import { getAssets, getSeries } from '../../lib/chain';
+import { getAssets, getProvider, getSeries } from '../../lib/chain';
 import { getContracts } from '../../lib/contracts';
 import { getMainnetVaults, getNotMainnetVaults } from '../../lib/vaults';
 
-const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const _vaultMap = useVaults();
-  const _assetMap = useAssets();
-  const _seriesMap = useSeries();
+const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data: _vaultMap } = useVaults();
+  const { data: _assetMap } = useAssets();
+  const { data: _seriesMap } = useSeries();
   return (
     <Vaults
       vaultList={_vaultMap ? Object.values(_vaultMap) : vaultList}
@@ -23,9 +22,9 @@ const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetServerSidePr
 
 export default StrategiesPage;
 
-export const getServerSideProps = async ({ query }) => {
-  const chainId = (query.chainId || 1) as number;
-  const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
+export const getStaticProps = async () => {
+  const chainId = 1;
+  const provider = getProvider(chainId);
   const contractMap = await getContracts(provider, chainId);
   const seriesMap = await getSeries(provider, contractMap);
   const assetMap = await getAssets(provider, contractMap);
@@ -36,5 +35,5 @@ export const getServerSideProps = async ({ query }) => {
       : await getNotMainnetVaults(contractMap, undefined, seriesMap, assetMap, chainId);
   const vaultList = Object.values(vaultMap).sort((v1, v2) => (+v1.art < +v2.art ? -1 : 1));
 
-  return { props: { vaultList, seriesMap, assetMap } };
+  return { props: { vaultList, seriesMap, assetMap }, revalidate: 1800 };
 };

@@ -6,7 +6,7 @@ import useAssets from '../../hooks/useAssets';
 const DynamicAsset = dynamic(() => import('../../components/views/Asset'), { ssr: false });
 
 const AssetPage = () => {
-  const assetMap = useAssets();
+  const { data: assetMap } = useAssets();
   const router = useRouter();
   const { id: assetId } = router.query;
   if (!assetMap || !assetId) return null;

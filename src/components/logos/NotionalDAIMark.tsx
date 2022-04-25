@@ -4,7 +4,7 @@ import DaiMark from './DaiMark';
 import NotionalMark from './NotionalMark';
 
 const NotionalDAIMark = ({ seriesId }: { seriesId: string }) => {
-  const seriesMap = useSeries();
+  const { data: seriesMap } = useSeries();
   const [seriesColor, setSeriesColor] = useState<string>();
 
   useEffect(() => {

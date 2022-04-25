@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { formatDistanceStrict } from 'date-fns';
-import { useWeb3React } from '@web3-react/core';
 import { burnFromStrategy, SECONDS_PER_YEAR } from '../utils/yieldMath';
 import { IStrategy } from '../types/chain';
 import * as contracts from '../contracts';
+import { getProvider } from '../lib/chain';
+import { useAppSelector } from '../state/hooks/general';
 
 /**
  * returns the strategy's corresponding apy estimated based on the base value per share of the current block num and a previous block num (using last 7-8 days)
@@ -12,7 +13,8 @@ import * as contracts from '../contracts';
  * @param previousBlocks number of blocks to use for comparison (lookback window)
  */
 export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) => {
-  const { provider } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+  const provider = getProvider(chainId);
   const [currentBlock, setCurrentBlock] = useState<number>();
   const [previousBlock, setPreviousBlock] = useState<number>();
 

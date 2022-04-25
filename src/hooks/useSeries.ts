@@ -1,14 +1,15 @@
-import { useWeb3React } from '@web3-react/core';
 import { ethers } from 'ethers';
 import useSWR from 'swr';
-import { getSeries } from '../lib/chain';
+import { getProvider, getSeries } from '../lib/chain';
+import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
 
 const useSeries = () => {
-  const { provider, chainId } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+  const provider = getProvider(chainId);
   const contractMap = useContracts();
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     provider ? `/series?chainId=${chainId}` : null,
     () => getSeries(provider as ethers.providers.Web3Provider, contractMap),
     {
@@ -18,7 +19,7 @@ const useSeries = () => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useSeries;

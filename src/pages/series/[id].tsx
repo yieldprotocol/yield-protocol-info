@@ -6,7 +6,7 @@ import useSeries from '../../hooks/useSeries';
 const DynamicSeries = dynamic(() => import('../../components/views/Series'), { ssr: false });
 
 const SeriesItem = () => {
-  const seriesMap = useSeries();
+  const { data: seriesMap } = useSeries();
   const router = useRouter();
   const { id: seriesId } = router.query;
   if (!seriesMap || !seriesId) return null;

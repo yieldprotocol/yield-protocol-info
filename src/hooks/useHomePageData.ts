@@ -1,11 +1,12 @@
-import { useWeb3React } from '@web3-react/core';
 import { ethers } from 'ethers';
 import useSWR from 'swr';
-import { getAssets, getAssetsTvl, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
+import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
+import { useAppSelector } from '../state/hooks/general';
 
 const useHomePageData = () => {
-  const { chainId, provider } = useWeb3React();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+  const provider = getProvider(chainId);
 
   const _getHomePageData = async () => {
     const _provider = provider as ethers.providers.Web3Provider;

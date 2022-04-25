@@ -5,11 +5,13 @@ import MainViewWrap from '../components/wraps/MainViewWrap';
 import useHomePageData from '../hooks/useHomePageData';
 import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
+import { useAppSelector } from '../state/hooks/general';
 
 const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data, loading } = useHomePageData();
+  const chainId = useAppSelector(({ application }) => application.chainId);
 
-  if (loading && !assetsTvl)
+  if (!assetsTvl || (loading && chainId !== 1))
     return (
       <MainViewWrap>
         <Spinner />
@@ -42,5 +44,5 @@ export const getStaticProps = async () => {
   const totalDebtList = await getTotalDebtList(provider, contractMap, seriesMap, assetMap);
   const totalDebt = getTotalDebt(totalDebtList);
 
-  return { props: { assetsTvl, totalDebtList, totalDebt, assetMap } };
+  return { props: { assetsTvl, totalDebtList, totalDebt, assetMap }, revalidate: 3600 };
 };
