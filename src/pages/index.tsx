@@ -1,16 +1,14 @@
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
 import MainViewWrap from '../components/wraps/MainViewWrap';
+import useHomePageData from '../hooks/useHomePageData';
 import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
 
-const Index = ({
-  assetsTvl,
-  totalDebtList,
-  totalDebt,
-  assetMap,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Index = ({ assetsTvl, totalDebtList, totalDebt, assetMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data } = useHomePageData();
+
   if (!assetsTvl)
     return (
       <MainViewWrap>
@@ -18,14 +16,20 @@ const Index = ({
       </MainViewWrap>
     );
 
-  return <Home assetsTvl={assetsTvl} totalDebtList={totalDebtList} totalDebt={totalDebt} assets={assetMap} />;
+  return (
+    <Home
+      assetsTvl={data?.assetsTvl ?? assetsTvl}
+      totalDebtList={data?.totalDebtList ?? totalDebtList}
+      totalDebt={data?.totalDebt ?? totalDebt}
+      assets={data?.assetMap ?? assetMap}
+    />
+  );
 };
 
 export default Index;
 
-export const getServerSideProps = async ({ query, res }) => {
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
-  const chainId = +query.chainId || 1;
+export const getStaticProps = async () => {
+  const chainId = 1;
   const provider = getProvider(chainId);
 
   // get asset tvl data
@@ -38,5 +42,5 @@ export const getServerSideProps = async ({ query, res }) => {
   const totalDebtList = await getTotalDebtList(provider, contractMap, seriesMap, assetMap);
   const totalDebt = getTotalDebt(totalDebtList);
 
-  return { props: { assetsTvl, totalDebtList, totalDebt, assetMap } };
+  return { props: { assetsTvl, totalDebtList, totalDebt, assetMap }, revalidate: 3600 };
 };
