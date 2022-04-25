@@ -23,8 +23,7 @@ const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetServerSidePr
 
 export default StrategiesPage;
 
-export const getServerSideProps = async ({ query, res }) => {
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+export const getServerSideProps = async ({ query }) => {
   const chainId = (query.chainId || 1) as number;
   const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
   const contractMap = await getContracts(provider, chainId);

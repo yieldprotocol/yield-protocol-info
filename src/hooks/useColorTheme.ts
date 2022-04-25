@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import { updateTheme } from '../state/actions/application';
-import { useAppDispatch, useAppSelector } from '../state/hooks/general';
 import { THEME_KEY } from '../utils/constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -8,34 +6,27 @@ const LIGHT = 'light';
 const DARK = 'dark';
 
 export const useColorTheme = () => {
-  const dispatch = useAppDispatch();
-  const { theme } = useAppSelector(({ application }) => application);
-  const [cachedTheme, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
-
-  const _setTheme = (_theme: string) => {
-    dispatch(updateTheme(_theme));
-    setCachedTheme(_theme);
-  };
+  const [theme, setTheme] = useLocalStorage(THEME_KEY, DARK);
 
   const toggleTheme = () => {
     // Whenever the user explicitly chooses light mode
-    if (theme === LIGHT) {
+    if (theme === DARK) {
       // Whenever the user explicitly chooses light mode
-      document.documentElement.classList.add(DARK);
-      _setTheme(DARK);
-    } else {
       document.documentElement.classList.remove(DARK);
-      _setTheme(LIGHT);
+      setTheme(LIGHT);
+    } else {
+      document.documentElement.classList.add(DARK);
+      setTheme(DARK);
     }
   };
 
   useEffect(() => {
-    if (cachedTheme === LIGHT) {
-      document.documentElement.classList.remove(DARK);
-      _setTheme(LIGHT);
-    } else {
+    if (theme === DARK) {
       document.documentElement.classList.add(DARK);
-      _setTheme(DARK);
+      setTheme(DARK);
+    } else {
+      document.documentElement.classList.remove(DARK);
+      setTheme(LIGHT);
     }
   }, []); // only on mount
 

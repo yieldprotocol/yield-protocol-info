@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 
 const getStorageValue = (key: string, defaultValue: string, account?: string) => {
-  if (typeof window !== 'undefined') {
-    const itemInLocalStorage: string | null = JSON.parse(localStorage.getItem(key)!);
-    return itemInLocalStorage ?? defaultValue;
-  }
-  return defaultValue;
+  const itemInLocalStorage: string | null = JSON.parse(localStorage.getItem(key)!);
+  return itemInLocalStorage ?? defaultValue;
 };
 
 export const useLocalStorage = (key: string, defaultValue: string) => {
