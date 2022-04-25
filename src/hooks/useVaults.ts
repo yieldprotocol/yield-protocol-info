@@ -8,8 +8,8 @@ import useSeries from './useSeries';
 const useVaults = (vaultId = undefined) => {
   const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
-  const seriesMap = useSeries();
-  const assetMap = useAssets();
+  const { data: seriesMap } = useSeries();
+  const { data: assetMap } = useAssets();
 
   const { data } = useSWR(
     `/vaults?chainId=${chainId}`,
