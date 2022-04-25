@@ -1,9 +1,8 @@
-import React, { FC } from 'react';
 import ListItemWrap from './wraps/ListItemWrap';
 import { markMap } from '../config/marks';
 import { IAsset } from '../types/chain';
 
-const AssetItem: FC<{ item: IAsset }> = ({ item }) => {
+const AssetItem = ({ item }: { item: IAsset }) => {
   const logo = markMap.get(item.symbol);
   return (
     <ListItemWrap type="assets" item={item}>
