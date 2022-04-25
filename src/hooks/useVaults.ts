@@ -6,7 +6,7 @@ import useContracts from './useContracts';
 import useSeries from './useSeries';
 
 const useVaults = (vaultId = undefined) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
   const seriesMap = useSeries();
   const assetMap = useAssets();

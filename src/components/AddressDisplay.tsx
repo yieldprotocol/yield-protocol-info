@@ -4,7 +4,7 @@ import { CHAIN_INFO } from '../config/chainData';
 import { useAppSelector } from '../state/hooks/general';
 
 const AddressDisplay = ({ addr, tx }: any) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
 
   if (!addr) return null;
 

@@ -13,7 +13,7 @@ import { useAppSelector } from '../state/hooks/general';
  * @param previousBlocks number of blocks to use for comparison (lookback window)
  */
 export const useStrategyReturns = (strategy: IStrategy, previousBlocks: number) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
   const [currentBlock, setCurrentBlock] = useState<number>();
   const [previousBlock, setPreviousBlock] = useState<number>();

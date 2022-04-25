@@ -7,7 +7,7 @@ import { useAppSelector } from '../state/hooks/general';
 import { getProvider } from '../lib/chain';
 
 const useProposalHashDecoder = (proposalHash: string) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
 
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';

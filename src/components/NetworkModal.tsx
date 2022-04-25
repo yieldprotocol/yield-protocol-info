@@ -9,7 +9,7 @@ import { CHAIN_ID_LOCAL_STORAGE } from '../utils/constants';
 
 const NetworkModal = () => {
   const dispatch = useAppDispatch();
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const [cachedChainId, setCachedChainId] = useLocalStorage(CHAIN_ID_LOCAL_STORAGE, chainId.toString());
   const [showModal, setShowModal] = useState<boolean>(false);
 

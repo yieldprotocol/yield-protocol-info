@@ -6,7 +6,7 @@ import { useAppSelector } from '../state/hooks/general';
 import { getProvider } from '../lib/chain';
 
 const useBatchDecoder = (txHash: string) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
 
   const [loading, setLoading] = useState(false);

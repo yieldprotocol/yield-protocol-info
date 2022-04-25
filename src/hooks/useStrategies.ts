@@ -4,7 +4,7 @@ import { getProvider, getStrategies } from '../lib/chain';
 import { useAppSelector } from '../state/hooks/general';
 
 const useStrategies = () => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
 
   const { data } = useSWR(

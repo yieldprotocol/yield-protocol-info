@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useAppSelector } from '../../state/hooks/general';
 
 const Liquidations = () => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
 
   let activeAuctionsDef: string | undefined;
   let vaultsDef: string | undefined;

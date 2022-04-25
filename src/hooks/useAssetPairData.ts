@@ -6,7 +6,7 @@ import useAssets from './useAssets';
 import useContracts from './useContracts';
 
 const useAssetPairData = (asset: IAsset) => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
   const assetMap = useAssets();
 

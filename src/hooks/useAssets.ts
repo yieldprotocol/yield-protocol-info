@@ -5,7 +5,7 @@ import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
 
 const useAssets = () => {
-  const { chainId } = useAppSelector(({ application }) => application);
+  const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
   const contractMap = useContracts();
 
