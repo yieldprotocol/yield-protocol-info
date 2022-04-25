@@ -1,11 +1,12 @@
-import { useWeb3React } from '@web3-react/core';
 import { ethers } from 'ethers';
 import useSWR from 'swr';
-import { getSeries } from '../lib/chain';
+import { getProvider, getSeries } from '../lib/chain';
+import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
 
 const useSeries = () => {
-  const { provider, chainId } = useWeb3React();
+  const { chainId } = useAppSelector(({ application }) => application);
+  const provider = getProvider(chainId);
   const contractMap = useContracts();
 
   const { data } = useSWR(

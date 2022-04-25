@@ -1,12 +1,12 @@
-import { useWeb3React } from '@web3-react/core';
 import useSWR from 'swr';
 import { getMainnetVaults, getNotMainnetVaults } from '../lib/vaults';
+import { useAppSelector } from '../state/hooks/general';
 import useAssets from './useAssets';
 import useContracts from './useContracts';
 import useSeries from './useSeries';
 
 const useVaults = (vaultId = undefined) => {
-  const { chainId } = useWeb3React();
+  const { chainId } = useAppSelector(({ application }) => application);
   const contractMap = useContracts();
   const seriesMap = useSeries();
   const assetMap = useAssets();

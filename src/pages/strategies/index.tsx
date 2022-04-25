@@ -1,10 +1,12 @@
 import { InferGetStaticPropsType } from 'next';
 import Strategies from '../../components/views/Strategies';
+import useStrategies from '../../hooks/useStrategies';
 import { getProvider, getStrategies } from '../../lib/chain';
 
-const StrategiesPage = ({ strategiesList }: InferGetStaticPropsType<typeof getStaticProps>) => (
-  <Strategies strategiesList={strategiesList} />
-);
+const StrategiesPage = ({ strategiesList }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const strategyMap = useStrategies();
+  return <Strategies strategiesList={strategyMap ? Object.values(strategyMap) : strategiesList} />;
+};
 
 export default StrategiesPage;
 
