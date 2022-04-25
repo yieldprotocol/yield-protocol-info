@@ -8,7 +8,8 @@ const StrategiesPage = ({ strategiesList }: InferGetServerSidePropsType<typeof g
 
 export default StrategiesPage;
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps = async ({ query, res }) => {
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
   const chainId = query.chainId || 1;
   const provider = getProvider(chainId);
   const strategyMap = await getStrategies(provider);

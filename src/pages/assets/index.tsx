@@ -8,7 +8,8 @@ const AssetsPage = ({ assetList }: InferGetServerSidePropsType<typeof getServerS
 );
 export default AssetsPage;
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps = async ({ query, res }) => {
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
   const chainId = +query.chainId || 1;
   const provider = getProvider(chainId);
   const contractMap = await getContracts(provider, chainId);
