@@ -1,17 +1,19 @@
-import { InferGetServerSidePropsType } from 'next';
+import { ethers } from 'ethers';
+import { InferGetStaticPropsType } from 'next';
 import Strategies from '../../components/views/Strategies';
-import { getProvider, getStrategies } from '../../lib/chain';
+import useStrategies from '../../hooks/useStrategies';
+import { getStrategies } from '../../lib/chain';
 
-const StrategiesPage = ({ strategiesList }: InferGetServerSidePropsType<typeof getServerSideProps>) => (
-  <Strategies strategiesList={strategiesList} />
-);
+const StrategiesPage = ({ strategiesList }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const strategyMap = useStrategies();
+  return <Strategies strategiesList={strategyMap ? Object.values(strategyMap) : strategiesList} />;
+};
 
 export default StrategiesPage;
 
-export const getServerSideProps = async ({ query, res }) => {
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
-  const chainId = query.chainId || 1;
-  const provider = getProvider(chainId);
+export const getStaticProps = async () => {
+  const chainId = 1;
+  const provider = new ethers.providers.JsonRpcProvider(process.env[`REACT_APP_RPC_URL_${chainId.toString()}`]);
   const strategyMap = await getStrategies(provider);
   const strategiesList = Object.values(strategyMap).sort((s1, s2) => (s1.name < s2.name ? -1 : 1));
 
