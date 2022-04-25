@@ -9,7 +9,7 @@ import { markMap } from '../../config/marks';
 import useAssets from '../../hooks/useAssets';
 
 const ProposalHashDecoder = () => {
-  const assets = useAssets();
+  const { data: assets } = useAssets();
   const [proposalHash, setProposalHash] = useState('');
   const { decodeProposalHash, loading, calls, txHash, getFunctionName, getFunctionArguments, decoded } =
     useProposalHashDecoder(proposalHash);
