@@ -1,8 +1,8 @@
-import { useWeb3React } from '@web3-react/core';
 import Image from 'next/image';
+import { useAppSelector } from '../../state/hooks/general';
 
 const Liquidations = () => {
-  const { chainId } = useWeb3React();
+  const { chainId } = useAppSelector(({ application }) => application);
 
   let activeAuctionsDef: string | undefined;
   let vaultsDef: string | undefined;

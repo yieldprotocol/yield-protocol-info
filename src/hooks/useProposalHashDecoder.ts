@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
-import { useWeb3React } from '@web3-react/core';
 import { addHexPrefix, fetchEtherscan, getABI } from '../utils/etherscan';
 import yieldEnv from '../config/yieldEnv';
+import { useAppSelector } from '../state/hooks/general';
+import { getProvider } from '../lib/chain';
 
 const useProposalHashDecoder = (proposalHash: string) => {
-  const { provider, chainId } = useWeb3React();
+  const { chainId } = useAppSelector(({ application }) => application);
+  const provider = getProvider(chainId);
 
   const PROPOSE_EVENT = '0x2de9aefe888ee33e88ff8f7de007bdda112b7b6a4d0b1cd88690e805920d4091';
   const PROPOSE_ARGUMENTS = 'tuple(address target, bytes data)[]';

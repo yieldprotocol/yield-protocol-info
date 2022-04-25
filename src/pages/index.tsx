@@ -1,4 +1,4 @@
-import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import Spinner from '../components/Spinner';
 import Home from '../components/views/Home';
 import MainViewWrap from '../components/wraps/MainViewWrap';
