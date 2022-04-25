@@ -9,7 +9,7 @@ const useSeries = () => {
   const provider = getProvider(chainId);
   const contractMap = useContracts();
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     provider ? `/series?chainId=${chainId}` : null,
     () => getSeries(provider as ethers.providers.Web3Provider, contractMap),
     {
@@ -19,7 +19,7 @@ const useSeries = () => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useSeries;

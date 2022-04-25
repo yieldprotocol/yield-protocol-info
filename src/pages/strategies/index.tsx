@@ -1,10 +1,22 @@
 import { InferGetStaticPropsType } from 'next';
+import Spinner from '../../components/Spinner';
 import Strategies from '../../components/views/Strategies';
+import MainViewWrap from '../../components/wraps/MainViewWrap';
 import useStrategies from '../../hooks/useStrategies';
 import { getProvider, getStrategies } from '../../lib/chain';
+import { useAppSelector } from '../../state/hooks/general';
 
 const StrategiesPage = ({ strategiesList }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const strategyMap = useStrategies();
+  const { data: strategyMap, loading } = useStrategies();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+
+  if (!strategiesList || (loading && chainId !== 1))
+    return (
+      <MainViewWrap>
+        <Spinner />
+      </MainViewWrap>
+    );
+
   return <Strategies strategiesList={strategyMap ? Object.values(strategyMap) : strategiesList} />;
 };
 

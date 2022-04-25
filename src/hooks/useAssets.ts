@@ -9,7 +9,7 @@ const useAssets = () => {
   const provider = getProvider(chainId);
   const contractMap = useContracts();
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     provider ? `/assets?chainId=${chainId}` : null,
     () => getAssets(provider as ethers.providers.Web3Provider, contractMap),
     {
@@ -19,7 +19,7 @@ const useAssets = () => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useAssets;

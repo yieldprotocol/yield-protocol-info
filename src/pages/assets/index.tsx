@@ -1,11 +1,23 @@
 import { InferGetStaticPropsType } from 'next';
+import Spinner from '../../components/Spinner';
 import Assets from '../../components/views/Assets';
+import MainViewWrap from '../../components/wraps/MainViewWrap';
 import useAssets from '../../hooks/useAssets';
 import { getAssets, getProvider } from '../../lib/chain';
 import { getContracts } from '../../lib/contracts';
+import { useAppSelector } from '../../state/hooks/general';
 
 const AssetsPage = ({ assetList }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const assetMap = useAssets();
+  const { data: assetMap, loading } = useAssets();
+  const chainId = useAppSelector(({ application }) => application.chainId);
+
+  if (!assetList || (loading && chainId !== 1))
+    return (
+      <MainViewWrap>
+        <Spinner />
+      </MainViewWrap>
+    );
+
   return <Assets assetList={assetMap ? Object.values(assetMap) : assetList} />;
 };
 

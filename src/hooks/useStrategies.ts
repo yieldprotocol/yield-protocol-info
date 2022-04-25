@@ -7,7 +7,7 @@ const useStrategies = () => {
   const chainId = useAppSelector(({ application }) => application.chainId);
   const provider = getProvider(chainId);
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     provider ? `/strategies?chainId=${chainId}` : null,
     () => getStrategies(provider as ethers.providers.Web3Provider),
     {
@@ -17,7 +17,7 @@ const useStrategies = () => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useStrategies;
