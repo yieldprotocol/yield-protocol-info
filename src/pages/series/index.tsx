@@ -1,5 +1,6 @@
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import SeriesList from '../../components/views/SeriesList';
+import useSeries from '../../hooks/useSeries';
 import { getProvider, getSeries } from '../../lib/chain';
 import { getContracts } from '../../lib/contracts';
 import { ISeriesMap } from '../../types/chain';
@@ -9,20 +10,20 @@ const handleSort = (strategyMap: ISeriesMap) =>
     .sort((s1, s2) => (s1.name < s2.name ? -1 : 1))
     .sort((s1, s2) => s1.maturity - s2.maturity);
 
-const SeriesPage = ({ seriesList }: InferGetServerSidePropsType<typeof getServerSideProps>) => (
-  <SeriesList seriesList={seriesList} />
-);
+const SeriesPage = ({ seriesList }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const seriesMap = useSeries();
+  return <SeriesList seriesList={seriesMap ? handleSort(seriesMap) : seriesList} />;
+};
 
 export default SeriesPage;
 
-export const getServerSideProps = async ({ query, res }) => {
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
-  const chainId = query.chainId || 1;
+export const getStaticProps = async () => {
+  const chainId = 1;
   const provider = getProvider(chainId);
   const contractMap = await getContracts(provider, chainId);
   const seriesMap = await getSeries(provider, contractMap);
 
   const seriesList = handleSort(seriesMap);
 
-  return { props: { seriesList } };
+  return { props: { seriesList }, revalidate: 3600 };
 };
