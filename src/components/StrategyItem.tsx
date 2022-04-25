@@ -4,7 +4,7 @@ import { IStrategy } from '../types/chain';
 import useAssets from '../hooks/useAssets';
 
 const StrategyItem = ({ item }: { item: IStrategy }) => {
-  const assets = useAssets();
+  const { data: assets } = useAssets();
   const asset = assets ? assets[item.baseId] : undefined;
   const logo = markMap.get(asset?.symbol!);
 
