@@ -8,9 +8,9 @@ import { getContracts } from '../../lib/contracts';
 import { getMainnetVaults, getNotMainnetVaults } from '../../lib/vaults';
 
 const StrategiesPage = ({ vaultList, assetMap, seriesMap }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const _vaultMap = useVaults();
-  const _assetMap = useAssets();
-  const _seriesMap = useSeries();
+  const { data: _vaultMap } = useVaults();
+  const { data: _assetMap } = useAssets();
+  const { data: _seriesMap } = useSeries();
   return (
     <Vaults
       vaultList={_vaultMap ? Object.values(_vaultMap) : vaultList}

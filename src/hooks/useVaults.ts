@@ -11,7 +11,7 @@ const useVaults = (vaultId = undefined) => {
   const { data: seriesMap } = useSeries();
   const { data: assetMap } = useAssets();
 
-  const { data } = useSWR(
+  const { data, error } = useSWR(
     `/vaults?chainId=${chainId}`,
     () =>
       chainId === 1
@@ -24,7 +24,7 @@ const useVaults = (vaultId = undefined) => {
     }
   );
 
-  return data;
+  return { data, loading: !error && !data };
 };
 
 export default useVaults;
