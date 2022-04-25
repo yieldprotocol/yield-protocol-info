@@ -10,7 +10,7 @@ const DARK = 'dark';
 export const useColorTheme = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(({ application }) => application.theme);
-  const [cachedTheme, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
+  const [, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
 
   const _setTheme = (_theme: string) => {
     dispatch(updateTheme(_theme));
@@ -19,23 +19,23 @@ export const useColorTheme = () => {
 
   const toggleTheme = () => {
     // Whenever the user explicitly chooses light mode
-    if (theme === LIGHT) {
+    if (theme === DARK) {
       // Whenever the user explicitly chooses light mode
-      document.documentElement.classList.add(DARK);
-      _setTheme(DARK);
-    } else {
       document.documentElement.classList.remove(DARK);
       _setTheme(LIGHT);
+    } else {
+      document.documentElement.classList.add(DARK);
+      _setTheme(DARK);
     }
   };
 
   useEffect(() => {
-    if (cachedTheme === LIGHT) {
-      document.documentElement.classList.remove(DARK);
-      _setTheme(LIGHT);
-    } else {
+    if (theme === DARK) {
       document.documentElement.classList.add(DARK);
       _setTheme(DARK);
+    } else {
+      document.documentElement.classList.remove(DARK);
+      _setTheme(LIGHT);
     }
   }, []); // only on mount
 

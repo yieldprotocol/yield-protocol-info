@@ -1,6 +1,6 @@
 import { EventFragment } from '@ethersproject/abi';
 import { fromUnixTime } from 'date-fns';
-import { Contract, Event } from 'ethers';
+import { Contract, ethers, Event } from 'ethers';
 import {
   IContractMap,
   IEventArgsPropsMap,
