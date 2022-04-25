@@ -10,7 +10,7 @@ const DARK = 'dark';
 export const useColorTheme = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(({ application }) => application.theme);
-  const [, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
+  const [cachedTheme, setCachedTheme] = useLocalStorage(THEME_KEY, LIGHT);
 
   const _setTheme = (_theme: string) => {
     dispatch(updateTheme(_theme));
@@ -30,7 +30,7 @@ export const useColorTheme = () => {
   };
 
   useEffect(() => {
-    if (theme === DARK) {
+    if (cachedTheme === DARK) {
       document.documentElement.classList.add(DARK);
       _setTheme(DARK);
     } else {
