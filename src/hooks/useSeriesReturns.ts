@@ -6,7 +6,7 @@ import { getProvider } from '../lib/chain';
 import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
 import { POOLVIEW } from '../utils/constants';
-import { calculateAPR, sellBase } from '../utils/yieldMath';
+import { buyBase, calculateAPR, sellBase } from '../utils/yieldMath';
 import { cleanValue } from '../utils/appUtils';
 
 export const useSeriesReturns = (series: ISeries) => {
@@ -42,36 +42,58 @@ export const useSeriesReturns = (series: ISeries) => {
 
     /**
      * calculate the fyToken interest portion of the total apr
-     * derived by calculating the ratio of fyToken in the pool, and multiplying by the current lend apr
+     * derived by calculating the ratio of fyToken in the pool, and multiplying by the current avg lend/borrow apr
      * @returns Promise<number>
      */
     const calcAnnualizedFyTokenInterest = async () => {
-      const [base, fyTokenVirtual, poolTotalSupply, ts, g1] = await Promise.all([
+      const [baseReserves, fyTokenVirtual, poolTotalSupply, ts, g1, g2] = await Promise.all([
         poolContract.getBaseBalance(),
         poolContract.getFYTokenBalance(),
         poolContract.totalSupply(),
         poolContract.ts(),
         poolContract.g1(),
+        poolContract.g2(),
       ]);
 
       const fyTokenReal = fyTokenVirtual.sub(poolTotalSupply);
-      const totalBalance = base.add(fyTokenReal);
+      const totalBalance = baseReserves.add(fyTokenReal);
       const fyTokenToTotalRatio = +fyTokenReal / +totalBalance;
+      const timeTillMaturity = series.maturity - NOW;
 
       // estimate the fyToken interest rate by taking the ratio of fyToken in the pool to total balance (base + fyToken) and multiplying by the current lend apr
       const baseAmount = ethers.utils.parseUnits('1', series.decimals); // used to estimate the lend apr
-      const timeTillMaturity = series.maturity - NOW;
-      const preview = sellBase(base, fyTokenVirtual, baseAmount, timeTillMaturity.toString(), ts, g1, series.decimals);
-      const apr = calculateAPR(baseAmount, preview, series.maturity);
+      const lendPreview = sellBase(
+        baseReserves,
+        fyTokenVirtual,
+        baseAmount,
+        timeTillMaturity.toString(),
+        ts,
+        g1,
+        series.decimals
+      );
+      const borrowPreview = buyBase(
+        baseReserves,
+        fyTokenVirtual,
+        baseAmount,
+        timeTillMaturity.toString(),
+        ts,
+        g2,
+        series.decimals
+      );
+      const lendAPR = calculateAPR(baseAmount, lendPreview, series.maturity);
+      const borrowAPR = calculateAPR(baseAmount, borrowPreview, series.maturity);
+      const avgAPR = (+lendAPR + +borrowAPR) / 2;
 
-      return +fyTokenToTotalRatio.toString() * +apr;
+      return +fyTokenToTotalRatio.toString() * +avgAPR;
     };
 
     const calcPoolReturns = async () => {
       const _feesAPR = await calcAnnualizedFees();
       setFeesAPR(cleanValue(_feesAPR.toString(), 2));
+
       const _fyTokenPoolAPR = await calcAnnualizedFyTokenInterest();
       setFyTokenPoolAPR(cleanValue(_fyTokenPoolAPR.toString(), 2));
+
       const res = cleanValue((_feesAPR + _fyTokenPoolAPR).toString(), 2);
       setSeriesReturns(res);
     };
