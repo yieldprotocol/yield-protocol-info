@@ -48,7 +48,7 @@ export const useSeriesReturns = (series: ISeries) => {
       const fyTokenToTotalRatio = +fyTokenReal / +totalBalance;
 
       // estimate the fyToken interest rate by taking the ratio of fyToken in the pool to total balance (base + fyToken) and multiplying by the current lend apr
-      const baseAmount = ethers.utils.parseUnits('10000', series.decimals);
+      const baseAmount = ethers.utils.parseUnits('1', series.decimals);
       const timeTillMaturity = series.maturity - NOW;
       const preview = sellBase(base, fyTokenVirtual, baseAmount, timeTillMaturity.toString(), ts, g1, series.decimals);
       const apr = calculateAPR(baseAmount, preview, series.maturity);
@@ -59,6 +59,7 @@ export const useSeriesReturns = (series: ISeries) => {
     const calcPoolReturns = async () => {
       const feesAPR = await calcAnnualizedFees();
       const fyTokenPoolAPR = await calcAnnualizedFyTokenInterest();
+      console.log('🦄 ~ file: useSeriesReturns.ts ~ line 62 ~ calcPoolReturns ~ fyTokenPoolAPR', fyTokenPoolAPR);
       const res = cleanValue((feesAPR + fyTokenPoolAPR).toString(), 2);
       setSeriesReturns(res);
     };
