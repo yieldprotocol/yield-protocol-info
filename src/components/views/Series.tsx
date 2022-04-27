@@ -4,8 +4,11 @@ import SingleItemViewGrid from '../wraps/SingleItemViewGrid';
 import { secondsToFrom } from '../../utils/yieldMath';
 import MainViewWrap from '../wraps/MainViewWrap';
 import { ISeries } from '../../types/chain';
+import { useSeriesReturns } from '../../hooks/useSeriesReturns';
+import SkeletonWrap from '../wraps/SkeletonWrap';
 
 const Series = ({ series }: { series: ISeries }) => {
+  const { seriesReturns } = useSeriesReturns(series);
   const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } = series;
   const series_ = {
     id,
@@ -50,7 +53,12 @@ const Series = ({ series }: { series: ISeries }) => {
         <div className="text-md pb-4">
           <strong>{series.symbol}</strong>
           <div className="text-md pt-2">
-            <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
+            <div className="mb-1">
+              <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
+            </div>
+            <div>
+              <i>APR (fees annualized + fyToken interest annualized): {seriesReturns || <SkeletonWrap />}%</i>
+            </div>
           </div>
         </div>
         <SingleItemViewGrid item={series_} />
