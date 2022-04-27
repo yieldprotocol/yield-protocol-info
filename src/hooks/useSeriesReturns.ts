@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { getDate } from 'date-fns';
 import { ISeries } from '../types/chain';
 import * as contracts from '../contracts';
 import { getProvider } from '../lib/chain';
 import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
-import { POOLVIEW, SECONDS_PER_YEAR } from '../utils/constants';
+import { POOLVIEW } from '../utils/constants';
 import { calculateAPR, sellBase } from '../utils/yieldMath';
 import { cleanValue } from '../utils/appUtils';
 
