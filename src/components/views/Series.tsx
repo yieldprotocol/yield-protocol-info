@@ -6,6 +6,7 @@ import MainViewWrap from '../wraps/MainViewWrap';
 import { ISeries } from '../../types/chain';
 import { useSeriesReturns } from '../../hooks/useSeriesReturns';
 import SkeletonWrap from '../wraps/SkeletonWrap';
+import InfoIcon from '../InfoIcon';
 
 const Series = ({ series }: { series: ISeries }) => {
   const { seriesReturns } = useSeriesReturns(series);
@@ -56,8 +57,11 @@ const Series = ({ series }: { series: ISeries }) => {
             <div className="mb-1">
               <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
             </div>
-            <div>
-              <i>APR (fees annualized + fyToken interest annualized): {seriesReturns || <SkeletonWrap />}%</i>
+            <div className="flex">
+              <i>APR: {seriesReturns || <SkeletonWrap />}%</i>
+              <div className="h-3 w-3">
+                <InfoIcon infoText="fees annualized + fyToken interest annualized" />
+              </div>
             </div>
           </div>
         </div>

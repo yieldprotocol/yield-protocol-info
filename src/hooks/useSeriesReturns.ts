@@ -18,11 +18,17 @@ export const useSeriesReturns = (series: ISeries) => {
   // pool state
   const [seriesReturns, setSeriesReturns] = useState<string>();
 
-  /* Calculate returns using alternative method (calc fees + fyToken interest) */
+  /* Calculate returns using alternative method (calc fees annualized + current fyToken interest annualized) */
   useEffect(() => {
     const poolContract = contracts.Pool__factory.connect(series.poolAddress, provider);
     const poolViewContract = contractMap[POOLVIEW] as contracts.PoolView;
 
+    /**
+     * calculate the fees portion of the total apr
+     * calculated by taking the current invariant relative to the initial invariant at pool launch
+     * extrapolates an apr based on the time between now and the pool launch
+     * @returns number
+     */
     const calcAnnualizedFees = async () => {
       const currentInvariant = await poolViewContract.invariant(series.poolAddress);
       const initInvariant = ethers.utils.parseUnits('1', 18);
@@ -32,6 +38,11 @@ export const useSeriesReturns = (series: ISeries) => {
       return +calculateAPR(initInvariant, currentInvariant, NOW, blockTimestamp);
     };
 
+    /**
+     * calculate the fyToken interest portion of the total apr
+     * derived by calculating the ratio of fyToken in the pool, and multiplying by the current lend apr
+     * @returns Promise<number>
+     */
     const calcAnnualizedFyTokenInterest = async () => {
       const [base, fyTokenVirtual, poolTotalSupply, ts, g1] = await Promise.all([
         poolContract.getBaseBalance(),
@@ -41,13 +52,12 @@ export const useSeriesReturns = (series: ISeries) => {
         poolContract.g1(),
       ]);
 
-      // the real balance of fyTokens in the pool
       const fyTokenReal = fyTokenVirtual.sub(poolTotalSupply);
       const totalBalance = base.add(fyTokenReal);
       const fyTokenToTotalRatio = +fyTokenReal / +totalBalance;
 
       // estimate the fyToken interest rate by taking the ratio of fyToken in the pool to total balance (base + fyToken) and multiplying by the current lend apr
-      const baseAmount = ethers.utils.parseUnits('1', series.decimals);
+      const baseAmount = ethers.utils.parseUnits('1', series.decimals); // used to estimate the lend apr
       const timeTillMaturity = series.maturity - NOW;
       const preview = sellBase(base, fyTokenVirtual, baseAmount, timeTillMaturity.toString(), ts, g1, series.decimals);
       const apr = calculateAPR(baseAmount, preview, series.maturity);
