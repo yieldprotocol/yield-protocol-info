@@ -9,7 +9,7 @@ import SkeletonWrap from '../wraps/SkeletonWrap';
 import InfoIcon from '../InfoIcon';
 
 const Series = ({ series }: { series: ISeries }) => {
-  const { seriesReturns } = useSeriesReturns(series);
+  const { seriesReturns, feesAPR, fyTokenPoolAPR } = useSeriesReturns(series);
   const { id, baseId, maturity, symbol, address, fyTokenAddress, poolAddress, poolName, poolSymbol, fullDate } = series;
   const series_ = {
     id,
@@ -60,7 +60,9 @@ const Series = ({ series }: { series: ISeries }) => {
             <div className="flex">
               <i>APR: {seriesReturns || <SkeletonWrap />}%</i>
               <div className="h-3 w-3">
-                <InfoIcon infoText="fees annualized + fyToken interest annualized" />
+                <InfoIcon
+                  infoText={`fees annualized (${feesAPR}%) + fyToken interest annualized (${fyTokenPoolAPR}%)`}
+                />
               </div>
             </div>
           </div>

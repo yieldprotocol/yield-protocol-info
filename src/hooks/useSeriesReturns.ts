@@ -17,6 +17,8 @@ export const useSeriesReturns = (series: ISeries) => {
 
   // pool state
   const [seriesReturns, setSeriesReturns] = useState<string>();
+  const [feesAPR, setFeesAPR] = useState<string>();
+  const [fyTokenPoolAPR, setFyTokenPoolAPR] = useState<string>();
 
   /* Calculate returns using alternative method (calc fees annualized + current fyToken interest annualized) */
   useEffect(() => {
@@ -66,15 +68,16 @@ export const useSeriesReturns = (series: ISeries) => {
     };
 
     const calcPoolReturns = async () => {
-      const feesAPR = await calcAnnualizedFees();
-      const fyTokenPoolAPR = await calcAnnualizedFyTokenInterest();
-      console.log('🦄 ~ file: useSeriesReturns.ts ~ line 62 ~ calcPoolReturns ~ fyTokenPoolAPR', fyTokenPoolAPR);
-      const res = cleanValue((feesAPR + fyTokenPoolAPR).toString(), 2);
+      const _feesAPR = await calcAnnualizedFees();
+      setFeesAPR(cleanValue(_feesAPR.toString(), 2));
+      const _fyTokenPoolAPR = await calcAnnualizedFyTokenInterest();
+      setFyTokenPoolAPR(cleanValue(_fyTokenPoolAPR.toString(), 2));
+      const res = cleanValue((_feesAPR + _fyTokenPoolAPR).toString(), 2);
       setSeriesReturns(res);
     };
 
     calcPoolReturns();
   }, [contractMap, series.decimals, series.maturity, series.poolAddress]);
 
-  return { seriesReturns };
+  return { seriesReturns, feesAPR, fyTokenPoolAPR };
 };
