@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import Popover from './PopOver';
+import Popover from './Popover';
 
 interface IInfoIcon {
   infoText: string;
