@@ -58,12 +58,18 @@ const Series = ({ series }: { series: ISeries }) => {
               <i>{secondsTillMaturity > 0 ? `${timeTillMaturity} left until maturity` : 'Mature'}</i>
             </div>
             <div className="flex">
-              <i>APR: {seriesReturns || <SkeletonWrap />}%</i>
-              <div className="h-3 w-3">
-                <InfoIcon
-                  infoText={`fees annualized (${feesAPR}%) + fyToken interest annualized (${fyTokenPoolAPR}%)`}
-                />
-              </div>
+              {seriesReturns ? (
+                <>
+                  <i>APR: {seriesReturns}%</i>
+                  <div className="h-3 w-3">
+                    <InfoIcon
+                      infoText={`fees annualized (${feesAPR}%) + fyToken interest annualized (${fyTokenPoolAPR}%)`}
+                    />
+                  </div>
+                </>
+              ) : (
+                <SkeletonWrap height={5} width={10} />
+              )}
             </div>
           </div>
         </div>
