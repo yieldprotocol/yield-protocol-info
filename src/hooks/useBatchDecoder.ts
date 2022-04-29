@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ethers } from 'ethers';
-import { addHexPrefix, fetchEtherscan } from '../utils/etherscan';
+import { addHexPrefix, getABI } from '../utils/etherscan';
 import { useAppSelector } from '../state/hooks/general';
 import { getProvider } from '../lib/chain';
 
@@ -21,50 +21,53 @@ const useBatchDecoder = (txHash: string) => {
     abi: { interface: Interface; functions: Map<string, FunctionFragment> },
     calldata: string
   ): Promise<any> {
+    if (!abi.interface || !abi.functions) return ['functions not found', 'data not found'];
+
     const selector = calldata.slice(0, 2 + 4 * 2);
+
     const f = abi.functions.get(selector);
+
     if (!f) {
       console.log(`Can't find selector ${selector} in function ${abi}`);
+      return ['func not found', 'data not found'];
     }
+
     return [f, addHexPrefix(calldata.slice(2 + 2 * 4))];
   }
 
-  async function getABI(target: string) {
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  async function _getABI(target: string) {
     if (target in decoded.abis) return decoded.abis[target];
-    const ret = await fetchEtherscan(
-      chainId!,
-      new URLSearchParams({
-        module: 'contract',
-        action: 'getsourcecode',
-        address: addHexPrefix(target),
-        apikey: process.env.ETHERSCAN_API_KEY,
-      })
-    );
-    console.log('🦄 ~ file: useBatchDecoder.ts ~ line 41 ~ getABI ~ ret', ret);
-    const iface = new Interface(ret.result[0].ABI);
-    const functions = new Map<string, FunctionFragment>();
-    // eslint-disable-next-line guard-for-in
-    for (const f in iface.functions) {
-      functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]);
+
+    try {
+      const _result = await getABI(chainId, target);
+
+      const iface = new Interface(_result);
+
+      const functions = new Map<string, FunctionFragment>();
+      Object.keys(iface.functions).map((f) => functions.set(iface.getSighash(iface.functions[f]), iface.functions[f]));
+
+      const res = { interface: iface, functions };
+
+      setDecoded((d: any) => ({
+        ...d,
+        contracts: {
+          ...d.contracts,
+          [target]: _result.ContractName,
+        },
+        abis: {
+          ...d.abis,
+          [target]: res,
+        },
+      }));
+
+      return res;
+    } catch (error) {
+      console.log(error);
+      console.log('could not get abi data for: ', target);
+      return {};
     }
-
-    const result = {
-      interface: iface,
-      functions,
-    };
-
-    setDecoded((d: any) => ({
-      ...d,
-      contracts: {
-        ...d.contracts,
-        [target]: ret.ContractName,
-      },
-      abis: {
-        ...d.abis,
-        [target]: result,
-      },
-    }));
-    return result;
   }
 
   class Call {
@@ -87,8 +90,15 @@ const useBatchDecoder = (txHash: string) => {
     }
   }
 
-  async function resolveCall(call: Call) {
-    const abi = await getABI(call.to);
+  async function resolveCall(call: Call, counter: number | null = 0) {
+    if (counter === null) return call;
+
+    const shouldDelay = counter % 3 === 0 && counter !== 0;
+    if (shouldDelay) delay(1000);
+
+    const abi = await _getABI(call.to);
+    const newCount = counter + 1;
+
     const [func, argsCalldata] = await getFunction(abi, call.calldata);
 
     let _args: any = ethers.utils.defaultAbiCoder.decode(
@@ -98,13 +108,13 @@ const useBatchDecoder = (txHash: string) => {
 
     if (ethers.utils.getAddress(call.to) && func.name === 'batch') {
       _args = [_args[0].map((x: any) => new Call(call.to, x))];
-      await Promise.all(_args[0].map((x: any) => resolveCall(x)));
+      await Promise.all(_args[0].map((x: any, idx: number) => resolveCall(x, newCount + idx)));
     } else if (func.name === 'execute') {
       _args = [_args[0].map((x: any) => new Call(x[0], x[1]))];
-      await Promise.all(_args[0].map((x: any) => resolveCall(x)));
+      await Promise.all(_args[0].map((x: any, idx: number) => resolveCall(x, newCount + idx)));
     } else if (ethers.utils.getAddress(call.to) && func.name === 'route') {
       _args = [new Call(_args[0], _args[1])];
-      await resolveCall(_args[0]);
+      await resolveCall(_args[0], newCount);
     } else {
       _args = _args.map((x: any) => x.toString());
     }
@@ -113,7 +123,7 @@ const useBatchDecoder = (txHash: string) => {
       _args,
       func.inputs.map((i: any) => ({ name: i.name, type: i.type }))
     );
-    return call;
+    return resolveCall(call, null);
   }
 
   async function decodeTxHash() {
