@@ -17,6 +17,7 @@ import {
   FUSDC2209,
   FDAI2209,
   FRAX,
+  CVX3CRV,
   // CVX3CRV,
 } from './assets';
 
@@ -56,7 +57,7 @@ usdcIlkOracle1.set(FUSDC2203, NOTIONAL_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2206, NOTIONAL_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2209, NOTIONAL_MULTI_ORACLE);
 /* convex */
-// usdcIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
+usdcIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
 
 CHAIN_ID_1_ASSET_ORACLE_INFO.set(USDC, usdcIlkOracle1);
 
@@ -79,7 +80,7 @@ daiIlkOracle1.set(FDAI2203, NOTIONAL_MULTI_ORACLE);
 daiIlkOracle1.set(FDAI2206, NOTIONAL_MULTI_ORACLE);
 daiIlkOracle1.set(FDAI2209, NOTIONAL_MULTI_ORACLE);
 /* convex */
-// daiIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
+daiIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
 
 CHAIN_ID_1_ASSET_ORACLE_INFO.set(DAI, daiIlkOracle1);
 
