@@ -18,7 +18,6 @@ import {
   FDAI2209,
   FRAX,
   CVX3CRV,
-  // CVX3CRV,
 } from './assets';
 
 const COMPOSITE_MULTI_ORACLE = 'CompositeMultiOracle';
@@ -37,7 +36,7 @@ export const CHAIN_ID_42_ASSET_ORACLE_INFO = new Map<string, Map<string, string>
 export const CHAIN_ID_42161_ASSET_ORACLE_INFO = new Map<string, Map<string, string>>();
 export const CHAIN_ID_421611_ASSET_ORACLE_INFO = new Map<string, Map<string, string>>();
 
-/* chain id 1, 4, 42 (these chain id's all use the same oracle contracts) */
+/* chain id 1, 4, 5, 42 (these chain id's all use the same oracle contracts) */
 // USDC base
 const usdcIlkOracle1 = new Map<string, string>();
 usdcIlkOracle1.set(WETH, CHAINLINK_MULTI_ORACLE);
