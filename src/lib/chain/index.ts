@@ -22,7 +22,7 @@ import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { getPrice } from '../vaults';
 import { ITotalDebtItem } from './types';
 
-export const getProvider = (chainId: number) => new ethers.providers.StaticJsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
+export const getProvider = (chainId: number) => new ethers.providers.JsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
   const Ladle = contractMap[LADLE];
