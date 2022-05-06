@@ -16,6 +16,7 @@ export const FUSDC2206 = '0x313500000000';
 export const FDAI2209 = '0x313600000000';
 export const FUSDC2209 = '0x313700000000';
 export const FRAX = '0x313800000000';
+export const CVX3CRV = '0x313900000000';
 
 export enum TokenType {
   ERC20_,
@@ -314,4 +315,22 @@ ASSET_INFO.set(FRAX, {
   digitFormat: 6,
   tokenType: TokenType.ERC20_,
   limitToSeries: [],
+});
+
+ASSET_INFO.set(CVX3CRV, {
+  version: '1',
+  name: 'cvx3crv',
+  decimals: 18,
+  symbol: 'cvx3crv',
+  showToken: true,
+  color: '#ffffff',
+  isWrappedToken: false,
+  digitFormat: 6,
+  tokenType: TokenType.ERC20_,
+  limitToSeries: [
+    '0x303130360000', // june dai
+    '0x303130370000', // sept dai
+    '0x303230370000', // sept usdc
+    '0x303230360000', // june usdc
+  ],
 });
