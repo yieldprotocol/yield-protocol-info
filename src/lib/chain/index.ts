@@ -259,7 +259,6 @@ export const getAssetsTvl = async (
 
   // get the balance of the asset in the respective join
   const _joinBalances = await getAssetJoinBalances(provider, assets);
-  console.log('🦄 ~ file: index.ts ~ line 259 ~ _joinBalances', _joinBalances);
 
   // map through series to get the relevant pool to asset
   const poolAddrToAssetMap = mapPoolAddrToAsset(seriesMap, assets);
