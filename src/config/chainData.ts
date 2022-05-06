@@ -1,6 +1,7 @@
 export const RPC_URLS: { [chainId: number]: string } = {
   1: process.env.REACT_APP_RPC_URL_1,
   4: process.env.REACT_APP_RPC_URL_4,
+  5: process.env.REACT_APP_RPC_URL_5,
   42: process.env.REACT_APP_RPC_URL_42,
   10: process.env.REACT_APP_RPC_URL_10,
   69: process.env.REACT_APP_RPC_URL_69,
@@ -11,6 +12,7 @@ export const RPC_URLS: { [chainId: number]: string } = {
 export const SUPPORTED_RPC_URLS: { [chainId: number]: string } = {
   1: RPC_URLS[1],
   4: RPC_URLS[4],
+  5: RPC_URLS[5],
   42: RPC_URLS[42],
   // 10: RPC_URLS[10],
   // 69: RPC_URLS[69],
@@ -38,7 +40,12 @@ CHAIN_INFO.set(4, {
   explorer: 'https://rinkeby.etherscan.io',
   etherscanApi: 'https://api-rinkeby.etherscan.io/api',
 });
-CHAIN_INFO.set(5, { name: 'Goerli', color: '#3099f2', explorer: 'https://goerli.etherscan.io' });
+CHAIN_INFO.set(5, {
+  name: 'Goerli',
+  color: '#3099f2',
+  explorer: 'https://goerli.etherscan.io',
+  etherscanApi: 'https://api-goerli.etherscan.io/api',
+});
 CHAIN_INFO.set(42, {
   name: 'Kovan',
   color: '#7F7FFE',
