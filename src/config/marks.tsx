@@ -39,4 +39,5 @@ export const markMap = new Map<string, any>([
   ['FUSDC2209', <NotionalUSDCMark key="notional" seriesId="0x303230370000" />],
   ['FRAX', <FRAXMark key="frax" />],
   ['Cvx3Crv Mock', <CVX3CRVMark key="cvx3crv" />],
+  ['cvx3crv', <CVX3CRVMark key="cvx3crv" />],
 ]);
