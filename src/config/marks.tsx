@@ -14,6 +14,7 @@ import MakerMark from '../components/logos/MakerMark';
 import NotionalDAIMark from '../components/logos/NotionalDAIMark';
 import NotionalUSDCMark from '../components/logos/NotionalUSDCMark';
 import FRAXMark from '../components/logos/FRAXMark';
+import CVX3CRVMark from '../components/logos/CVX3CRVMark';
 
 export const markMap = new Map<string, any>([
   ['DAI', <DaiMark key="dai" />],
@@ -37,4 +38,6 @@ export const markMap = new Map<string, any>([
   ['FUSDC2206', <NotionalUSDCMark key="notional" seriesId="0x303230360000" />],
   ['FUSDC2209', <NotionalUSDCMark key="notional" seriesId="0x303230370000" />],
   ['FRAX', <FRAXMark key="frax" />],
+  ['Cvx3Crv Mock', <CVX3CRVMark key="cvx3crv" />],
+  ['cvx3crv', <CVX3CRVMark key="cvx3crv" />],
 ]);

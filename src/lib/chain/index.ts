@@ -1,12 +1,15 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers, EventFilter } from 'ethers';
-import { ASSET_INFO, FDAI2203, FDAI2206, FDAI2209, TokenType, USDC } from '../../config/assets';
+import { ASSET_INFO, CVX3CRV, FDAI2203, FDAI2206, FDAI2209, TokenType, USDC } from '../../config/assets';
 import { SUPPORTED_RPC_URLS } from '../../config/chainData';
 import yieldEnv from '../../config/yieldEnv';
 import {
+  ConvexJoin,
+  ConvexJoin__factory,
   ERC20Permit__factory,
   ERC20__factory,
   FYToken__factory,
+  Join,
   Join__factory,
   Pool,
   Pool__factory,
@@ -22,7 +25,7 @@ import { decimalNToDecimal18 } from '../../utils/yieldMath';
 import { getPrice } from '../vaults';
 import { ITotalDebtItem } from './types';
 
-export const getProvider = (chainId: number) => new ethers.providers.StaticJsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
+export const getProvider = (chainId: number) => new ethers.providers.JsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
   const Ladle = contractMap[LADLE];
@@ -322,9 +325,15 @@ const getAssetJoinBalances = async (provider: ethers.providers.JsonRpcProvider, 
 };
 
 const getAssetJoinBalance = async (provider: ethers.providers.JsonRpcProvider, asset: IAsset) => {
+  let _Join: Join | ConvexJoin;
+
   try {
-    const Join = Join__factory.connect(asset.joinAddress, provider);
-    return ethers.utils.formatUnits(await Join.storedBalance(), asset.decimals);
+    if (asset.id === CVX3CRV) {
+      _Join = ConvexJoin__factory.connect(asset.joinAddress, provider);
+    } else {
+      _Join = Join__factory.connect(asset.joinAddress, provider);
+    }
+    return ethers.utils.formatUnits(await _Join.storedBalance(), asset.decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);
     console.log(e);
