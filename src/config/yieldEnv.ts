@@ -57,6 +57,7 @@ const yieldEnv = {
       Cauldron: '0xF39bf75997176915a117Bb274eF6F20784B91568',
       Ladle: '0xE34989E754e6fF29A0bcbe0A9b0ea818C93bff05',
       YearnVaultMultiOracle: '0xbA8EB420D61C18A211ae4a157C80D157F49A322D',
+      ConvexPoolMock: '0xACf676Ce44e99503424c8dA551491f44C6dd438e',
     },
     42: {
       Timelock: '0xEc923c8392E53BB7B25dAe012aeF0883a6fa7B7B',
