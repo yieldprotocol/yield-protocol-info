@@ -122,6 +122,7 @@ export const getMainnetVaults = async (
         } else {
           const _price = await getPrice(ilkId, baseId, contractMap, ilkDecimals, chainId);
           price = decimalNToDecimal18(_price, baseDecimals);
+          prices.set(baseIlk, price);
         }
 
         if (minCollatRatioPcts.has(baseIlk)) {
@@ -129,6 +130,7 @@ export const getMainnetVaults = async (
         } else {
           const { ratio } = await Cauldron.spotOracles(baseId, ilkId);
           minCollatRatioPct = `${ethers.utils.formatUnits(ratio * 100, 6)}`;
+          minCollatRatioPcts.set(baseIlk, minCollatRatioPct);
         }
       } catch (e) {
         console.log('could not get min collat ratio pct or price data');
