@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { gql } from '@apollo/client';
 import { fromUnixTime } from 'date-fns';
 import { ORACLE_INFO } from '../../config/oracles';
@@ -98,6 +98,11 @@ export const getMainnetVaults = async (
   const Cauldron = contractMap[CAULDRON];
   const Witch = contractMap[WITCH];
 
+  // map base + ilk id's to a price
+  let prices: Map<string, BigNumber>;
+  // map base + ilk id's to a minCollatRatioPct
+  let minCollatRatioPcts: Map<string, string>;
+
   /* Add in the dynamic vault data by mapping the vaults list */
   const vaultListMod = await Promise.all(
     vaultsToUse.map(async (vault) => {
@@ -106,19 +111,28 @@ export const getMainnetVaults = async (
       const { assetId: ilkId, decimals: ilkDecimals } = vault.collateral.asset;
       const seriesId = vault.series.id;
 
+      let price: BigNumber;
       let minCollatRatioPct: string;
-      const _price = await getPrice(ilkId, baseId, contractMap, ilkDecimals, chainId);
-      const price = decimalNToDecimal18(_price, baseDecimals);
+
+      const baseIlk = baseId + ilkId;
 
       try {
-        if (assetPairData) {
-          minCollatRatioPct = assetPairData.filter((a) => a.ilkAssetId === ilkId)[0].minCollatRatioPct;
+        if (prices.has(baseIlk)) {
+          price = prices.get(baseIlk);
+        } else {
+          const _price = await getPrice(ilkId, baseId, contractMap, ilkDecimals, chainId);
+          price = decimalNToDecimal18(_price, baseDecimals);
+        }
+
+        if (minCollatRatioPcts.has(baseIlk)) {
+          minCollatRatioPct = minCollatRatioPcts.get(baseIlk);
         } else {
           const { ratio } = await Cauldron.spotOracles(baseId, ilkId);
           minCollatRatioPct = `${ethers.utils.formatUnits(ratio * 100, 6)}`;
         }
       } catch (e) {
-        console.log('could not get min collat ratio pct');
+        console.log('could not get min collat ratio pct or price data');
+        price = ethers.constants.Zero;
         minCollatRatioPct = '0';
       }
 
