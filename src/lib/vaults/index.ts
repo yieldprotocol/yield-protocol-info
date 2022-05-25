@@ -121,10 +121,8 @@ export const getMainnetVaults = async (
           price = prices.get(baseIlk);
         } else {
           const _price = await getPrice(ilkId, baseId, contractMap, ilkDecimals, chainId);
-          console.log('🦄 ~ file: index.ts ~ line 124 ~ vaultsToUse.map ~ _price', _price);
           price = decimalNToDecimal18(_price, baseDecimals);
           prices.set(baseIlk, price);
-          console.log('🦄 ~ file: index.ts ~ line 127 ~ vaultsToUse.map ~ prices', prices);
         }
       } catch (e) {
         console.log('could not get price data');
