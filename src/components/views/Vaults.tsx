@@ -14,14 +14,19 @@ const Vaults = ({
   vaultList,
   seriesMap,
   assetMap,
+  vaultsLoading,
+  search,
 }: {
   vaultList: IVault[];
   seriesMap: ISeriesMap | undefined;
   assetMap: IAssetMap | undefined;
+  vaultsLoading: boolean;
+  search: (vault: string | null) => void;
 }) => {
   const router = useRouter();
 
   // filters
+  const [vaultSearch, setVaultSearch] = useState<string | null>(null);
   const [seriesFilterChoices, setSeriesFilterChoices] = useState<string[][]>();
   const [ilkFilterChoices, setIlkFilterChoices] = useState<string[][]>();
 
@@ -29,7 +34,6 @@ const Vaults = ({
   const [filteredVaults, setFilteredVaults] = useState<IVault[]>([]);
   const [unhealthyFilter, setUnhealthyFilter] = useState<boolean>(false);
   const [numUnhealthy, setNumUnhealthy] = useState<string | null>(null);
-  const [vaultSearch, setVaultSearch] = useState<string | undefined>(undefined);
   const [ilkFilter, setIlkFilter] = useState<string>('');
   const [seriesFilter, setSeriesFilter] = useState<string>('');
 
@@ -42,13 +46,12 @@ const Vaults = ({
     setSeriesFilterChoices(seriesChoices.map((sc) => [sc, seriesMap[sc] ? seriesMap[sc].name : '']));
 
     const ilkChoices = Array.from(new Set(vaultList.map((v) => v.ilkId)));
-    setIlkFilterChoices(ilkChoices.map((ic) => [ic, assetMap[ic].name]));
+    setIlkFilterChoices(ilkChoices.map((ic) => [ic, assetMap[ic]?.name]));
   }, [assetMap, seriesMap, vaultList]);
 
   const handleFilter = useCallback(
     (_vaults: IVault[]) => {
       const _filteredVaults = _vaults
-        .filter((v) => (vaultSearch ? v.id === vaultSearch || v.owner === vaultSearch : true))
         .filter((v) =>
           unhealthyFilter ? Number(v.collatRatioPct) <= Number(v.minCollatRatioPct) - 10 && v.baseId !== v.ilkId : true
         )
@@ -57,7 +60,7 @@ const Vaults = ({
       setFilteredVaults(_filteredVaults);
       setNumUnhealthy(_filteredVaults.length.toString());
     },
-    [unhealthyFilter, vaultSearch, seriesFilter, ilkFilter]
+    [unhealthyFilter, seriesFilter, ilkFilter]
   );
 
   useEffect(() => {
@@ -70,12 +73,22 @@ const Vaults = ({
   }, [vaultList]);
 
   useEffect(() => {
-    if (unhealthyFilter || vaultSearch || seriesFilter || ilkFilter) {
+    if (unhealthyFilter || seriesFilter || ilkFilter) {
       handleFilter(allVaults);
     }
-  }, [allVaults, handleFilter, ilkFilter, seriesFilter, unhealthyFilter, vaultSearch]);
+  }, [allVaults, handleFilter, ilkFilter, seriesFilter, unhealthyFilter]);
 
-  if (!assetMap || !seriesMap)
+  useEffect(() => {
+    if (vaultSearch === '') {
+      search(null);
+      setAllVaults(vaultList);
+    } else {
+      search(vaultSearch);
+      setAllVaults(vaultList);
+    }
+  }, [search, vaultSearch, vaultList]);
+
+  if (!assetMap || !seriesMap || vaultsLoading)
     return (
       <MainViewWrap>
         <Spinner />
@@ -145,7 +158,7 @@ const Vaults = ({
                 </tr>
               </thead>
               <tbody className="bg-green divide-y divide-gray-200">
-                {(ilkFilter || unhealthyFilter || seriesFilter || vaultSearch ? filteredVaults : allVaults).map((v) => {
+                {(ilkFilter || unhealthyFilter || seriesFilter ? filteredVaults : allVaults).map((v) => {
                   const debtAsset = assetMap[v.baseId];
                   const collatAsset = assetMap[v.ilkId];
                   const debtAssetLogo = markMap.get(debtAsset?.symbol);
