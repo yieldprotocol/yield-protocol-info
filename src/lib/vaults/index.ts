@@ -99,9 +99,9 @@ export const getMainnetVaults = async (
   const Witch = contractMap[WITCH];
 
   // map base + ilk id's to a price
-  let prices: Map<string, BigNumber>;
+  const prices: Map<string, BigNumber> = new Map();
   // map base + ilk id's to a minCollatRatioPct
-  let minCollatRatioPcts: Map<string, string>;
+  const minCollatRatioPcts: Map<string, string> = new Map();
 
   /* Add in the dynamic vault data by mapping the vaults list */
   const vaultListMod = await Promise.all(
@@ -121,21 +121,23 @@ export const getMainnetVaults = async (
           price = prices.get(baseIlk);
         } else {
           const _price = await getPrice(ilkId, baseId, contractMap, ilkDecimals, chainId);
+          console.log('🦄 ~ file: index.ts ~ line 124 ~ vaultsToUse.map ~ _price', _price);
           price = decimalNToDecimal18(_price, baseDecimals);
           prices.set(baseIlk, price);
-        }
-
-        if (minCollatRatioPcts.has(baseIlk)) {
-          minCollatRatioPct = minCollatRatioPcts.get(baseIlk);
-        } else {
-          const { ratio } = await Cauldron.spotOracles(baseId, ilkId);
-          minCollatRatioPct = `${ethers.utils.formatUnits(ratio * 100, 6)}`;
-          minCollatRatioPcts.set(baseIlk, minCollatRatioPct);
+          console.log('🦄 ~ file: index.ts ~ line 127 ~ vaultsToUse.map ~ prices', prices);
         }
       } catch (e) {
-        console.log('could not get min collat ratio pct or price data');
+        console.log('could not get price data');
         price = ethers.constants.Zero;
         minCollatRatioPct = '0';
+      }
+
+      if (minCollatRatioPcts.has(baseIlk)) {
+        minCollatRatioPct = minCollatRatioPcts.get(baseIlk);
+      } else {
+        const { ratio } = await Cauldron.spotOracles(baseId, ilkId);
+        minCollatRatioPct = `${ethers.utils.formatUnits(ratio * 100, 6)}`;
+        minCollatRatioPcts.set(baseIlk, minCollatRatioPct);
       }
 
       const collatRatioPct = `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}`;
