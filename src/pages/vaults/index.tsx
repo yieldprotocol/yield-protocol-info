@@ -38,7 +38,7 @@ export const getStaticProps = async () => {
   const seriesMap = await getSeries(provider, contractMap);
   const assetMap = await getAssets(provider, contractMap);
 
-  const vaultMap = await getMainnetVaults(contractMap, undefined, chainId);
+  const vaultMap = await getMainnetVaults(contractMap, undefined, chainId, null);
   const vaultList = Object.values(vaultMap).sort((v1, v2) => (+v1.art < +v2.art ? -1 : 1));
 
   return { props: { vaultList, seriesMap, assetMap }, revalidate: 1800 };
