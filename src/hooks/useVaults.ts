@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { getMainnetVaults, getNotMainnetVaults } from '../lib/vaults';
+import { getMainnetVaults } from '../lib/vaults';
 import { useAppSelector } from '../state/hooks/general';
 import useContracts from './useContracts';
 
