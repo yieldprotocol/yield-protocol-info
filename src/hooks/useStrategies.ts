@@ -12,8 +12,6 @@ const useStrategies = () => {
     () => getStrategies(provider as ethers.providers.Web3Provider),
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
     }
   );
 
