@@ -1,30 +1,22 @@
 import useSWR from 'swr';
 import { getMainnetVaults, getNotMainnetVaults } from '../lib/vaults';
 import { useAppSelector } from '../state/hooks/general';
-import useAssets from './useAssets';
 import useContracts from './useContracts';
-import useSeries from './useSeries';
 
-const useVaults = (vaultId = undefined) => {
+const useVaults = (vaultId = null) => {
   const chainId = useAppSelector(({ application }) => application.chainId);
   const contractMap = useContracts();
-  const { data: seriesMap } = useSeries();
-  const { data: assetMap } = useAssets();
 
   const { data, error } = useSWR(
-    `/vaults?chainId=${chainId}`,
-    () =>
-      chainId === 1
-        ? getMainnetVaults(contractMap, undefined, chainId, vaultId)
-        : getNotMainnetVaults(contractMap, undefined, seriesMap, assetMap, chainId, vaultId),
+    `/vaults?chainId=${chainId}${vaultId ? `&vaultId=${vaultId}` : ''}`,
+    () => getMainnetVaults(contractMap, undefined, chainId, vaultId),
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
-      revalidateOnReconnect: false,
     }
   );
 
-  return { data, loading: !error && !data };
+  return { data, loading: (!error && !data && chainId !== 1) || (!error && !data && vaultId) };
 };
 
 export default useVaults;

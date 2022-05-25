@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { gql } from '@apollo/client';
 import { fromUnixTime } from 'date-fns';
-import client from '../../config/apolloClient';
 import { ORACLE_INFO } from '../../config/oracles';
 import { IContractMap } from '../../types/contracts';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
@@ -12,6 +11,7 @@ import { IAssetMap, IAssetPairData, ISeriesMap } from '../../types/chain';
 import { VaultBuiltEvent } from '../../contracts/Cauldron';
 import { ChainlinkMultiOracle, ChainlinkMultiOracle__factory, ChainlinkUSDOracle } from '../../contracts';
 import { USDC, WETH } from '../../config/assets';
+import getClient from '../../config/apolloClient';
 
 const TOP_VAULTS_QUERY = `
   query vaults {
@@ -71,8 +71,10 @@ export const getMainnetVaults = async (
   contractMap: IContractMap,
   assetPairData: IAssetPairData[] | undefined,
   chainId: number,
-  vaultId?: string
+  vaultId: string | null
 ) => {
+  const client = getClient(chainId);
+
   let vaultsToUse: IVaultGraph[];
 
   // if vault id is supplied, get only that vault's data
