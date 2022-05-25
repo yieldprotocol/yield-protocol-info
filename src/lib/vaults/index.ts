@@ -7,8 +7,7 @@ import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
 import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
 import { IVault, IVaultGraph, IVaultMap } from '../../types/vaults';
-import { IAssetMap, IAssetPairData, ISeriesMap } from '../../types/chain';
-import { VaultBuiltEvent } from '../../contracts/Cauldron';
+import { IAssetMap, IAssetPairData } from '../../types/chain';
 import { ChainlinkMultiOracle, ChainlinkMultiOracle__factory, ChainlinkUSDOracle } from '../../contracts';
 import { USDC, WETH } from '../../config/assets';
 import getClient from '../../config/apolloClient';
@@ -41,7 +40,7 @@ const TOP_VAULTS_QUERY = `
 `;
 
 const SINGLE_VAULT_QUERY = `
-  query getVault($address: ID!) {
+  query($address: ID!) {
     vault(id: $address) {
       id
       owner
@@ -87,6 +86,7 @@ export const getMainnetVaults = async (
     });
     vaultsToUse = [vault];
   } else {
+    console.log('getting vaults');
     const {
       data: { vaults },
     } = await client.query({
@@ -137,74 +137,6 @@ export const getMainnetVaults = async (
         art,
         decimals: baseDecimals.toString(),
       };
-    })
-  );
-
-  return vaultListMod.reduce((acc: IVaultMap, item: IVault) => {
-    acc[item.id] = item;
-    return acc;
-  }, {});
-};
-
-export const getNotMainnetVaults = async (
-  contractMap: IContractMap,
-  assetPairData: IAssetPairData[],
-  seriesMap: ISeriesMap,
-  assetMap: IAssetMap,
-  chainId: number,
-  vaultId?: string
-) => {
-  const Cauldron = contractMap[CAULDRON];
-  const Witch = contractMap[WITCH];
-
-  const vaultsBuiltFilter = Cauldron.filters.VaultBuilt(null, null);
-  const vaultsBuilt = await Cauldron.queryFilter(vaultsBuiltFilter, 0);
-
-  const vaultEventList = await Promise.all(
-    vaultsBuilt.map(async (x: VaultBuiltEvent) => {
-      const { vaultId: id, ilkId, seriesId, owner } = x.args;
-      const _series = seriesMap[seriesId];
-      return {
-        id,
-        seriesId,
-        baseId: _series?.baseId!,
-        ilkId,
-        decimals: _series?.decimals!,
-        owner,
-      };
-    })
-  );
-
-  /* Add in the dynamic vault data by mapping the vaults list */
-  const vaultListMod = await Promise.all(
-    vaultEventList.map(async (vault) => {
-      /* update balance and series  ( series - because a vault can have been rolled to another series) */
-      try {
-        const _ilk = assetMap[vault.ilkId];
-        const [{ ink, art }, { ratio: minCollatRatio }, price] = await Promise.all([
-          await Cauldron.balances(vault.id),
-          await Cauldron.spotOracles(vault.baseId, vault.ilkId),
-          await getPrice(vault.ilkId, vault.baseId, contractMap, _ilk.decimals, chainId),
-        ]);
-
-        const { owner, seriesId, ilkId, decimals } = vault;
-        const base = assetMap[vault.baseId];
-        const ilk = assetMap[ilkId];
-
-        return {
-          ...vault,
-          owner,
-          isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
-          collatRatioPct: `${cleanValue(calculateCollateralizationRatio(ink, price!, art, true), 2)}`,
-          minCollatRatioPct: `${ethers.utils.formatUnits(minCollatRatio * 100, 6)}`, // collat ratios always have 6 decimals
-          ink: ilk ? cleanValue(ethers.utils.formatUnits(ink, ilk.decimals), ilk.digitFormat) : '',
-          art: base ? cleanValue(ethers.utils.formatUnits(art, base.decimals), base.digitFormat) : '',
-          decimals,
-          seriesId,
-        };
-      } catch (error) {
-        return {};
-      }
     })
   );
 
