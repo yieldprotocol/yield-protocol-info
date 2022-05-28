@@ -21,6 +21,7 @@ export interface IVault {
   ink: string;
   art: string;
   decimals: string;
+  liquidated: string;
 }
 
 export interface IPriceMap {
@@ -45,8 +46,11 @@ export interface IVaultGraph {
   collateralAmount: string;
   debtAmount: string;
   id: string;
-  owner: string;
+  owner: {
+    id: string;
+  };
   series: ISeriesGraph;
+  liquidated: boolean;
 }
 
 interface IAssetGraph {

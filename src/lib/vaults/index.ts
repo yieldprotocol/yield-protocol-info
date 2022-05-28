@@ -16,9 +16,12 @@ const TOP_VAULTS_QUERY = `
   query vaults {
     vaults(orderBy: debtAmount, orderDirection: desc, first: 100) {
       id
-      owner
+      owner {
+        id
+      }
       debtAmount
       collateralAmount
+      liquidated
       collateral {
         asset {
           name
@@ -43,9 +46,12 @@ const SINGLE_VAULT_QUERY = `
   query($address: ID!) {
     vault(id: $address) {
       id
-      owner
+      owner {
+        id
+      }
       debtAmount
       collateralAmount
+      liquidated
       collateral {
         asset {
           name
@@ -106,7 +112,13 @@ export const getMainnetVaults = async (
   /* Add in the dynamic vault data by mapping the vaults list */
   const vaultListMod = await Promise.all(
     vaultsToUse.map(async (vault) => {
-      const { collateralAmount: ink, debtAmount: art, id, owner } = vault;
+      const {
+        collateralAmount: ink,
+        debtAmount: art,
+        id,
+        owner: { id: owner },
+        liquidated,
+      } = vault;
       const { assetId: baseId, decimals: baseDecimals } = vault.series.baseAsset;
       const { assetId: ilkId, decimals: ilkDecimals } = vault.collateral.asset;
       const seriesId = vault.series.id;
@@ -152,6 +164,7 @@ export const getMainnetVaults = async (
         ink,
         art,
         decimals: baseDecimals.toString(),
+        liquidated: liquidated ? 'true' : 'false',
       };
     })
   );
