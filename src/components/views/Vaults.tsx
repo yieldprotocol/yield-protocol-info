@@ -120,7 +120,7 @@ const Vaults = ({
               name="search"
               value={vaultSearch || ''}
               action={(e: any) => setVaultSearch(e.target.value)}
-              placeHolder="Vault Id or Owner"
+              placeHolder="Vault Id"
             />
           </div>
           <div>
