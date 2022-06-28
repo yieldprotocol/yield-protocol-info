@@ -296,7 +296,7 @@ export const getAssetsTvl = async (
       const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
       const totalBalance = +joinBalance_ + +poolBalance_;
       const _value = +price_ * +totalBalance;
-      const value = isNaN(_value) ? 0 : _value;
+      const value = isNaN(_value) || _value < 0.01 ? 0 : _value;
       return {
         symbol: bal.asset.symbol as string,
         id: bal.id as string,
@@ -326,6 +326,7 @@ const getAssetJoinBalances = async (provider: ethers.providers.JsonRpcProvider, 
 
 const getAssetJoinBalance = async (provider: ethers.providers.JsonRpcProvider, asset: IAsset) => {
   let _Join: Join | ConvexJoin;
+  const decimals = [FDAI2203, FDAI2206, FDAI2209].includes(asset.id) ? 18 : asset.decimals; // notional assets have 6 decimals, but the join uses the underlying asset's decimals
 
   try {
     if (asset.id === CVX3CRV) {
@@ -333,7 +334,7 @@ const getAssetJoinBalance = async (provider: ethers.providers.JsonRpcProvider, a
     } else {
       _Join = Join__factory.connect(asset.joinAddress, provider);
     }
-    return ethers.utils.formatUnits(await _Join.storedBalance(), asset.decimals);
+    return ethers.utils.formatUnits(await _Join.storedBalance(), decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);
     console.log(e);
