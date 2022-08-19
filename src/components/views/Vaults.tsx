@@ -186,7 +186,7 @@ const Vaults = ({
                       </td>
                       <td className="px-6 py-3 text-center items-center">
                         <span className="text-sm font-medium text-gray-900 truncate">
-                          <span>{formatValue(v.art, debtAsset.digitFormat)}</span>
+                          <span>{debtAsset && formatValue(v.art, debtAsset.digitFormat)}</span>
                         </span>
                       </td>
                       <td className="px-6 py-3 text-center items-center">
@@ -196,7 +196,7 @@ const Vaults = ({
                       </td>
                       <td className="px-6 py-3 text-center items-center">
                         <span className="text-sm font-medium text-gray-900 truncate">
-                          <span>{formatValue(v.ink, 2)}</span>
+                          <span>{collatAsset && formatValue(v.ink, 2)}</span>
                         </span>
                       </td>
                     </tr>
