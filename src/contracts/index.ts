@@ -5,6 +5,7 @@ export type { AccumulatorOracle } from "./AccumulatorOracle";
 export type { Cauldron } from "./Cauldron";
 export type { ChainlinkMultiOracle } from "./ChainlinkMultiOracle";
 export type { ChainlinkUSDOracle } from "./ChainlinkUSDOracle";
+export type { Cloak } from "./Cloak";
 export type { CompositeMultiOracle } from "./CompositeMultiOracle";
 export type { CompoundMultiOracle } from "./CompoundMultiOracle";
 export type { ConvexJoin } from "./ConvexJoin";
@@ -35,6 +36,7 @@ export { AccumulatorOracle__factory } from "./factories/AccumulatorOracle__facto
 export { Cauldron__factory } from "./factories/Cauldron__factory";
 export { ChainlinkMultiOracle__factory } from "./factories/ChainlinkMultiOracle__factory";
 export { ChainlinkUSDOracle__factory } from "./factories/ChainlinkUSDOracle__factory";
+export { Cloak__factory } from "./factories/Cloak__factory";
 export { CompositeMultiOracle__factory } from "./factories/CompositeMultiOracle__factory";
 export { CompoundMultiOracle__factory } from "./factories/CompoundMultiOracle__factory";
 export { ConvexJoin__factory } from "./factories/ConvexJoin__factory";
