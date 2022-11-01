@@ -18,6 +18,12 @@ import {
   FDAI2209,
   FRAX,
   CVX3CRV,
+  FUSDC2212,
+  FUSDC2303,
+  FDAI2212,
+  FDAI2303,
+  FETH2212,
+  FETH2303,
 } from './assets';
 
 const COMPOSITE_MULTI_ORACLE = 'CompositeMultiOracle';
@@ -55,6 +61,8 @@ usdcIlkOracle1.set(FRAX, CHAINLINK_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2203, NOTIONAL_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2206, NOTIONAL_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2209, NOTIONAL_MULTI_ORACLE);
+usdcIlkOracle1.set(FUSDC2212, NOTIONAL_MULTI_ORACLE);
+usdcIlkOracle1.set(FUSDC2303, NOTIONAL_MULTI_ORACLE);
 /* convex */
 usdcIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
 
@@ -78,6 +86,8 @@ daiIlkOracle1.set(FRAX, COMPOSITE_MULTI_ORACLE);
 daiIlkOracle1.set(FDAI2203, NOTIONAL_MULTI_ORACLE);
 daiIlkOracle1.set(FDAI2206, NOTIONAL_MULTI_ORACLE);
 daiIlkOracle1.set(FDAI2209, NOTIONAL_MULTI_ORACLE);
+daiIlkOracle1.set(FDAI2212, NOTIONAL_MULTI_ORACLE);
+daiIlkOracle1.set(FDAI2303, NOTIONAL_MULTI_ORACLE);
 /* convex */
 daiIlkOracle1.set(CVX3CRV, COMPOSITE_MULTI_ORACLE);
 
@@ -98,6 +108,9 @@ wethIlkOracle1.set(yvUSDC, YEARNVAULT_MULTI_ORACLE);
 wethIlkOracle1.set(MKR, COMPOSITE_MULTI_ORACLE);
 wethIlkOracle1.set(FRAX, COMPOSITE_MULTI_ORACLE);
 CHAIN_ID_1_ASSET_ORACLE_INFO.set(WETH, wethIlkOracle1);
+/* notional additions */
+wethIlkOracle1.set(FETH2212, NOTIONAL_MULTI_ORACLE);
+wethIlkOracle1.set(FETH2303, NOTIONAL_MULTI_ORACLE);
 
 // FRAX base
 const fraxIlkOracle1 = new Map<string, string>();
