@@ -1,6 +1,19 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers, EventFilter } from 'ethers';
-import { ASSET_INFO, CVX3CRV, FDAI2203, FDAI2206, FDAI2209, TokenType, USDC } from '../../config/assets';
+import {
+  ASSET_INFO,
+  CVX3CRV,
+  FDAI2203,
+  FDAI2206,
+  FDAI2209,
+  FDAI2212,
+  FDAI2303,
+  FETH2212,
+  FETH2303,
+  TokenType,
+  USDC,
+  WETH,
+} from '../../config/assets';
 import { SUPPORTED_RPC_URLS } from '../../config/chainData';
 import yieldEnv from '../../config/yieldEnv';
 import {
@@ -283,8 +296,11 @@ export const getAssetsTvl = async (
       let _price: BigNumber;
       let price_: string;
 
-      if ([FDAI2203, FDAI2206, FDAI2209].includes(bal.id)) {
+      if ([FDAI2203, FDAI2206, FDAI2209, FDAI2212, FDAI2303].includes(bal.id)) {
         price_ = '1';
+      } else if ([FETH2212, FETH2303].includes(bal.id)) {
+        // if FETH, use eth price as proxy for fETH price
+        _price = await getPrice(WETH, _USDC.id, contractMap, 18, chainId);
       } else {
         _price = await getPrice(bal.id, _USDC.id, contractMap, bal.asset.decimals, chainId);
 
