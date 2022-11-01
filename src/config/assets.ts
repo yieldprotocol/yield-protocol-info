@@ -9,14 +9,26 @@ export const ENS = '0x303700000000';
 export const UNI = '0x313000000000';
 export const yvUSDC = '0x303900000000';
 export const MKR = '0x313100000000';
-export const FDAI2203 = '0x313200000000';
-export const FUSDC2203 = '0x313300000000';
-export const FDAI2206 = '0x313400000000';
-export const FUSDC2206 = '0x313500000000';
-export const FDAI2209 = '0x313600000000';
-export const FUSDC2209 = '0x313700000000';
 export const FRAX = '0x313800000000';
 export const CVX3CRV = '0x313900000000';
+
+// fCash assets
+export const FDAI2203 = '0x313200000000';
+export const FUSDC2203 = '0x313300000000';
+
+export const FDAI2206 = '0x313400000000';
+export const FUSDC2206 = '0x313500000000';
+
+export const FDAI2209 = '0x313600000000';
+export const FUSDC2209 = '0x313700000000';
+
+export const FDAI2212 = '0x323300000000';
+export const FUSDC2212 = '0x323400000000';
+export const FETH2212 = '0x323800000000';
+
+export const FDAI2303 = '0x323500000000';
+export const FUSDC2303 = '0x323600000000';
+export const FETH2303 = '0x323900000000';
 
 export enum TokenType {
   ERC20_,
@@ -333,4 +345,88 @@ ASSET_INFO.set(CVX3CRV, {
     '0x303230370000', // sept usdc
     '0x303230360000', // june usdc
   ],
+});
+
+ASSET_INFO.set(FDAI2212, {
+  version: '1',
+  name: 'fDAI2212',
+  decimals: 8,
+  symbol: 'FDAI2212',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563377944461313,
+  limitToSeries: ['0x303130380000'],
+});
+
+ASSET_INFO.set(FDAI2303, {
+  version: '1',
+  name: 'fDAI2303',
+  decimals: 8,
+  symbol: 'FDAI2303',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563379935117313,
+  limitToSeries: ['0x303130390000'],
+});
+
+ASSET_INFO.set(FUSDC2212, {
+  version: '1',
+  name: 'fUSDC2212',
+  decimals: 8,
+  symbol: 'FUSDC2212',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844852921171969,
+  limitToSeries: ['0x303230380000'],
+});
+
+ASSET_INFO.set(FUSDC2303, {
+  version: '1',
+  name: 'fUSDC2303',
+  decimals: 8,
+  symbol: 'FUSDC2303',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844854911827969,
+  limitToSeries: ['0x303230390000'],
+});
+
+ASSET_INFO.set(FETH2212, {
+  version: '1',
+  name: 'fETH2212',
+  decimals: 8,
+  symbol: 'FETH2212',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 281902967750657,
+  limitToSeries: ['0x303030380000'],
+});
+
+ASSET_INFO.set(FETH2303, {
+  version: '1',
+  name: 'fETH2303',
+  decimals: 8,
+  symbol: 'FETH2303',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 281904958406657,
+  limitToSeries: ['0x303030390000'],
 });
