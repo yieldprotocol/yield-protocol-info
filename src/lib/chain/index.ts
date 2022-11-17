@@ -28,8 +28,8 @@ import {
   Pool__factory,
   Strategy__factory,
 } from '../../contracts';
-import { SeriesAddedEvent } from '../../contracts/Cauldron';
-import { JoinAddedEvent, PoolAddedEvent } from '../../contracts/Ladle';
+import { AssetAddedEvent, Cauldron, SeriesAddedEvent } from '../../contracts/Cauldron';
+import { JoinAddedEvent, Ladle, PoolAddedEvent } from '../../contracts/Ladle';
 import { IAsset, IAssetMap, IAssetPairData, ISeriesMap, IStrategyMap } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
@@ -41,14 +41,14 @@ import { ITotalDebtItem } from './types';
 export const getProvider = (chainId: number) => new ethers.providers.JsonRpcProvider(SUPPORTED_RPC_URLS[chainId]);
 
 export const getSeries = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
-  const Ladle = contractMap[LADLE];
-  const Cauldron = contractMap[CAULDRON];
+  const ladle = contractMap[LADLE] as Ladle;
+  const cauldron = contractMap[CAULDRON] as Cauldron;
 
   try {
     /* get poolAdded events and series events at the same time */
     const [seriesAddedEvents, poolAddedEvents] = await Promise.all([
-      Cauldron.queryFilter('SeriesAdded' as EventFilter),
-      Ladle.queryFilter('PoolAdded' as EventFilter),
+      cauldron.queryFilter(cauldron.filters.SeriesAdded()),
+      ladle.queryFilter(ladle.filters.PoolAdded()),
     ]);
 
     /* build a map from the poolAdded event data */
@@ -58,9 +58,9 @@ export const getSeries = async (provider: ethers.providers.JsonRpcProvider, cont
 
     /* Add in any extra static series */
     await Promise.all([
-      ...seriesAddedEvents.map(async (x: SeriesAddedEvent): Promise<void> => {
+      ...seriesAddedEvents.map(async (x): Promise<void> => {
         const { seriesId: id, baseId, fyToken } = x.args;
-        const { maturity } = await Cauldron.series(id);
+        const { maturity } = await cauldron.series(id);
 
         if (poolMap.has(id)) {
           // only add series if it has a pool
@@ -176,17 +176,18 @@ export const getStrategies = async (provider: ethers.providers.JsonRpcProvider) 
 
 export const getAssets = async (provider: ethers.providers.JsonRpcProvider, contractMap: IContractMap) => {
   console.log('getting assets');
-  const Ladle = contractMap[LADLE];
-  const Cauldron = contractMap[CAULDRON];
+  const ladle = contractMap[LADLE] as Ladle;
+  const cauldron = contractMap[CAULDRON] as Cauldron;
 
   try {
     /* get all the assetAdded, roacleAdded and joinAdded events and series events at the same time */
     const [assetAddedEvents, joinAddedEvents] = await Promise.all([
-      Cauldron.queryFilter('AssetAdded' as EventFilter),
-      Ladle.queryFilter('JoinAdded' as EventFilter),
+      cauldron.queryFilter(cauldron.filters.AssetAdded()),
+      ladle.queryFilter(ladle.filters.JoinAdded()),
     ]);
+
     /* Create a map from the joinAdded event data */
-    const joinMap: Map<string, string> = new Map(joinAddedEvents.map((e: JoinAddedEvent) => e.args));
+    const joinMap = new Map(joinAddedEvents.map((e) => e.args));
 
     const newAssets: IAssetMap = {};
 
@@ -194,7 +195,19 @@ export const getAssets = async (provider: ethers.providers.JsonRpcProvider, cont
       assetAddedEvents.map(async (x) => {
         const { assetId: id, asset: address } = x.args;
         const assetInfo = ASSET_INFO.get(id);
-        let { name, symbol, decimals, version } = assetInfo!;
+        let name: string;
+        let symbol: string;
+        let decimals: number;
+        let idToUse: string;
+        let joinAddress: string;
+
+        if (assetInfo) {
+          assetInfo.name = name;
+          assetInfo.symbol = symbol;
+          assetInfo.decimals = decimals;
+          idToUse = assetInfo.wrappedTokenId || id; // here we are using the unwrapped id
+          joinAddress = joinMap.get(idToUse);
+        }
 
         /* On first load Checks/Corrects the ERC20 name/symbol/decimals  (if possible ) */
         if (
@@ -206,6 +219,10 @@ export const getAssets = async (provider: ethers.providers.JsonRpcProvider, cont
           try {
             [name, symbol, decimals] = await Promise.all([contract.name(), contract.symbol(), contract.decimals()]);
           } catch (e) {
+            name = '';
+            symbol = '';
+            decimals = 18;
+            idToUse = '';
             console.log(
               address,
               ': ERC20 contract auto-validation unsuccessfull. Please manually ensure symbol and decimals are correct.'
@@ -213,34 +230,17 @@ export const getAssets = async (provider: ethers.providers.JsonRpcProvider, cont
           }
         }
 
-        /* Checks/Corrects the version for ERC20Permit tokens */
-        if (assetInfo?.tokenType === TokenType.ERC20_Permit || assetInfo?.tokenType === TokenType.ERC20_DaiPermit) {
-          const contract = ERC20Permit__factory.connect(address, provider);
-          try {
-            version = await contract.version();
-          } catch (e) {
-            console.log(
-              address,
-              ': contract version auto-validation unsuccessfull. Please manually ensure version is correct.'
-            );
-          }
-        }
-
-        const idToUse = assetInfo?.wrappedTokenId || id; // here we are using the unwrapped id
-        const joinAddress = joinMap.get(idToUse);
-
-        const newAsset = {
+        const newAsset: IAsset = {
           id,
           address,
-          name,
-          symbol,
-          decimals,
-          version,
-          joinAddress,
+          name: name ?? '',
+          symbol: symbol ?? '',
+          decimals: decimals ?? 18,
+          joinAddress: joinAddress ?? 'Could not get join address',
           digitFormat: 2,
         };
 
-        if (joinAddress) (newAssets as IAssetMap)[id] = newAsset;
+        if (joinAddress) newAssets[id] = newAsset;
       })
     );
 
