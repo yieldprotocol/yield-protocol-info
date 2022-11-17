@@ -19,7 +19,6 @@ import yieldEnv from '../../config/yieldEnv';
 import {
   ConvexJoin,
   ConvexJoin__factory,
-  ERC20Permit__factory,
   ERC20__factory,
   FYToken__factory,
   Join,
@@ -28,8 +27,8 @@ import {
   Pool__factory,
   Strategy__factory,
 } from '../../contracts';
-import { AssetAddedEvent, Cauldron, SeriesAddedEvent } from '../../contracts/Cauldron';
-import { JoinAddedEvent, Ladle, PoolAddedEvent } from '../../contracts/Ladle';
+import { Cauldron } from '../../contracts/Cauldron';
+import { Ladle, PoolAddedEvent } from '../../contracts/Ladle';
 import { IAsset, IAssetMap, IAssetPairData, ISeriesMap, IStrategyMap } from '../../types/chain';
 import { IContractMap } from '../../types/contracts';
 import { cleanValue, getSeason, SeasonType } from '../../utils/appUtils';
@@ -493,18 +492,18 @@ export const getAssetPairData = async (
   chainId: number
 ): Promise<IAssetPairData[] | undefined> => {
   try {
-    const Cauldron = contractMap[CAULDRON];
+    const cauldron = contractMap[CAULDRON] as Cauldron;
 
     return await Promise.all(
       Object.values(assets).map(async (x) => {
         const [{ min, max, dec: decimals }, { ratio: minCollatRatio }, totalDebt] = await Promise.all([
-          await Cauldron.debt(asset.id, x.id),
-          await Cauldron.spotOracles(asset.id, x.id),
-          (await Cauldron.debt(asset.id, x.id)).sum,
+          await cauldron.debt(asset.id, x.id),
+          await cauldron.spotOracles(asset.id, x.id),
+          (await cauldron.debt(asset.id, x.id)).sum,
         ]);
 
         const minDebt = (min * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
-        const maxDebt = (max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
+        const maxDebt = (+max * 10 ** decimals).toLocaleString('fullwide', { useGrouping: false });
         const totalDebt_ = cleanValue(ethers.utils.formatUnits(totalDebt, decimals), 2);
         const _USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
 
