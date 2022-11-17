@@ -4,7 +4,7 @@ import { fromUnixTime } from 'date-fns';
 import { ORACLE_INFO } from '../../config/oracles';
 import { IContractMap } from '../../types/contracts';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
+import { CAULDRON, WAD_BN, WITCH, WITCH_V1 } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
 import { IVault, IVaultGraph, IVaultMap } from '../../types/vaults';
 import { IAssetMap, IAssetPairData } from '../../types/chain';
@@ -103,6 +103,7 @@ export const getMainnetVaults = async (
 
   const Cauldron = contractMap[CAULDRON];
   const Witch = contractMap[WITCH];
+  const WitchV1 = contractMap[WITCH_V1];
 
   // map base + ilk id's to a price
   const prices: Map<string, BigNumber> = new Map();
@@ -158,7 +159,7 @@ export const getMainnetVaults = async (
         baseId,
         ilkId,
         owner,
-        isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
+        isWitchOwner: `${Witch.address === owner || WitchV1.address === owner}`, // check if witch is the owner (in liquidation process)
         collatRatioPct,
         minCollatRatioPct,
         ink,

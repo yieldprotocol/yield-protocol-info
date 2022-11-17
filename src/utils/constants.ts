@@ -27,6 +27,7 @@ export const POOLVIEW = 'PoolView';
 export const CAULDRON = 'Cauldron';
 export const LADLE = 'Ladle';
 export const WITCH = 'Witch';
+export const WITCH_V1 = 'WitchV1';
 export const COMPOUND_MULTI_ORACLE = 'CompoundMultiOracle';
 export const CHAINLINK_MULTI_ORACLE = 'ChainlinkMultiOracle';
 export const COMPOSITE_MULTI_ORACLE = 'CompositeMultiOracle';
