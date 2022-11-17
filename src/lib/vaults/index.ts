@@ -163,7 +163,6 @@ export const getMainnetVaults = async (
       // check if witch v2 auctioned
       const witchAutcionedFilter = witch.filters.Auctioned(bytesToBytes32(id, 12));
       const liqqed = await witch.queryFilter(witchAutcionedFilter);
-      console.log('🦄 ~ file: index.ts ~ line 166 ~ vaultsToUse.map ~ liqqed', liqqed);
 
       return {
         id,
