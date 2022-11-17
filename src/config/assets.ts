@@ -31,12 +31,12 @@ export const FUSDC2303 = '0x323600000000';
 export const FETH2303 = '0x323900000000';
 
 export enum TokenType {
-  ERC20_,
-  ERC20_Permit,
-  ERC20_DaiPermit,
-  ERC20_MKR,
-  ERC1155_,
-  ERC720_,
+  ERC20_ = 'ERC20_',
+  ERC20_Permit = 'ERC20_Permit',
+  ERC20_DaiPermit = 'ERC20_DaiPermit',
+  ERC20_MKR = 'ERC20_MKR',
+  ERC1155_ = 'ERC1155_',
+  ERC720_ = 'ERC720_',
 }
 
 export interface IAssetInfo {

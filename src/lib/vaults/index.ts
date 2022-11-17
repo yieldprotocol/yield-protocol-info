@@ -4,11 +4,18 @@ import { fromUnixTime } from 'date-fns';
 import { ORACLE_INFO } from '../../config/oracles';
 import { IContractMap } from '../../types/contracts';
 import { bytesToBytes32, cleanValue } from '../../utils/appUtils';
-import { CAULDRON, WAD_BN, WITCH } from '../../utils/constants';
+import { CAULDRON, WAD_BN, WITCH, WITCH_V1 } from '../../utils/constants';
 import { calculateCollateralizationRatio, decimal18ToDecimalN, decimalNToDecimal18 } from '../../utils/yieldMath';
 import { IVault, IVaultGraph, IVaultMap } from '../../types/vaults';
 import { IAssetMap, IAssetPairData } from '../../types/chain';
-import { ChainlinkMultiOracle, ChainlinkMultiOracle__factory, ChainlinkUSDOracle } from '../../contracts';
+import {
+  Cauldron,
+  ChainlinkMultiOracle,
+  ChainlinkMultiOracle__factory,
+  ChainlinkUSDOracle,
+  Witch,
+  WitchV1,
+} from '../../contracts';
 import { USDC, WETH } from '../../config/assets';
 import getClient from '../../config/apolloClient';
 
@@ -101,8 +108,9 @@ export const getMainnetVaults = async (
     vaultsToUse = vaults;
   }
 
-  const Cauldron = contractMap[CAULDRON];
-  const Witch = contractMap[WITCH];
+  const cauldron = contractMap[CAULDRON] as Cauldron;
+  const witch = contractMap[WITCH] as Witch;
+  const witchV1 = contractMap[WITCH_V1] as WitchV1;
 
   // map base + ilk id's to a price
   const prices: Map<string, BigNumber> = new Map();
@@ -145,12 +153,16 @@ export const getMainnetVaults = async (
       if (minCollatRatioPcts.has(baseIlk)) {
         minCollatRatioPct = minCollatRatioPcts.get(baseIlk);
       } else {
-        const { ratio } = await Cauldron.spotOracles(baseId, ilkId);
+        const { ratio } = await cauldron.spotOracles(baseId, ilkId);
         minCollatRatioPct = `${ethers.utils.formatUnits(ratio * 100, 6)}`;
         minCollatRatioPcts.set(baseIlk, minCollatRatioPct);
       }
 
       const collatRatioPct = `${cleanValue(calculateCollateralizationRatio(ink, price, art, true), 2)}`;
+
+      // check if witch v2 auctioned
+      const witchAutcionedFilter = witch.filters.Auctioned(bytesToBytes32(id, 12));
+      const liqqed = await witch.queryFilter(witchAutcionedFilter);
 
       return {
         id,
@@ -158,13 +170,13 @@ export const getMainnetVaults = async (
         baseId,
         ilkId,
         owner,
-        isWitchOwner: `${Witch.address === owner}`, // check if witch is the owner (in liquidation process)
+        isWitchOwner: `${witch.address === owner || witchV1.address === owner}`, // check if witch is the owner (in liquidation process)
         collatRatioPct,
         minCollatRatioPct,
         ink,
         art,
         decimals: baseDecimals.toString(),
-        liquidated: liquidated ? 'true' : 'false',
+        liquidated: liquidated || liqqed.length ? 'true' : 'false',
       };
     })
   );

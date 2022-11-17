@@ -24,6 +24,173 @@ const _abi = [
     type: "constructor",
   },
   {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "AuctionIsCorrect",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "max",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "actual",
+        type: "uint256",
+      },
+    ],
+    name: "AuctioneerRewardTooHigh",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "current",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "max",
+        type: "uint256",
+      },
+    ],
+    name: "CollateralLimitExceeded",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes6",
+        name: "id",
+        type: "bytes6",
+      },
+    ],
+    name: "JoinNotFound",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "remainder",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "min",
+        type: "uint256",
+      },
+    ],
+    name: "LeavesDust",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "got",
+        type: "uint256",
+      },
+    ],
+    name: "NotEnoughBought",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "NotUnderCollateralised",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "UnderCollateralised",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "param",
+        type: "bytes32",
+      },
+    ],
+    name: "UnrecognisedParam",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+      {
+        internalType: "address",
+        name: "witch",
+        type: "address",
+      },
+    ],
+    name: "VaultAlreadyUnderAuction",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes6",
+        name: "ilkId",
+        type: "bytes6",
+      },
+      {
+        internalType: "bytes6",
+        name: "baseId",
+        type: "bytes6",
+      },
+    ],
+    name: "VaultNotLiquidatable",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "VaultNotUnderAuction",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "WitchIsDead",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -33,13 +200,80 @@ const _abi = [
         type: "bytes12",
       },
       {
-        indexed: true,
+        components: [
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            internalType: "uint32",
+            name: "start",
+            type: "uint32",
+          },
+          {
+            internalType: "bytes6",
+            name: "baseId",
+            type: "bytes6",
+          },
+          {
+            internalType: "uint128",
+            name: "ink",
+            type: "uint128",
+          },
+          {
+            internalType: "uint128",
+            name: "art",
+            type: "uint128",
+          },
+          {
+            internalType: "address",
+            name: "auctioneer",
+            type: "address",
+          },
+          {
+            internalType: "bytes6",
+            name: "ilkId",
+            type: "bytes6",
+          },
+          {
+            internalType: "bytes6",
+            name: "seriesId",
+            type: "bytes6",
+          },
+        ],
+        indexed: false,
+        internalType: "struct DataTypes.Auction",
+        name: "auction",
+        type: "tuple",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
-        name: "start",
+        name: "duration",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "initialCollateralProportion",
         type: "uint256",
       },
     ],
     name: "Auctioned",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "auctioneerReward",
+        type: "uint256",
+      },
+    ],
+    name: "AuctioneerRewardSet",
     type: "event",
   },
   {
@@ -78,8 +312,78 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "Cancelled",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "Cleared",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "Ended",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "bytes6",
         name: "ilkId",
+        type: "bytes6",
+      },
+      {
+        indexed: true,
+        internalType: "bytes6",
+        name: "baseId",
+        type: "bytes6",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "max",
+        type: "uint128",
+      },
+    ],
+    name: "LimitSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes6",
+        name: "ilkId",
+        type: "bytes6",
+      },
+      {
+        indexed: true,
+        internalType: "bytes6",
+        name: "baseId",
         type: "bytes6",
       },
       {
@@ -91,29 +395,17 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint64",
-        name: "initialOffer",
+        name: "vaultProportion",
         type: "uint64",
       },
       {
         indexed: false,
-        internalType: "uint96",
-        name: "line",
-        type: "uint96",
-      },
-      {
-        indexed: false,
-        internalType: "uint24",
-        name: "dust",
-        type: "uint24",
-      },
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "dec",
-        type: "uint8",
+        internalType: "uint64",
+        name: "collateralProportion",
+        type: "uint64",
       },
     ],
-    name: "IlkSet",
+    name: "LineSet",
     type: "event",
   },
   {
@@ -126,13 +418,38 @@ const _abi = [
         type: "bytes32",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
-        name: "value",
+        name: "oldValue",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newValue",
         type: "address",
       },
     ],
     name: "Point",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "value",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "protected",
+        type: "bool",
+      },
+    ],
+    name: "ProtectedSet",
     type: "event",
   },
   {
@@ -232,6 +549,32 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "ONE_HUNDRED_PERCENT",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ONE_PERCENT",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "ROOT",
     outputs: [
       {
@@ -263,10 +606,120 @@ const _abi = [
         name: "vaultId",
         type: "bytes12",
       },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
     ],
     name: "auction",
-    outputs: [],
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            internalType: "uint32",
+            name: "start",
+            type: "uint32",
+          },
+          {
+            internalType: "bytes6",
+            name: "baseId",
+            type: "bytes6",
+          },
+          {
+            internalType: "uint128",
+            name: "ink",
+            type: "uint128",
+          },
+          {
+            internalType: "uint128",
+            name: "art",
+            type: "uint128",
+          },
+          {
+            internalType: "address",
+            name: "auctioneer",
+            type: "address",
+          },
+          {
+            internalType: "bytes6",
+            name: "ilkId",
+            type: "bytes6",
+          },
+          {
+            internalType: "bytes6",
+            name: "seriesId",
+            type: "bytes6",
+          },
+        ],
+        internalType: "struct DataTypes.Auction",
+        name: "auction_",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            internalType: "bytes6",
+            name: "seriesId",
+            type: "bytes6",
+          },
+          {
+            internalType: "bytes6",
+            name: "ilkId",
+            type: "bytes6",
+          },
+        ],
+        internalType: "struct DataTypes.Vault",
+        name: "vault",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "contract IFYToken",
+            name: "fyToken",
+            type: "address",
+          },
+          {
+            internalType: "bytes6",
+            name: "baseId",
+            type: "bytes6",
+          },
+          {
+            internalType: "uint32",
+            name: "maturity",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct DataTypes.Series",
+        name: "series",
+        type: "tuple",
+      },
+    ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "auctioneerReward",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -289,6 +742,36 @@ const _abi = [
         name: "start",
         type: "uint32",
       },
+      {
+        internalType: "bytes6",
+        name: "baseId",
+        type: "bytes6",
+      },
+      {
+        internalType: "uint128",
+        name: "ink",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "art",
+        type: "uint128",
+      },
+      {
+        internalType: "address",
+        name: "auctioneer",
+        type: "address",
+      },
+      {
+        internalType: "bytes6",
+        name: "ilkId",
+        type: "bytes6",
+      },
+      {
+        internalType: "bytes6",
+        name: "seriesId",
+        type: "bytes6",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -301,24 +784,47 @@ const _abi = [
         type: "bytes12",
       },
       {
-        internalType: "uint128",
-        name: "base",
-        type: "uint128",
+        internalType: "address",
+        name: "to",
+        type: "address",
       },
-      {
-        internalType: "uint128",
-        name: "min",
-        type: "uint128",
-      },
-    ],
-    name: "buy",
-    outputs: [
       {
         internalType: "uint256",
-        name: "ink",
+        name: "maxArtIn",
         type: "uint256",
       },
     ],
+    name: "calcPayout",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "liquidatorCut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "auctioneerCut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "artIn",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "cancel",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -333,6 +839,19 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+    ],
+    name: "clear",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -415,30 +934,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "bytes6",
-        name: "",
-        type: "bytes6",
-      },
-    ],
-    name: "ilks",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "duration",
-        type: "uint32",
-      },
-      {
-        internalType: "uint64",
-        name: "initialOffer",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "ladle",
     outputs: [
@@ -458,28 +953,57 @@ const _abi = [
         name: "",
         type: "bytes6",
       },
+      {
+        internalType: "bytes6",
+        name: "",
+        type: "bytes6",
+      },
     ],
     name: "limits",
     outputs: [
       {
-        internalType: "uint96",
-        name: "line",
-        type: "uint96",
-      },
-      {
-        internalType: "uint24",
-        name: "dust",
-        type: "uint24",
-      },
-      {
-        internalType: "uint8",
-        name: "dec",
-        type: "uint8",
+        internalType: "uint128",
+        name: "max",
+        type: "uint128",
       },
       {
         internalType: "uint128",
         name: "sum",
         type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes6",
+        name: "",
+        type: "bytes6",
+      },
+      {
+        internalType: "bytes6",
+        name: "",
+        type: "bytes6",
+      },
+    ],
+    name: "lines",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "duration",
+        type: "uint32",
+      },
+      {
+        internalType: "uint64",
+        name: "vaultProportion",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "collateralProportion",
+        type: "uint64",
       },
     ],
     stateMutability: "view",
@@ -506,17 +1030,81 @@ const _abi = [
         type: "bytes12",
       },
       {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
         internalType: "uint128",
-        name: "min",
+        name: "minInkOut",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "maxBaseIn",
         type: "uint128",
       },
     ],
-    name: "payAll",
+    name: "payBase",
     outputs: [
       {
         internalType: "uint256",
-        name: "ink",
+        name: "liquidatorCut",
         type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "auctioneerCut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "baseIn",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes12",
+        name: "vaultId",
+        type: "bytes12",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint128",
+        name: "minInkOut",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "maxArtIn",
+        type: "uint128",
+      },
+    ],
+    name: "payFYToken",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "liquidatorCut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "auctioneerCut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint128",
+        name: "artIn",
+        type: "uint128",
       },
     ],
     stateMutability: "nonpayable",
@@ -538,6 +1126,25 @@ const _abi = [
     name: "point",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "protected",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -597,8 +1204,26 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "auctioneerReward_",
+        type: "uint256",
+      },
+    ],
+    name: "setAuctioneerReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes6",
         name: "ilkId",
+        type: "bytes6",
+      },
+      {
+        internalType: "bytes6",
+        name: "baseId",
         type: "bytes6",
       },
       {
@@ -608,26 +1233,39 @@ const _abi = [
       },
       {
         internalType: "uint64",
-        name: "initialOffer",
+        name: "vaultProportion",
         type: "uint64",
       },
       {
-        internalType: "uint96",
-        name: "line",
-        type: "uint96",
+        internalType: "uint64",
+        name: "collateralProportion",
+        type: "uint64",
       },
       {
-        internalType: "uint24",
-        name: "dust",
-        type: "uint24",
-      },
-      {
-        internalType: "uint8",
-        name: "dec",
-        type: "uint8",
+        internalType: "uint128",
+        name: "max",
+        type: "uint128",
       },
     ],
-    name: "setIlk",
+    name: "setLineAndLimit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "_protected",
+        type: "bool",
+      },
+    ],
+    name: "setProtected",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

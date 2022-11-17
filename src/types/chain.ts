@@ -72,7 +72,6 @@ export interface IAsset {
   name: string;
   symbol: string;
   decimals: number;
-  version: string;
   joinAddress: string;
   digitFormat: number;
 }
