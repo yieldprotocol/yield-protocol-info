@@ -17,9 +17,12 @@ export function getEvents(contractMap: IContractMap, name: string, filter: any =
     const contract: Contract = contractMap[name];
 
     if (contract) {
+      console.log('Fetching events for contract: ', name);
       try {
+        console.log("not hitting here :/");
         dispatch(setEventsLoading(true));
         const events = await contract.queryFilter(filter, -10000, undefined);
+        console.log(events);
 
         const updatedEvents = await Promise.all(
           events.map(async (e: Event, i: number) => ({
