@@ -12,6 +12,7 @@ import {
   FETH2303,
   TokenType,
   USDC,
+  USDT,
   WETH,
 } from '../../config/assets';
 import { SUPPORTED_RPC_URLS } from '../../config/chainData';
@@ -201,9 +202,6 @@ export const getAssets = async (provider: ethers.providers.JsonRpcProvider, cont
         let joinAddress: string;
 
         if (assetInfo) {
-          assetInfo.name = name;
-          assetInfo.symbol = symbol;
-          assetInfo.decimals = decimals;
           idToUse = assetInfo.wrappedTokenId || id; // here we are using the unwrapped id
           joinAddress = joinMap.get(idToUse);
         }
@@ -227,6 +225,10 @@ export const getAssets = async (provider: ethers.providers.JsonRpcProvider, cont
               ': ERC20 contract auto-validation unsuccessfull. Please manually ensure symbol and decimals are correct.'
             );
           }
+        } else if (assetInfo?.tokenType === TokenType.ERC1155_) {
+          name = assetInfo.name;
+          symbol = assetInfo.symbol;
+          decimals = assetInfo.decimals;
         }
 
         const newAsset: IAsset = {
@@ -312,6 +314,7 @@ export const getAssetsTvl = async (
       const totalBalance = +joinBalance_ + +poolBalance_;
       const _value = +price_ * +totalBalance;
       const value = isNaN(_value) || _value < 0.01 ? 0 : _value;
+
       return {
         symbol: bal.asset.symbol as string,
         id: bal.id as string,
@@ -389,6 +392,7 @@ export const convertValue = async (
   chainId: number
 ) => {
   if (fromAsset === toAsset) return fromValue;
+
   const _price = await getPrice(fromAsset.id, toAsset.id, contractMap, fromAsset.decimals, chainId);
   const price = decimalNToDecimal18(_price, toAsset.decimals);
   const price_ = ethers.utils.formatUnits(price, 18);

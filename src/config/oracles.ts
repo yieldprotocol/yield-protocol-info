@@ -3,6 +3,7 @@ import {
   DAI,
   USDC,
   WBTC,
+  USDT,
   stETH,
   wstETH,
   ENS,
@@ -57,6 +58,7 @@ usdcIlkOracle1.set(UNI, CHAINLINK_MULTI_ORACLE);
 usdcIlkOracle1.set(yvUSDC, YEARNVAULT_MULTI_ORACLE);
 usdcIlkOracle1.set(MKR, COMPOSITE_MULTI_ORACLE);
 usdcIlkOracle1.set(FRAX, CHAINLINK_MULTI_ORACLE);
+usdcIlkOracle1.set(USDT, CHAINLINK_MULTI_ORACLE);
 /* notional additions */
 usdcIlkOracle1.set(FUSDC2203, NOTIONAL_MULTI_ORACLE);
 usdcIlkOracle1.set(FUSDC2206, NOTIONAL_MULTI_ORACLE);
@@ -126,6 +128,21 @@ fraxIlkOracle1.set(UNI, CHAINLINK_MULTI_ORACLE);
 fraxIlkOracle1.set(yvUSDC, YEARNVAULT_MULTI_ORACLE);
 fraxIlkOracle1.set(MKR, COMPOSITE_MULTI_ORACLE);
 CHAIN_ID_1_ASSET_ORACLE_INFO.set(FRAX, fraxIlkOracle1);
+
+// USDT base
+const usdtIlkOracle1 = new Map<string, string>();
+usdtIlkOracle1.set(WETH, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(DAI, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(USDC, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(WBTC, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(stETH, COMPOSITE_MULTI_ORACLE);
+usdtIlkOracle1.set(wstETH, COMPOSITE_MULTI_ORACLE);
+usdtIlkOracle1.set(ENS, COMPOSITE_MULTI_ORACLE);
+usdtIlkOracle1.set(LINK, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(UNI, CHAINLINK_MULTI_ORACLE);
+usdtIlkOracle1.set(yvUSDC, YEARNVAULT_MULTI_ORACLE);
+usdtIlkOracle1.set(MKR, COMPOSITE_MULTI_ORACLE);
+CHAIN_ID_1_ASSET_ORACLE_INFO.set(USDT, usdtIlkOracle1);
 
 /* chain id 42161, 421611 (aribtrum mainnet and arbitrum rinkeby use the same oracle contracts) */
 

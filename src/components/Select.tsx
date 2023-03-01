@@ -62,7 +62,7 @@ const Selecty = ({ options, label, onChange }: any) => {
                   >
                     {({ selected, active }) => {
                       const asset = label === 'Series' ? assetMap[seriesMap[_x].baseId] : assetMap[_x];
-                      const logo = markMap.get(asset.symbol);
+                      const logo = markMap?.get(asset?.symbol);
                       return (
                         <div className="flex justify-between">
                           <div className="flex">
