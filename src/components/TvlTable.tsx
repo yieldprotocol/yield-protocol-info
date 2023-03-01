@@ -22,7 +22,7 @@ const TvlTable = ({ data, assets }: { data: any[]; assets: IAssetMap }) =>
                   {x.value >= 0 && (
                     <div className="text-md font-medium text-gray-900 truncate">
                       <div>
-                        ${formatValue(x.value, 0)} {asset?.symbol}
+                        ${formatValue(x.value, 0)} <span className="font-extralight">{asset?.symbol}</span>
                       </div>
                     </div>
                   )}
