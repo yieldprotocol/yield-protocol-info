@@ -11,6 +11,7 @@ export const yvUSDC = '0x303900000000';
 export const MKR = '0x313100000000';
 export const FRAX = '0x313800000000';
 export const CVX3CRV = '0x313900000000';
+export const USDT = '0x30a000000000';
 
 // fCash assets
 export const FDAI2203 = '0x313200000000';
@@ -429,4 +430,16 @@ ASSET_INFO.set(FETH2303, {
   tokenType: TokenType.ERC1155_,
   tokenIdentifier: 281904958406657,
   limitToSeries: ['0x303030390000'],
+});
+
+ASSET_INFO.set(USDT, {
+  version: '1',
+  name: 'Tether USD',
+  decimals: 6,
+  symbol: 'USDT',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#26A17B',
+  digitFormat: 2,
+  tokenType: TokenType.ERC20_,
 });

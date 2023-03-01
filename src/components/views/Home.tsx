@@ -50,7 +50,7 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{tvlList.length > 0 && <TvlTable data={tvlList} assets={assets} />}</div>
+          <div className="w-64">{tvlList.length > 0 && <TvlTable data={tvlList} assets={assets} />}</div>
         </div>
         <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
           <Summary>
@@ -65,7 +65,7 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
               )}
             </div>
           </Summary>
-          <div className="w-52">{totalDebt > 0 && <TvlTable data={totalDebtList} assets={assets} />}</div>
+          <div className="w-64">{totalDebt > 0 && <TvlTable data={totalDebtList} assets={assets} />}</div>
         </div>
       </div>
     </MainViewWrap>
