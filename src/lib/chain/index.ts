@@ -286,13 +286,19 @@ export const getAssetsTvl = async (
     const newMap: any = balMap;
     const prevBalance: number = +balMap[bal.id]?.balance! || 0;
     const newBalance: number = prevBalance + Number(bal.balance);
-    newMap[bal.id as string] = { id: bal.id, asset: bal.asset, balance: newBalance.toString() };
+    newMap[bal.id as string] = {
+      id: bal.id,
+      asset: bal.asset,
+      balance: newBalance.toString(),
+    };
     return newMap;
   }, {});
 
   // convert the balances to usdc (or dai) denomination
   const totalTvl = await Promise.all(
     Object.values(_joinBalances!)?.map(async (bal: any) => {
+      const assetInfo = ASSET_INFO.get(bal.id);
+
       // get the usdc price of the asset
       let _price: BigNumber;
       let price_: string;
@@ -314,11 +320,21 @@ export const getAssetsTvl = async (
       const totalBalance = +joinBalance_ + +poolBalance_;
       const _value = +price_ * +totalBalance;
       const value = isNaN(_value) || _value < 0.01 ? 0 : _value;
+      let hasMatured: boolean;
+
+      if (assetInfo.tokenType === TokenType.ERC1155_) {
+        const maturity = await getAssetJoinMaturity(provider, bal.asset);
+        const today = new Date();
+        hasMatured = new Date(maturity * 1000) < today;
+      } else {
+        hasMatured = false;
+      }
 
       return {
         symbol: bal.asset.symbol as string,
         id: bal.id as string,
         value,
+        hasMatured,
       };
     })
   );
@@ -355,6 +371,20 @@ const getAssetJoinBalance = async (provider: ethers.providers.JsonRpcProvider, a
     return ethers.utils.formatUnits(await _Join.storedBalance(), decimals);
   } catch (e) {
     console.log('error getting join balance for', asset);
+    console.log(e);
+    return '0';
+  }
+};
+
+const getAssetJoinMaturity = async (provider: ethers.providers.JsonRpcProvider, asset: IAsset) => {
+  let _Join;
+
+  try {
+    _Join = Pool__factory.connect(asset.joinAddress, provider);
+    const maturity = await _Join.maturity();
+    return maturity;
+  } catch (e) {
+    console.log('error getting join maturity for', asset);
     console.log(e);
     return '0';
   }
