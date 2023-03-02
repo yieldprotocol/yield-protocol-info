@@ -25,8 +25,6 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
   const [tvl, setTvl] = useState<number>();
   const [tvlList, setTvlList] = useState<Tvl[]>([]);
 
-  console.log('%c rendering home', 'color: green; font-size: 16px; font-weight: bold;');
-
   // sets the total value locked for all assets combined
   useEffect(() => {
     Object.values(assetsTvl).length &&
