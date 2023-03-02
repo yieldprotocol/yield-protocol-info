@@ -11,6 +11,7 @@ interface Tvl {
   symbol: string;
   id: string;
   value: number;
+  hasMatured: boolean;
 }
 
 interface HomeProps {
@@ -24,6 +25,8 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
   const [tvl, setTvl] = useState<number>();
   const [tvlList, setTvlList] = useState<Tvl[]>([]);
 
+  console.log('%c rendering home', 'color: green; font-size: 16px; font-weight: bold;');
+
   // sets the total value locked for all assets combined
   useEffect(() => {
     Object.values(assetsTvl).length &&
@@ -31,7 +34,12 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
   }, [assetsTvl]);
 
   useEffect(() => {
-    setTvlList(Object.values(assetsTvl).sort((a, b) => b.value - a.value)); // sort by largest tvl
+    // sort by tvl and filter out matured assets
+    const tvlItems = Object.values(assetsTvl)
+      .sort((a, b) => b.value - a.value)
+      .filter((asset) => !asset.hasMatured);
+
+    setTvlList(tvlItems);
   }, [assetsTvl]);
 
   return (
