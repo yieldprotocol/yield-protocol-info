@@ -381,7 +381,7 @@ const getAssetJoinMaturity = async (provider: ethers.providers.JsonRpcProvider, 
 
   try {
     _Join = Pool__factory.connect(asset.joinAddress, provider);
-    let maturity = await _Join.maturity();
+    const maturity = await _Join.maturity();
     return maturity;
   } catch (e) {
     console.log('error getting join maturity for', asset);
