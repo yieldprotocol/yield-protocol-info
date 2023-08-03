@@ -12,6 +12,9 @@ export const MKR = '0x313100000000';
 export const FRAX = '0x313800000000';
 export const CVX3CRV = '0x313900000000';
 export const USDT = '0x30a000000000';
+export const CRAB = '0x333800000000';
+export const RETH = '0xe03016000000';
+
 
 // fCash assets
 export const FDAI2203 = '0x313200000000';
@@ -30,6 +33,18 @@ export const FETH2212 = '0x323800000000';
 export const FDAI2303 = '0x323500000000';
 export const FUSDC2303 = '0x323600000000';
 export const FETH2303 = '0x323900000000';
+
+export const FETH2306 = '0x40301200028b';
+export const FDAI2306 = '0x40311200028b';
+export const FUSDC2306 = '0x40321200028b';
+
+export const FETH2309 = '0x40301200028e';
+export const FDAI2309 = '0x40311200028e';
+export const FUSDC2309 = '0x40321200028e';
+
+export const FETH2312 = '0x403012000291';
+export const FDAI2312 = '0x403112000291';
+export const FUSDC2312 = '0x403212000291';
 
 export enum TokenType {
   ERC20_ = 'ERC20_',
@@ -145,7 +160,7 @@ ASSET_INFO.set(stETH, {
   name: 'Staked Eth',
   decimals: 18,
   symbol: 'stETH',
-  showToken: false,
+  showToken: true,
   isWrappedToken: false,
   wrapHandlerAddress: '0x491aB93faa921C8E634F891F96512Be14fD3DbB1',
   wrappedTokenId: '0x303400000000',
@@ -443,3 +458,147 @@ ASSET_INFO.set(USDT, {
   digitFormat: 2,
   tokenType: TokenType.ERC20_,
 });
+
+ASSET_INFO.set(FETH2306, {
+  version: '1',
+  name: 'fETH2306',
+  decimals: 8,
+  symbol: 'FETH2306',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 281906949062657,
+  limitToSeries: ['0x0030ff00028c'],
+})
+
+ASSET_INFO.set(FDAI2306, {
+  version: '1',
+  name: 'fDAI2306',
+  decimals: 8,
+  symbol: 'FDAI2306',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563381925773313,
+  limitToSeries: ['0x0031ff00028c'],
+})
+
+ASSET_INFO.set(FUSDC2306, {
+  version: '1',
+  name: 'fUSDC2306',
+  decimals: 8,
+  symbol: 'FUSDC2306',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844856902483969,
+  limitToSeries: ['0x0032ff00028c'],
+})
+
+ASSET_INFO.set(FETH2309, {
+  version: '1',
+  name: 'fETH2309',
+  decimals: 8,
+  symbol: 'FETH2309',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 281908939718657,
+})
+
+ASSET_INFO.set(FDAI2309, {
+  version: '1',
+  name: 'fDAI2309',
+  decimals: 8,
+  symbol: 'FDAI2309',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563383916429313,
+})
+
+ASSET_INFO.set(FUSDC2309, {
+  version: '1',
+  name: 'fUSDC2309',
+  decimals: 8,
+  symbol: 'FUSDC2309',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844858893139969,
+})
+
+ASSET_INFO.set(FETH2312, {
+  version: '1',
+  name: 'fETH2312',
+  decimals: 8,
+  symbol: 'FETH2312',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 6,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 281910930374657,
+})
+
+ASSET_INFO.set(FDAI2312, {
+  version: '1',
+  name: 'fDAI2312',
+  decimals: 8,
+  symbol: 'FDAI2312',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 563385907085313,
+})
+
+ASSET_INFO.set(FUSDC2312, {
+  version: '1',
+  name: 'fUSDC2312',
+  decimals: 8,
+  symbol: 'FUSDC2312',
+  showToken: true,
+  isWrappedToken: false,
+  color: '#FF007A',
+  digitFormat: 2,
+  tokenType: TokenType.ERC1155_,
+  tokenIdentifier: 844860883795969,
+})
+
+ASSET_INFO.set(CRAB, {
+  version: '1',
+  name: 'Crab Strategy v2',
+  decimals: 18,
+  symbol: 'Crabv2',
+  showToken: true,
+  digitFormat: 2,
+  tokenType: TokenType.ERC20_,
+  isWrappedToken: false, 
+  color: '#FF007A',
+})
+
+ASSET_INFO.set(RETH, {
+        version: '1',
+        name: 'Rocket Pool ETH',
+        decimals: 18,
+        symbol: 'rETH',
+        showToken: true,
+        digitFormat: 6,
+        tokenType: TokenType.ERC20_,
+        isWrappedToken: false,
+        color: '#FF007A',
+})
