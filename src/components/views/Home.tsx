@@ -6,6 +6,8 @@ import Summary from '../Summary';
 import TvlTable from '../TvlTable';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SkeletonWrap from '../wraps/SkeletonWrap';
+import Button  from '../../components/Button';
+import { formatValue } from '../../utils/appUtils';
 
 interface Tvl {
   symbol: string;
@@ -24,6 +26,8 @@ interface HomeProps {
 const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
   const [tvl, setTvl] = useState<number>();
   const [tvlList, setTvlList] = useState<Tvl[]>([]);
+  const [debtList, setDebtList] = useState<ITotalDebtItem[]>([]);
+  const [showZeroBalances, setShowZeroBalances] = useState<boolean>(false);
 
   // sets the total value locked for all assets combined
   useEffect(() => {
@@ -35,14 +39,43 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
     // sort by tvl and filter out matured assets
     const tvlItems = Object.values(assetsTvl)
       .sort((a, b) => b.value - a.value)
-      .filter((asset) => !asset.hasMatured);
+      .filter(
+        (asset) => !asset.hasMatured || (asset.hasMatured && asset.value > 0)
+      )
 
+    console.log('tvItems', tvlItems)
+
+
+    // If showZeroBalances is false, filter out assets with zero value
+  if (!showZeroBalances) {
+    const filteredTvlItems = tvlItems.filter((asset) => asset.value > 0);
+    setTvlList(filteredTvlItems);
+    console.log('tvlItems filter?', filteredTvlItems);
+  } else {
+    // If showZeroBalances is true, set the original tvlItems
     setTvlList(tvlItems);
-  }, [assetsTvl]);
+  }
+  }, [assetsTvl, showZeroBalances]);
+
+  useEffect(() => {
+    // sort by totalDebt and filter out matured assets
+    const totalDebtItems = Object.values(totalDebtList)
+
+    // If showZeroBalances is false, filter out assets with zero value
+    if (!showZeroBalances) {
+      const filteredTotalDebtItems = totalDebtItems.filter((asset) => asset.value > 0);
+      setDebtList(filteredTotalDebtItems);
+    } else {
+      // If showZeroBalances is true, set the original totalDebtItems
+      setDebtList(totalDebtItems);
+    }
+  }, [totalDebtList, showZeroBalances])
 
   return (
     <MainViewWrap>
       <div className="bg-green-50 dark:bg-green-300 rounded-xl p-8">
+        <span className="mr-2">{`Solvency ratio: ${((tvl * 100) / totalDebt).toFixed(2)}%`}</span>
+        {`Solvency Margin: $${formatValue((tvl - totalDebt).toFixed(2),2)}`}
         <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
@@ -54,6 +87,13 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
                   $<AnimatedNum num={tvl!} />
                 </>
               )}
+            </div>
+            <div>
+              <Button 
+                action={() => setShowZeroBalances(!showZeroBalances)}
+                label={showZeroBalances ? 'Hide zero balances' : 'Show zero balances'}
+                className="mt-3"
+              />
             </div>
           </Summary>
           <div className="w-64">{tvlList.length > 0 && <TvlTable data={tvlList} assets={assets} />}</div>
@@ -71,7 +111,7 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets }: HomeProps) => {
               )}
             </div>
           </Summary>
-          <div className="w-64">{totalDebt > 0 && <TvlTable data={totalDebtList} assets={assets} />}</div>
+          <div className="w-64">{totalDebt > 0 && <TvlTable data={debtList} assets={assets} />}</div>
         </div>
       </div>
     </MainViewWrap>
