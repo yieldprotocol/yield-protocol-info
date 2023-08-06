@@ -48,4 +48,13 @@ export const markMap = new Map<string, any>([
   ['FUSDC2303', <NotionalUSDCMark key="notional" seriesId="0x303230390000" />],
   ['FETH2212', <NotionalETHMark key="notional" seriesId="0x303030380000" />],
   ['FETH2303', <NotionalETHMark key="notional" seriesId="0x303030390000" />],
+  ['FETH2306', <NotionalETHMark key="notional" seriesId="0x303030310000" />],
+  ['FETH2309', <NotionalETHMark key="notional" seriesId="0x303030320000" />],
+  ['FETH2312', <NotionalETHMark key="notional" seriesId="0x303030330000" />],
+  ['FDAI2306', <NotionalDAIMark key="notional" seriesId="0x303130310000" />],
+  ['FDAI2309', <NotionalDAIMark key="notional" seriesId="0x303130320000" />],
+  ['FDAI2312', <NotionalDAIMark key="notional" seriesId="0x303130330000" />],
+  ['FUSDC2306', <NotionalUSDCMark key="notional" seriesId="0x303230310000" />],
+  ['FUSDC2309', <NotionalUSDCMark key="notional" seriesId="0x303230320000" />],
+  ['FUSDC2312', <NotionalUSDCMark key="notional" seriesId="0x303230330000" />],
 ]);
