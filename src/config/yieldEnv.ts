@@ -21,6 +21,7 @@ const yieldEnv = {
       Wand: '0x21F7794cF4e9aF58cbd0A71Fd33C73458981239f',
       YearnVaultMultiOracle: '0xC597E9cA52Afc13F7F5EDdaC9e53DEF569236016',
       NotionalMultiOracle: '0x660bB2F1De01AacA46FCD8004e852234Cf65F3fb',
+      StrategyRescue: '0x0702290D4da74A2004C7E77F66C4Bbd91FcA62bb'
     },
     42161: {
       Timelock: '0xd0a22827Aed2eF5198EbEc0093EA33A4CD641b6c',
@@ -36,6 +37,7 @@ const yieldEnv = {
       AccumulatorOracle: '0x0ad9Ef93673B6081c0c3b753CcaaBDdd8d2e7848',
       WitchV1: '0x08173D0885B00BDD640aaE57D05AbB74cd00d669',
       Witch: '0x07C2C74811cB14a5003C3ccff7EC436d504ffFb6',
+      CompositeMultiOracle: '0x750B3a18115fe090Bc621F9E4B90bd442bcd02F2'
     },
   },
 
@@ -69,6 +71,25 @@ const yieldEnv = {
     USDT: '#50af95',
     wstETH: '#00A3FF',
     LINK: '#2A5ADA',
+  },
+
+  /* 
+    These series are the only active series to be factored into our liability calculations. 
+    We will use these to filter the SeriesAdded events 
+  */
+  series: {
+    Ids: [
+      "0x0030ff00028e", // ETH 2309
+      "0x0031ff00028e", // DAI 2309
+      "0x0032ff00028e", // USDC 2309
+      "0x00a0ff00028e", // uSDT 2309
+      "0x0138ff00028e", // FRAX 2309
+
+      "0x0030ff000291", // ETH 2312
+      "0x0031ff000291", // DAI 2312
+      "0x0032ff000291", // USDC 2312
+      "0x00a0ff000291", // uSDT 2312
+    ]
   },
 
   seasonColors: {
