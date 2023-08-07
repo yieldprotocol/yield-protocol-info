@@ -44,14 +44,10 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets, joinBalancesUSDC }:
         (asset) => !asset.hasMatured || (asset.hasMatured && asset.value > 0)
       )
 
-    console.log('tvItems', tvlItems)
-
-
     // If showZeroBalances is false, filter out assets with zero value
   if (!showZeroBalances) {
     const filteredTvlItems = tvlItems.filter((asset) => asset.value > 0);
     setTvlList(filteredTvlItems);
-    console.log('tvlItems filter?', filteredTvlItems);
   } else {
     // If showZeroBalances is true, set the original tvlItems
     setTvlList(tvlItems);
