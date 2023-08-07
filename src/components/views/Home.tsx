@@ -76,8 +76,8 @@ const Home = ({ assetsTvl, totalDebtList, totalDebt, assets, joinBalancesUSDC }:
     <MainViewWrap>
       <div className="bg-green-50 dark:bg-green-300 rounded-xl p-8">
 
-    Solvency ratio: <span className="mr-2 px-3 py-1 text-sm bg-green-300 rounded-full">{` ${((joinBalancesUSDC * 100) / totalDebt).toFixed(2)}%`}</span>
-    Solvency Margin: <span className="mr-2 px-3 py-1 text-sm bg-green-300 rounded-full">{`$${formatValue((joinBalancesUSDC - totalDebt).toFixed(2),2)}`}</span>
+    Solvency ratio: <span className="mr-2 px-3 py-1 text-sm bg-green-300 rounded-full">{` ${joinBalancesUSDC ? ((joinBalancesUSDC * 100) / totalDebt).toFixed(2) : '-'}%`}</span>
+    Solvency Margin: <span className="mr-2 px-3 py-1 text-sm bg-green-300 rounded-full">{`$${joinBalancesUSDC && totalDebt ? formatValue((joinBalancesUSDC - totalDebt).toFixed(2),2) : '-'}`}</span>
         <div className="m-8 bg-green-50 dark:bg-green-300 rounded-xl gap-10 flex justify-between">
           <Summary>
             <div className="text-xl text-gray-500">Total Value Locked</div>
