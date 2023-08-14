@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({ label, action, className = '' }: { label: string; action: any, className: string }) => (
+const Button = ({ label, action, className = '' }: { label: string; action: any, className?: string }) => (
   <button
     type="button"
     onClick={action}
