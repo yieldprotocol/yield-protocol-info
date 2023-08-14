@@ -6,7 +6,7 @@ import Summary from '../Summary';
 import TvlTable from '../TvlTable';
 import MainViewWrap from '../wraps/MainViewWrap';
 import SkeletonWrap from '../wraps/SkeletonWrap';
-import Button  from '../../components/Button';
+import Button  from '../Button';
 import { formatValue } from '../../utils/appUtils';
 
 interface Tvl {
