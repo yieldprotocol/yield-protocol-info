@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import useSWR from 'swr';
-import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList } from '../lib/chain';
+import { getAssets, getAssetsTvl, getProvider, getSeries, getTotalDebt, getTotalDebtList, getAssetJoinTotalsInUSDC } from '../lib/chain';
 import { getContracts } from '../lib/contracts';
 import { useAppSelector } from '../state/hooks/general';
 
@@ -15,11 +15,13 @@ const useHomePageData = () => {
     const seriesMap = await getSeries(_provider, contractMap);
     const assetsTvl = await getAssetsTvl(_provider, contractMap, assetMap, seriesMap);
 
+    const joinBalancesUSDC = await getAssetJoinTotalsInUSDC(_provider, assetMap, contractMap)
+
     // get total debt data
     const totalDebtList = await getTotalDebtList(_provider, contractMap, seriesMap, assetMap);
     const totalDebt = getTotalDebt(totalDebtList);
 
-    return { assetsTvl, totalDebtList, totalDebt, assetMap };
+    return { assetsTvl, totalDebtList, totalDebt, assetMap, joinBalancesUSDC };
   };
 
   const { data, error } = useSWR(`/home/${chainId}`, () => _getHomePageData(), {

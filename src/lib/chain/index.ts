@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { BigNumber, ethers, EventFilter } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
   ASSET_INFO,
   CVX3CRV,
@@ -26,7 +26,7 @@ import {
   Join__factory,
   Pool,
   Pool__factory,
-  Strategy__factory,
+  Strategy__factory
 } from '../../contracts';
 import { Cauldron } from '../../contracts/Cauldron';
 import { Ladle, PoolAddedEvent } from '../../contracts/Ladle';
@@ -51,6 +51,9 @@ export const getSeries = async (provider: ethers.providers.JsonRpcProvider, cont
       ladle.queryFilter(ladle.filters.PoolAdded()),
     ]);
 
+    /* Remove certain series IDs */
+    const seriesAddedEventsFiltered = seriesAddedEvents.filter(event => yieldEnv.series.Ids.includes(event.args[0]));
+
     /* build a map from the poolAdded event data */
     const poolMap: Map<string, string> = new Map(poolAddedEvents.map((e: PoolAddedEvent) => e.args));
 
@@ -58,7 +61,7 @@ export const getSeries = async (provider: ethers.providers.JsonRpcProvider, cont
 
     /* Add in any extra static series */
     await Promise.all([
-      ...seriesAddedEvents.map(async (x): Promise<void> => {
+      ...seriesAddedEventsFiltered.map(async (x): Promise<void> => {
         const { seriesId: id, baseId, fyToken } = x.args;
         const { maturity } = await cauldron.series(id);
 
@@ -294,33 +297,17 @@ export const getAssetsTvl = async (
     return newMap;
   }, {});
 
-  // convert the balances to usdc (or dai) denomination
+  // the balances to usdc (or dai) denomination
   const totalTvl = await Promise.all(
     Object.values(_joinBalances!)?.map(async (bal: any) => {
       const assetInfo = ASSET_INFO.get(bal.id);
 
-      // get the usdc price of the asset
-      let _price: BigNumber;
-      let price_: string;
-
-      if ([FDAI2203, FDAI2206, FDAI2209, FDAI2212, FDAI2303].includes(bal.id)) {
-        price_ = '1';
-      } else if ([FETH2212, FETH2303].includes(bal.id)) {
-        // if FETH, use eth price as proxy for fETH price
-        _price = await getPrice(WETH, _USDC.id, contractMap, 18, chainId);
-      } else {
-        _price = await getPrice(bal.id, _USDC.id, contractMap, bal.asset.decimals, chainId);
-
-        const priceInUSDC = decimalNToDecimal18(_price, _USDC.decimals);
-        price_ = ethers.utils.formatUnits(priceInUSDC, 18);
-      }
-
       const joinBalance_ = bal.balance;
       const poolBalance_ = totalPoolBalances[bal.id]?.balance! || 0;
       const totalBalance = +joinBalance_ + +poolBalance_;
-      const _value = +price_ * +totalBalance;
-      const value = isNaN(_value) || _value < 0.01 ? 0 : _value;
       let hasMatured: boolean;
+
+      const value = await convertToUSDC(totalBalance, bal.asset, assets, contractMap, chainId)
 
       if (assetInfo.tokenType === TokenType.ERC1155_) {
         const maturity = await getAssetJoinMaturity(provider, bal.asset);
@@ -357,6 +344,51 @@ const getAssetJoinBalances = async (provider: ethers.providers.JsonRpcProvider, 
     return undefined;
   }
 };
+
+export const convertToUSDC = async (
+  balance: number, // balance should be a number
+  asset: any, // asset should include id and decimals
+  assets: IAssetMap,
+  contractMap: any,
+  chainId: any
+) => {
+  const _USDC = Object.values(assets).filter((a) => a.symbol === 'USDC')[0];
+  
+  let _price: BigNumber;
+  let price_: string;
+
+  if ([FDAI2203, FDAI2206, FDAI2209, FDAI2212, FDAI2303].includes(asset.id)) {
+    price_ = '1';
+  } else if ([FETH2212, FETH2303].includes(asset.id)) {
+    _price = await getPrice(WETH, _USDC.id, contractMap, 18, chainId);
+  } else {
+    _price = await getPrice(asset.id, _USDC.id, contractMap, asset.decimals, chainId);
+    const priceInUSDC = decimalNToDecimal18(_price, _USDC.decimals);
+    price_ = ethers.utils.formatUnits(priceInUSDC, 18);
+  }
+
+  const _value = +price_ * balance;
+  const value = isNaN(_value) || _value < 0.01 ? 0 : _value;
+
+  return value;  // return value in USDC
+}
+
+
+export const getAssetJoinTotalsInUSDC = async (provider: ethers.providers.JsonRpcProvider, assets: IAssetMap, contractMap: IContractMap) => {
+  const _joinBalances = await getAssetJoinBalances(provider, assets);
+  const { chainId } = await provider.getNetwork();
+
+  const assetBalanceTotal = await Promise.all(
+    Object.values(_joinBalances!)?.map(async (bal: any) => {
+      const joinBalance_ = bal.balance;
+      const value = await convertToUSDC(joinBalance_, bal.asset, assets, contractMap, chainId)
+      return value
+    })
+  );
+
+  return assetBalanceTotal.reduce((a, b) => a + b, 0)
+}
+
 
 const getAssetJoinBalance = async (provider: ethers.providers.JsonRpcProvider, asset: IAsset) => {
   let _Join: Join | ConvexJoin;
@@ -497,11 +529,21 @@ export const getTotalDebtList = async (
   const totalDebtMap = await Object.values(series).reduce(async (map, x) => {
     const { chainId } = await provider.getNetwork();
     const fyToken = FYToken__factory.connect(x.fyTokenAddress, provider!);
-    const fyTokenSupply = await fyToken.totalSupply();
-    const fyTokenSupply_ = ethers.utils.formatUnits(fyTokenSupply, x.decimals);
     const base = assets![x.baseId];
     const usdc = assets![USDC];
-    const fyTokenToUSDC = await convertValue(fyTokenSupply_, base, usdc, contractMap!, chainId);
+    let fyTokenAmount = BigNumber.from(0);
+
+    try {
+      // We accidentally minted more 2306B and 2309 FYTokens than we should have, locked in the StrategyRescue contract, so we need to subtract them from the total supply
+      // Until the total supply of 2309 fyToken is reduced, we need to calculate the value of those liabilities manually
+      fyTokenAmount = (await fyToken.totalSupply()).sub(await fyToken.balanceOf(yieldEnv.addresses[chainId].StrategyRescue))
+    } catch (e) {
+      fyTokenAmount = (await fyToken.totalSupply())
+    }
+
+    const fyTokenAmount_ = ethers.utils.formatUnits(fyTokenAmount, x.decimals);
+
+    const fyTokenToUSDC = await convertValue(fyTokenAmount_, base, usdc, contractMap!, chainId);
 
     const newMap = await map;
     const currItemValue = newMap.has(base.id) ? newMap.get(base.id)?.value : 0;
